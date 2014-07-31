@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/gallery_white"
+    android:padding="@dimen/size_4">
+
+    <ProgressBar
+        android:layout_width="96dp"
+        android:layout_height="48dp"
+        android:layout_marginLeft="16dp"
+        android:layout_centerVertical="true"
+        android:id="@+id/progress"
+        android:contentDescription="@string/app_name"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:id="@+id/id"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="6dp"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/image">
+
+    </TextView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="18sp"
+        android:id="@+id/label"
+        android:maxLines="3"
+        android:layout_marginLeft="6dp"
+        android:layout_below="@+id/id"
+        android:layout_toRightOf="@+id/image"
+        android:ellipsize="end">
+
+    </TextView>
+
+    <ImageView
+        android:layout_width="122dp"
+        android:layout_height="100dp"
+        android:id="@+id/image"
+        android:contentDescription="@string/app_name"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:padding="@dimen/size_2"
+        android:adjustViewBounds="true"
+        android:cropToPadding="true"
+        android:scaleType="centerCrop"
+        android:background="@color/green"
+        android:src="#ffff1300" />
+
+</RelativeLayout>

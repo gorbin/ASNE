@@ -1,0 +1,3 @@
+include ':ASNE', ':iconify_custom', ':library', ':facebook', ':vksdk_library'
+project(':facebook').projectDir = new File('third_party/facebook')
+project(':vksdk_library').projectDir = new File('third_party/vksdk_library')

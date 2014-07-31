@@ -1,0 +1,8 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.joanzapata.android.icons.iconify_custom">
+
+    <application android:allowBackup="true">
+
+    </application>
+
+</manifest>

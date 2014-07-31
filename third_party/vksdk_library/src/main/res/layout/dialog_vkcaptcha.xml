@@ -1,0 +1,43 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:context=".VKCaptchaActivity$PlaceholderFragment"
+    android:background="@color/vk_grey_color"
+    android:padding="20dp">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/captcha_container">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:id="@+id/progressBar"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView"
+            android:layout_alignParentTop="true"
+            android:visibility="gone"
+            android:contentDescription="@string/vk_enter_captcha_text"/>
+
+    </RelativeLayout>
+
+    <EditText
+        android:id="@+id/captchaAnswer"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/captcha_container"
+        android:hint="@string/vk_enter_captcha_text"
+        android:gravity="center"
+        android:textColor="@color/vk_color"
+        android:textColorHint="@color/vk_light_color"
+        android:imeOptions="actionSend"
+        android:inputType="textVisiblePassword"/>
+</RelativeLayout>

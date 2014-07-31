@@ -1,0 +1,16 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="listPopupWindowStyle">@style/Widget.AppCompat.Light.ListPopupWindow</item>
+    </style>
+
+    <style name="noAnimTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+	  <style name="noDimmDialog" parent="AppTheme">
+    <item name="android:backgroundDimEnabled">false</item>
+  </style>
+
+</resources>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentStart="true"
+    android:layout_marginRight="5dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@drawable/shadow"
+        android:layout_marginBottom="3dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="64dp"
+        android:paddingBottom="2dp">
+
+        <LinearLayout
+            android:id="@+id/nameLine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Name"
+                android:maxLines="2"
+                android:singleLine="false"
+                android:id="@+id/name"
+                android:paddingTop="8dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="8dp"
+                android:paddingBottom="8dp"
+                android:layout_marginRight="128dp"
+                android:layout_alignParentTop="true"
+                android:textColor="@color/green"
+                android:layout_alignLeft="@+id/divider"
+                android:layout_alignStart="@+id/divider"/>
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/size_2"
+            android:id="@+id/divider"
+            android:background="@color/green"
+            android:contentDescription="@string/divider"
+            android:layout_below="@+id/nameLine"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="@dimen/size_4" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ID"
+            android:id="@+id/id"
+            android:textColor="@android:color/black"
+            android:paddingTop="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="16dp"
+            android:layout_below="@+id/divider"
+            android:layout_alignParentLeft="true" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="7pt"
+            android:layout_below="@+id/id"
+            android:text="detailed info..."
+            android:id="@+id/minfo"
+            android:background="@color/gallery_grey"
+            android:layout_marginLeft="1dp"
+            android:layout_marginRight="1dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+			android:id="@+id/buttonLayout"
+            android:layout_below="@+id/minfo"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:background="@color/grey_light"
+            android:layout_marginLeft="1dp"
+            android:layout_marginRight="1dp">
+
+            <IconButton
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="FB Login"
+                android:id="@+id/connect"
+                android:padding="@dimen/size_8"
+                android:background="@android:color/white"
+				android:layout_marginRight="1dp"
+                android:layout_weight="1" />
+            <IconButton
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="FB about"
+                android:id="@+id/info"
+                android:padding="@dimen/size_8"
+                android:background="@android:color/white"
+                android:layout_weight="1" />
+			<IconButton
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="FB Login"
+                android:id="@+id/share"
+                android:padding="@dimen/size_8"
+                android:background="@android:color/white"
+				android:layout_marginLeft="1dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <ImageView
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:id="@+id/image"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:background="@color/green"
+        android:layout_margin="@dimen/size_5"
+        android:padding="@dimen/size_2"
+        android:src="@drawable/user"
+        android:adjustViewBounds="true"
+		android:cropToPadding="true"
+        android:scaleType="centerCrop"/>
+</RelativeLayout>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="vk_color">#5585BC</color>
+    <color name="vk_grey_color">#F0F2F5</color>
+    <color name="vk_white">#fff</color>
+    <color name="vk_smoke_white">#ddd</color>
+    <color name="vk_light_color">#A7C2DF</color>
+</resources>
