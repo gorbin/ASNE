@@ -2,6 +2,9 @@ ASNE
 ====
 This is extention of ASN(https://github.com/antonkrasov/AndroidSocialNetworks) library
 
+Download here:
+https://github.com/gorbin/ASNE/releases/tag/0.1
+
 Features:
 
 1) add new social networks(Vkontakte, Odnoklassniki)
