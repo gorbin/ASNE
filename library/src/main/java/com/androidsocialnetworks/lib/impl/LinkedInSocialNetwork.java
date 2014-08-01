@@ -15,6 +15,7 @@ import com.androidsocialnetworks.lib.SocialNetworkException;
 import com.androidsocialnetworks.lib.listener.OnCheckIsFriendCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnLoginCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnPostingCompleteListener;
+import com.androidsocialnetworks.lib.listener.OnRequestAccessTokenCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnRequestAddFriendCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnRequestDetailedSocialPersonCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnRequestGetFriendsCompleteListener;
@@ -108,6 +109,16 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
                 mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null),
                 mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_SECRET, null)
         );
+    }
+
+    @Override
+    public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
+        super.requestAccessToken(onRequestAccessTokenCompleteListener);
+        ((OnRequestAccessTokenCompleteListener) mLocalListeners.get(REQUEST_ACCESS_TOKEN))
+                .onRequestAccessTokenComplete(getID(), new AccessToken(
+                        mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null),
+                        mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_SECRET, null)
+                ));
     }
 
     @Override

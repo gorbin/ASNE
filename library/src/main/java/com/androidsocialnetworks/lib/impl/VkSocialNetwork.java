@@ -15,6 +15,7 @@ import com.androidsocialnetworks.lib.SocialNetworkException;
 import com.androidsocialnetworks.lib.listener.OnCheckIsFriendCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnLoginCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnPostingCompleteListener;
+import com.androidsocialnetworks.lib.listener.OnRequestAccessTokenCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnRequestAddFriendCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnRequestDetailedSocialPersonCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnRequestGetFriendsCompleteListener;
@@ -89,7 +90,6 @@ public class VkSocialNetwork extends SocialNetwork {
             if (mLocalListeners.get(REQUEST_LOGIN) != null) {
                 ((OnLoginCompleteListener) mLocalListeners.get(REQUEST_LOGIN)).onLoginSuccess(getID());
                 mLocalListeners.remove(REQUEST_LOGIN);
-                return;
             }
             requestIdPerson();
         }
@@ -132,6 +132,7 @@ public class VkSocialNetwork extends SocialNetwork {
 
     @Override
     public boolean isConnected() {
+        boolean wat = VKSdk.isLoggedIn();
         return VKSdk.isLoggedIn();
     }
 
@@ -154,6 +155,13 @@ public class VkSocialNetwork extends SocialNetwork {
     @Override
     public AccessToken getAccessToken() {
         return new AccessToken(accessToken.toString(), null);
+    }
+
+    @Override
+    public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
+        super.requestAccessToken(onRequestAccessTokenCompleteListener);
+        ((OnRequestAccessTokenCompleteListener) mLocalListeners.get(REQUEST_ACCESS_TOKEN))
+                .onRequestAccessTokenComplete(getID(), new AccessToken(accessToken.toString(), null));
     }
 
     @Override
@@ -599,7 +607,9 @@ public class VkSocialNetwork extends SocialNetwork {
         VKUIHelper.onCreate(activity);
         VKSdk.initialize(vkSdkListener, key);
         VKSdk.wakeUpSession();
-        requestIdPerson();
+        if(isConnected()) {
+            requestIdPerson();
+        }
     }
 
     @Override

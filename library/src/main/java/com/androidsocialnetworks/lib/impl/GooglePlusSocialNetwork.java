@@ -3,6 +3,7 @@ package com.androidsocialnetworks.lib.impl;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,7 @@ import com.androidsocialnetworks.lib.SocialNetworkException;
 import com.androidsocialnetworks.lib.listener.OnCheckIsFriendCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnLoginCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnPostingCompleteListener;
+import com.androidsocialnetworks.lib.listener.OnRequestAccessTokenCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnRequestAddFriendCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnRequestDetailedSocialPersonCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnRequestGetFriendsCompleteListener;
@@ -23,8 +25,10 @@ import com.androidsocialnetworks.lib.listener.OnRequestSocialPersonCompleteListe
 import com.androidsocialnetworks.lib.listener.OnRequestSocialPersonsCompleteListener;
 import com.androidsocialnetworks.lib.persons.GooglePlusPerson;
 import com.androidsocialnetworks.lib.persons.SocialPerson;
+import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -101,31 +105,39 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
 
     @Override
     public AccessToken getAccessToken() {
-        // todo token!!!
-//        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
-//            @Override
-//            protected String doInBackground(Void... params) {
-//                String scope = "oauth2:" + Scopes.PLUS_LOGIN;
-//                String token = null;
-//                try {
-//                    token = GoogleAuthUtil.getToken(mSocialNetworkManager.getActivity(),
-//                            Plus.AccountApi.getAccountName(googleApiClient), scope);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//                return token;
-//            }
-//
-//            @Override
-//            protected void onPostExecute(String token) {
-//                Log.i(TAG, "Access token:" + token);
-//            }
-//        };
-//        String token = null;
-//        task.execute();
-//
-//        return new AccessToken(token, null);
         throw new SocialNetworkException("Not supported for GooglePlusSocialNetwork");
+    }
+
+    @Override
+    public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
+        super.requestAccessToken(onRequestAccessTokenCompleteListener);
+
+        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                String scope = "oauth2:" + Scopes.PLUS_LOGIN;
+                String token;
+                try {
+                    token = GoogleAuthUtil.getToken(mSocialNetworkManager.getActivity(),
+                            Plus.AccountApi.getAccountName(googleApiClient), scope);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return e.getMessage();
+                }
+                return token;
+            }
+
+            @Override
+            protected void onPostExecute(String token) {
+                if(token != null) {
+                    ((OnRequestAccessTokenCompleteListener) mLocalListeners.get(REQUEST_ACCESS_TOKEN))
+                            .onRequestAccessTokenComplete(getID(), new AccessToken(token, null));
+                } else {
+                    mLocalListeners.get(REQUEST_LOGIN).onError(getID(), REQUEST_ACCESS_TOKEN, token, null);
+                }
+            }
+        };
+        task.execute();
     }
 
     @Override
@@ -246,7 +258,7 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
                         personBuffer.close();
                     }
                 } else {
-    //                    Log.e(TAG, "Error requesting people data: " + loadPeopleResult.getStatus());
+//                    Log.e(TAG, "Error requesting people data: " + loadPeopleResult.getStatus());
                     if (mLocalListeners.get(REQUEST_GET_PERSON) != null) {
                         mLocalListeners.get(REQUEST_GET_PERSON).onError(getID(), REQUEST_GET_PERSON, "Can't get person"
                                 + loadPeopleResult.getStatus(), null);
@@ -469,6 +481,10 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
 
     @Override
     public void onConnectionSuspended(int i) {
+        if (mLocalListeners.get(REQUEST_LOGIN) != null) {
+            mLocalListeners.get(REQUEST_LOGIN).onError(getID(), REQUEST_LOGIN,
+                    "get person == null", null);
+        }
         mConnectRequested = false;
     }
 

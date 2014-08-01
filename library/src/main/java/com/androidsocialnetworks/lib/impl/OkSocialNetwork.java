@@ -13,6 +13,7 @@ import com.androidsocialnetworks.lib.SocialNetworkException;
 import com.androidsocialnetworks.lib.listener.OnCheckIsFriendCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnLoginCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnPostingCompleteListener;
+import com.androidsocialnetworks.lib.listener.OnRequestAccessTokenCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnRequestAddFriendCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnRequestDetailedSocialPersonCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnRequestGetFriendsCompleteListener;
@@ -98,6 +99,11 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
         } else if(mLocalListeners.containsKey(REQUEST_GET_FRIENDS)){
             mRequests.remove(REQUEST_GET_FRIENDS);
             executeRequest(new RequestGetFriendsAsyncTask(), requestBundle, REQUEST_GET_FRIENDS);
+        } else if (mLocalListeners.containsKey(REQUEST_ACCESS_TOKEN)) {
+            mRequests.remove(REQUEST_ACCESS_TOKEN);
+            String accessToken = mSharedPreferences.getString(TOKEN, null);
+            ((OnRequestAccessTokenCompleteListener) mLocalListeners.get(REQUEST_ACCESS_TOKEN))
+                    .onRequestAccessTokenComplete(getID(), new AccessToken(accessToken, null));
         }
     }
 
@@ -147,6 +153,14 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
     public AccessToken getAccessToken() {
         String accessToken = mSharedPreferences.getString(TOKEN, null);
         return new AccessToken(accessToken, null);
+    }
+
+    @Override
+    public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
+        super.requestAccessToken(onRequestAccessTokenCompleteListener);
+        String accessToken = mSharedPreferences.getString(TOKEN, null);
+        ((OnRequestAccessTokenCompleteListener) mLocalListeners.get(REQUEST_ACCESS_TOKEN))
+                .onRequestAccessTokenComplete(getID(), new AccessToken(accessToken, null));
     }
 
     private boolean checkTokenError(Bundle result){

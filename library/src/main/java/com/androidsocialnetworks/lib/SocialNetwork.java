@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import com.androidsocialnetworks.lib.listener.OnCheckIsFriendCompleteListener;
+import com.androidsocialnetworks.lib.listener.OnRequestAccessTokenCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnLoginCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnPostingCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnRequestAddFriendCompleteListener;
@@ -40,6 +41,7 @@ public abstract class SocialNetwork {
 
     public static final String REQUEST_LOGIN = "SocialNetwork.REQUEST_LOGIN";
     public static final String REQUEST_LOGIN2 = "SocialNetwork.REQUEST_LOGIN2"; // used with OAuth in Twitter and LinekdIn
+    public static final String REQUEST_ACCESS_TOKEN = "SocialNetwork.REQUEST_ACCESS_TOKEN";
     public static final String REQUEST_GET_DETAIL_PERSON = "SocialNetwork.REQUEST_GET_DETAIL_PERSON";
     public static final String REQUEST_GET_PERSON = "SocialNetwork.REQUEST_GET_PERSON";
     public static final String REQUEST_GET_PERSONS = "SocialNetwork.REQUEST_GET_PERSONS";
@@ -134,6 +136,14 @@ public abstract class SocialNetwork {
     public abstract int getID();
 
     public abstract AccessToken getAccessToken();
+
+    public void requestAccessToken(){
+        requestAccessToken(null);
+    }
+
+    public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
+        registerListener(REQUEST_ACCESS_TOKEN, onRequestAccessTokenCompleteListener);
+    }
 	
 	public void requestCurrentPerson() {
         requestCurrentPerson(null);
@@ -243,6 +253,10 @@ public abstract class SocialNetwork {
         mLocalListeners.remove(REQUEST_LOGIN);
     }
 
+    public void cancelAccessTokenRequest() {
+        mLocalListeners.remove(REQUEST_ACCESS_TOKEN);
+    }
+
     public void cancelGetCurrentPersonRequest() {
         mLocalListeners.remove(REQUEST_GET_CURRENT_PERSON);
     }
@@ -295,6 +309,7 @@ public abstract class SocialNetwork {
 
         // we need to call all, because in implementations we can possible do aditional work in specific methods
         cancelLoginRequest();
+        cancelAccessTokenRequest();
         cancelGetCurrentPersonRequest();
         cancelGetSocialPersonRequest();
         cancelGetSocialPersonsRequest();
@@ -332,6 +347,10 @@ public abstract class SocialNetwork {
 
     public void setOnLoginCompleteListener(OnLoginCompleteListener onLoginCompleteListener) {
         mGlobalListeners.put(REQUEST_LOGIN, onLoginCompleteListener);
+    }
+
+    public void setOnRequestAccessTokenCompleteListener(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
+        mGlobalListeners.put(REQUEST_ACCESS_TOKEN, onRequestAccessTokenCompleteListener);
     }
 
     public void setOnRequestCurrentPersonCompleteListener(OnRequestSocialPersonCompleteListener onRequestCurrentPersonCompleteListener) {

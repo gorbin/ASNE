@@ -8,4 +8,12 @@ public class AccessToken {
         this.token = token;
         this.secret = secret;
     }
+
+    @Override
+    public String toString() {
+        return "AccessToken{" +
+                "token='" + token + '\'' +
+                ", secret='" + secret + '\'' +
+                '}';
+    }
 }

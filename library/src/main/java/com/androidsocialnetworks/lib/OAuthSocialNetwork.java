@@ -46,6 +46,13 @@ public abstract class OAuthSocialNetwork extends SocialNetwork {
     }
 
     @Override
+    public void cancelAccessTokenRequest() {
+        super.cancelAccessTokenRequest();
+
+        cancelRequest(REQUEST_ACCESS_TOKEN);
+    }
+
+    @Override
     public void cancelGetCurrentPersonRequest() {
         super.cancelGetCurrentPersonRequest();
 

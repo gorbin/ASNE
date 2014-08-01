@@ -36,14 +36,14 @@ import ru.ok.android.sdk.util.OkScope;
 
 public class MainFragment  extends Fragment implements SocialNetworkManager.OnInitializationCompleteListener, OnLoginCompleteListener, OnRequestSocialPersonCompleteListener, OnRequestDetailedSocialPersonCompleteListener {
     //Keys
-    public static final String TWITTER_CONSUMER_KEY = "TWITTER_CONSUMER_KEY";
-    public static final String TWITTER_CONSUMER_SECRET = "TWITTER_CONSUMER_SECRET";
-    public static final String LINKEDIN_CONSUMER_KEY = "LINKEDIN_CONSUMER_KEY";
-    public static final String LINKEDIN_CONSUMER_SECRET = "LINKEDIN_CONSUMER_SECRET";
-    public static final String VK_KEY =  "VK_KEY";
-    public static final String OK_APP_ID =  "OK_APP_ID";
-    public static final String OK_PUBLIC_KEY =  "OK_PUBLIC_KEY";
-    public static final String OK_SECRET_KEY =  "OK_SECRET_KEY";
+    public static final String TWITTER_CONSUMER_KEY = "BBQAUAVKYzmYtvEcNhUEvGiKd";
+    public static final String TWITTER_CONSUMER_SECRET = "byZzHPxE1tkGmnPEj5zUyc7MG464Q1LgNRcwbBJV1Ap86575os";
+    public static final String LINKEDIN_CONSUMER_KEY = "75ubsp337ll7sf";
+    public static final String LINKEDIN_CONSUMER_SECRET = "8DVk4hi3wvEyzjbh";
+    public static final String VK_KEY = "4449647";
+    public static final String OK_APP_ID = "1096125440";
+    public static final String OK_PUBLIC_KEY = "CBANIGFCEBABABABA";
+    public static final String OK_SECRET_KEY = "FF5161844C04525B64FA41A7";
 
     private SocialCard socialCards[] =  new SocialCard[Constants.logo.length];
     private boolean isDetailed[] = new boolean[Constants.logo.length];

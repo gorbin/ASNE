@@ -14,6 +14,7 @@ import com.androidsocialnetworks.lib.SocialNetworkException;
 import com.androidsocialnetworks.lib.listener.OnCheckIsFriendCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnLoginCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnPostingCompleteListener;
+import com.androidsocialnetworks.lib.listener.OnRequestAccessTokenCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnRequestAddFriendCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnRequestDetailedSocialPersonCompleteListener;
 import com.androidsocialnetworks.lib.listener.OnRequestGetFriendsCompleteListener;
@@ -108,6 +109,13 @@ public class FacebookSocialNetwork extends SocialNetwork {
 
             currentSession.openForRead(openRequest);
         }
+    }
+
+    @Override
+    public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
+        super.requestAccessToken(onRequestAccessTokenCompleteListener);
+        ((OnRequestAccessTokenCompleteListener) mLocalListeners.get(REQUEST_ACCESS_TOKEN))
+                .onRequestAccessTokenComplete(getID(), new AccessToken(Session.getActiveSession().getAccessToken(), null));
     }
 
     @Override
@@ -279,7 +287,7 @@ public class FacebookSocialNetwork extends SocialNetwork {
                     .setApplicationName(bundle.getString(BUNDLE_APP_NAME))
                     .setCaption(bundle.getString(BUNDLE_CAPTION))
                     .setPicture(bundle.getString(BUNDLE_PICTURE))
-                    .setFriends(bundle.getStringArrayList(DIALOG_FRIENDS))
+//                    .setFriends(bundle.getStringArrayList(DIALOG_FRIENDS))
                     .build();
             mUILifecycleHelper.trackPendingDialogCall(shareDialog.present());
         } else {
