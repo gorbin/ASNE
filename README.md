@@ -2,8 +2,9 @@ ASNE
 ====
 This is extention of ASN(https://github.com/antonkrasov/AndroidSocialNetworks) library
 
-Download here:
+Download pre-release here:
 https://github.com/gorbin/ASNE/releases/tag/0.1
+app wasn't optimized, so just report your bugs to me
 
 Features:
 
@@ -15,4 +16,4 @@ Features:
 
 4) add permissions to social network initialization 
 
-5) add new methods: getFriends, postLink, postDialog, getSocialPersons, requestDetailedSocialPerson, requestCheckIsFriend
+5) add new methods: getFriends, postLink, postDialog, getSocialPersons, requestDetailedSocialPerson
