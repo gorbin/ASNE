@@ -51,7 +51,6 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
      * so let's handle state by ourselves
      */
     private static final String SAVE_STATE_KEY_IS_CONNECTED = "GooglePlusSocialNetwork.SAVE_STATE_KEY_OAUTH_TOKEN";
-    private static final String MESSAGE = "SocialNetwork.MESSAGE";
     private GoogleApiClient googleApiClient;
     private ConnectionResult mConnectionResult;
 

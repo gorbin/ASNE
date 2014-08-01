@@ -3,7 +3,6 @@
 /.idea/workspace.xml
 .DS_Store
 /third_party/facebook/build/
-
 /third_party/facebook/build/libs/
 
 # built application files
@@ -42,3 +41,4 @@ Thumbs.db
 gradle/
 
 third_party/facebook/build/libs/facebook.aar
+build/
