@@ -224,6 +224,7 @@ public class MainFragment  extends Fragment implements SocialNetworkManager.OnIn
                     updateSocialCard(socialCard, networkId);
                 }
             });
+            final ADialogs alertDialog = new ADialogs(getActivity());
             socialCard.share.setVisibility(View.VISIBLE);
             socialCard.share.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
@@ -233,15 +234,53 @@ public class MainFragment  extends Fragment implements SocialNetworkManager.OnIn
                         public void onADialogsListDialog(DialogInterface dialog, int id, Constants.SharePost type) {
                             switch(type){
                                 case POST_MESSAGE:
-                                    socialNetwork.requestPostMessage(Constants.message, postingComplete);
+                                    alertDialog.alert(true, "Would you like to post message:", Constants.message, "Post Message", "Cancel");
+                                    alertDialog.setADialogsListener(new ADialogs.ADialogsListener() {
+                                        @Override
+                                        public void onADialogsPositiveClick(DialogInterface dialog) {
+                                            socialNetwork.requestPostMessage(Constants.message, postingComplete);
+                                        }
+
+                                        @Override
+                                        public void onADialogsNegativeClick(DialogInterface dialog) {
+                                            dialog.cancel();
+                                        }
+
+                                        @Override
+                                        public void onADialogsCancel(DialogInterface dialog) {
+                                            dialog.cancel();
+                                        }
+                                    });
                                     break;
                                 case POST_PHOTO:
-                                    socialNetwork.requestPostPhoto(getPhotoFile(), Constants.message, postingComplete);
+                                    alertDialog.customImageDialog(getActivity(), true, "Would you like to post photo:", getPhotoFile(), "Post Photo", "Cancel");
+                                    alertDialog.setADialogsImageAlertListener(new ADialogs.ADialogsImageAlertListener() {
+                                        @Override
+                                        public void onADialogsImageAlertPositiveClick(DialogInterface dialog, int id) {
+                                            socialNetwork.requestPostPhoto(getPhotoFile(), Constants.message, postingComplete);
+                                        }
+                                    });
                                     break;
                                 case POST_LINK:
-                                    Bundle postParams = new Bundle();
-                                    postParams.putString(SocialNetwork.BUNDLE_LINK, Constants.link);
-                                    socialNetwork.requestPostLink(postParams, Constants.message, postingComplete);
+                                    alertDialog.alert(true, "Would you like to post Link:", Constants.link, "Post Link", "Cancel");
+                                    alertDialog.setADialogsListener(new ADialogs.ADialogsListener() {
+                                        @Override
+                                        public void onADialogsPositiveClick(DialogInterface dialog) {
+                                            Bundle postParams = new Bundle();
+                                            postParams.putString(SocialNetwork.BUNDLE_LINK, Constants.link);
+                                            socialNetwork.requestPostLink(postParams, Constants.message, postingComplete);
+                                        }
+
+                                        @Override
+                                        public void onADialogsNegativeClick(DialogInterface dialog) {
+                                            dialog.cancel();
+                                        }
+
+                                        @Override
+                                        public void onADialogsCancel(DialogInterface dialog) {
+                                            dialog.cancel();
+                                        }
+                                    });
                                     break;
                                 case POST_DIALOG:
                                     Bundle linkParams = new Bundle();

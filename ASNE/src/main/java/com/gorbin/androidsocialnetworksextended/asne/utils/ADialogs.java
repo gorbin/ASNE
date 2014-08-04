@@ -4,13 +4,17 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.gorbin.androidsocialnetworksextended.asne.R;
 
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -220,5 +224,55 @@ public class ADialogs {
     }
     public void cancelProgress(){
         pd.dismiss();
+    }
+
+    // CustomListDialog
+    private ADialogsImageAlertListener imageAlertListener = null;
+    public interface ADialogsImageAlertListener {
+        public void onADialogsImageAlertPositiveClick(DialogInterface dialog, int id);
+    }
+
+    public void setADialogsImageAlertListener(ADialogsImageAlertListener imageAlertListener) {
+        this.imageAlertListener = imageAlertListener;
+    }
+
+    public void customImageDialog(Context context, boolean cancelable, String title, File file, String positiveButton, String negativeButton) {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View listLayout = inflater.inflate(R.layout.dialog_image, null);
+
+        ImageView image = (ImageView) listLayout.findViewById(R.id.imageView);
+        if(file.exists()){
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+            image.setImageBitmap(bitmap);
+        }
+
+        AlertDialog.Builder ad = build(cancelable, title, null);
+        ad.setView(listLayout);
+        if (positiveButton != null) {
+            ad.setPositiveButton(positiveButton, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    if (imageAlertListener != null) {
+                        imageAlertListener.onADialogsImageAlertPositiveClick(dialog, id);
+                    } else {
+                        dialog.cancel();
+                    }
+                }
+            });
+        }
+        if (negativeButton != null) {
+            ad.setNegativeButton(negativeButton, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
+        }
+        if (cancelable) {
+            ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                public void onCancel(DialogInterface dialog) {
+                    dialog.cancel();
+                }
+            });
+        }
+        ad.create().show();
     }
 }
