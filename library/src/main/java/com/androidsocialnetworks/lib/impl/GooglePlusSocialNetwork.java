@@ -347,13 +347,18 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
     @Override
     public void requestPostDialog(Bundle bundle, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostDialog(bundle, onPostingCompleteListener);
-
-        Intent shareIntent = new PlusShare.Builder(mSocialNetworkManager.getActivity())
-            .setType("text/plain")
-            .setText(bundle.getString(BUNDLE_MESSAGE))
-            .setContentUrl(Uri.parse(bundle.getString(BUNDLE_LINK)))
-            .getIntent();
-
+        bundle = null;
+        PlusShare.Builder plusShare =  new PlusShare.Builder(mSocialNetworkManager.getActivity())
+                .setType("text/plain");
+        if(bundle != null){
+            if(bundle.containsKey(BUNDLE_MESSAGE)){
+                plusShare.setText(bundle.getString(BUNDLE_MESSAGE));
+            }
+            if(bundle.containsKey(BUNDLE_LINK)){
+                plusShare.setContentUrl(Uri.parse(bundle.getString(BUNDLE_LINK)));
+            }
+        }
+        Intent shareIntent = plusShare.getIntent();
         mSocialNetworkManager.getActivity().startActivityForResult(shareIntent, 0);
     }
 
