@@ -392,6 +392,7 @@ public abstract class SocialNetwork {
     public void setOnRequestGetFriendsCompleteListener(OnRequestGetFriendsCompleteListener onRequestGetFriendsCompleteListener) {
         mGlobalListeners.put(REQUEST_GET_FRIENDS, onRequestGetFriendsCompleteListener);
     }
+
     public void setOnRequestAddFriendCompleteListener(OnRequestAddFriendCompleteListener onRequestAddFriendCompleteListener) {
         mGlobalListeners.put(REQUEST_ADD_FRIEND, onRequestAddFriendCompleteListener);
     }

@@ -34,7 +34,10 @@ import java.util.Arrays;
 
 import ru.ok.android.sdk.util.OkScope;
 
-public class MainFragment  extends Fragment implements SocialNetworkManager.OnInitializationCompleteListener, OnLoginCompleteListener, OnRequestSocialPersonCompleteListener, OnRequestDetailedSocialPersonCompleteListener {
+public class MainFragment  extends Fragment
+        implements SocialNetworkManager.OnInitializationCompleteListener, OnLoginCompleteListener,
+        OnRequestSocialPersonCompleteListener, OnRequestDetailedSocialPersonCompleteListener {
+
     //Keys
     public static final String TWITTER_CONSUMER_KEY = "TWITTER_CONSUMER_KEY";
     public static final String TWITTER_CONSUMER_SECRET = "TWITTER_CONSUMER_SECRET";

@@ -347,7 +347,6 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
     @Override
     public void requestPostDialog(Bundle bundle, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostDialog(bundle, onPostingCompleteListener);
-        bundle = null;
         PlusShare.Builder plusShare =  new PlusShare.Builder(mSocialNetworkManager.getActivity())
                 .setType("text/plain");
         if(bundle != null){
@@ -414,6 +413,7 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
             }
         });
     }
+
     @Override
     public void requestAddFriend(String userID, OnRequestAddFriendCompleteListener onRequestAddFriendCompleteListener) {
         throw new SocialNetworkException("requestAddFriend isn't allowed for GooglePlusSocialNetwork");
