@@ -41,6 +41,11 @@ ASNE это расширение библиотеки [Android Social Networks][
 
 [Прямая ссылка на загрузку последней версии демо][5]
 
+<a href="https://play.google.com/store/apps/details?id=com.gorbin.androidsocialnetworksextended.asne">
+  <img alt="Get it on Google Play"
+       src="https://developer.android.com//images/brand/ru_generic_rgb_wo_60.png" />
+</a>
+
 Подключение библиотеки
 ----------------------
 Для начала необходимо создать и настроить приложения в необходимых социальных сетях:
