@@ -1,15 +1,35 @@
 apply plugin: 'android'
 
 android {
+    signingConfigs {
+        config {
+        }
+    }
     compileSdkVersion 19
     buildToolsVersion '19.1.0'
-
     defaultConfig {
         minSdkVersion 10
         targetSdkVersion 19
         versionCode 1
         versionName "1.0"
     }
+
+//    signingConfigs {
+//        release {
+//            storeFile file("D:\\develop\\keystores\\asne\\asne.jks")
+//            storePassword "qqww1122"
+//            keyAlias "asneKey"
+//            keyPassword "qqww1122"
+//        }
+//
+//        buildTypes {
+//            release {
+//                runProguard true
+//                signingConfig signingConfigs.release
+//                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+//            }
+//        }
+//    }
     buildTypes {
         release {
             runProguard false
@@ -19,7 +39,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':facebook')
     compile project(':vksdk_library')
     compile project(':iconify_custom')
@@ -27,3 +47,4 @@ dependencies {
     compile 'com.android.support:appcompat-v7:19.1.0'
     compile 'com.android.support:support-v4:19.+'
 }
+
