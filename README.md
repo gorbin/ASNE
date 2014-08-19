@@ -15,7 +15,7 @@ ASNE это расширение библиотеки [Android Social Networks][
 
 Возможности
 -----------
-Библеотека охватывает практически все необходимые запросы к социальным сетям
+Библиотека охватывает [практически все необходимые запросы](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BF%D0%B8%D1%81%D0%BE%D0%BA-%D0%BC%D0%B5%D1%82%D0%BE%D0%B4%D0%BE%D0%B2-SocialNetwork) к социальным сетям
 
  - Подключение и вход в социальные сети
  - Настройка необходимых вам разрешений для социальных сетей
@@ -39,18 +39,22 @@ ASNE это расширение библиотеки [Android Social Networks][
 ====
 [Ссылка на страницу загрузки версий демо приложения][4]
 
-[Прямая ссылка на загрузку последней версии демо][5]
+<a href="https://play.google.com/store/apps/details?id=com.gorbin.androidsocialnetworksextended.asne">
+  <img alt="Get it on Google Play"
+       src="https://developer.android.com//images/brand/ru_generic_rgb_wo_60.png" />
+</a>
 
 Подключение библиотеки
 ----------------------
 Для начала необходимо создать и настроить приложения в необходимых социальных сетях:
  
- - Twitter  
- - LinkedIn  
- - Facebook 
- - Google Plus 
- - Vkontakte 
- - Odnoklassniki
+ - [Twitter](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-Twitter)  
+ - [LinkedIn](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-LinkedIn)  
+ - [Facebook](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-Facebook) 
+ - [Google Plus](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-Google-Plus) 
+ - [Vkontakte](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-Vkontakte) 
+ - [Odnoklassniki](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-Odnoklassniki)
+
 
 Далее необходимо создать `mSocialNetworkManager`, с помощью которого можно подключить необходимые социальные сети. Для этого можно воспользоваться `SocialNetworkManager.Builder` следующим образом:
 
@@ -91,7 +95,7 @@ mSocialNetworkManager.getVKSocialNetwork().requestLogin(new OnLoginCompleteListe
 Например в AndroidStudio вы можете добавить библиотеку в Ваш проект с использованием Gradle: 
 
  1. Скопируйте директорию library в директорию Вашего проекта.
- 2. Найдите settings.gradle. Скорее всего, оно содержит что-то вроде `include ':app'` - jтредактируйте строку следующим образом `include ':library',':app' `
+ 2. Найдите settings.gradle. Скорее всего, оно содержит что-то вроде `include ':app'` - отредактируйте строку следующим образом `include ':library',':app' `
  3. Ваш проект теперь содержит модуль library. Необходимо добавить его как зависимость к Вашему приложению. Найдите build.gradle в поддиректории модуля Вашего приложения (например YOUR_PROJECT/app/build.gradle) Добавьте новую строку в dependencies: `compile project(':library') `
 
 Если Ваш проект не поддерживает Gradle, добавить SDK можно следующим образом: 
@@ -101,7 +105,7 @@ mSocialNetworkManager.getVKSocialNetwork().requestLogin(new OnLoginCompleteListe
  4. Выберите Create module from existing sources, затем два раза нажмите "Next" переименуйте модуль из "main" в "asne", снова нажмите "next". 
  5. Добавьте новый модуль asne зависимостью к модулю Вашего приложения. 
 
-**Не забудьте нодключинь необходимые библиотеки в проект - проведите те же действия с папкой ``third_party``**
+**Не забудьте подключить необходимые библиотеки в проект - проведите те же действия с папкой ``third_party``**
 
 Важные замечания
 =====================
@@ -135,7 +139,7 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 **Проблемы с LinkedIn**
 
-Иногда отваливается связь с LinkedIn сервером, но при этом при следующем запросе востанавливается - решаю данную проблему
+Иногда отваливается связь с LinkedIn сервером, но при этом при следующем запросе восстанавливается - решаю данную проблему
 
 Лицензия
 =====================
