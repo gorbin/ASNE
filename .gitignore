@@ -41,3 +41,4 @@ Thumbs.db
 
 third_party/facebook/build/libs/facebook.aar
 build/
+build/intermediates/dex-cache/cache.xml

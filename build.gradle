@@ -1,6 +1,4 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-apply plugin: 'android-reporting'
-
 buildscript {
     repositories {
         mavenCentral()
@@ -22,3 +20,6 @@ allprojects {
         mavenCentral()
     }
 }
+
+apply plugin: 'android-reporting'
+
