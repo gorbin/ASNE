@@ -25,8 +25,6 @@ import com.androidsocialnetworks.lib.listener.OnRequestSocialPersonsCompleteList
 import com.androidsocialnetworks.lib.persons.SocialPerson;
 import com.androidsocialnetworks.lib.persons.VKPerson;
 import com.vk.sdk.VKAccessToken;
-import com.vk.sdk.VKCaptchaDialog;
-import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.VKSdkListener;
 import com.vk.sdk.VKUIHelper;
@@ -43,6 +41,7 @@ import com.vk.sdk.api.model.VKPhotoArray;
 import com.vk.sdk.api.model.VKWallPostResult;
 import com.vk.sdk.api.photo.VKImageParameters;
 import com.vk.sdk.api.photo.VKUploadImage;
+import com.vk.sdk.dialogs.VKCaptchaDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;

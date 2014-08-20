@@ -38,7 +38,6 @@ proguard/
 .hg/
 .hg
 Thumbs.db
-gradle/
 
 third_party/facebook/build/libs/facebook.aar
 build/

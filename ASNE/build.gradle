@@ -14,22 +14,6 @@ android {
         versionName "1.0"
     }
 
-//    signingConfigs {
-//        release {
-//            storeFile file("D:\\develop\\keystores\\asne\\asne.jks")
-//            storePassword "qqww1122"
-//            keyAlias "asneKey"
-//            keyPassword "qqww1122"
-//        }
-//
-//        buildTypes {
-//            release {
-//                runProguard true
-//                signingConfig signingConfigs.release
-//                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-//            }
-//        }
-//    }
     buildTypes {
         release {
             runProguard false
@@ -40,11 +24,9 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':facebook')
-    compile project(':vksdk_library')
     compile project(':iconify_custom')
     compile project(':library')
-    compile 'com.android.support:appcompat-v7:19.1.0'
+    compile 'com.android.support:appcompat-v7:19.+'
     compile 'com.android.support:support-v4:19.+'
 }
 

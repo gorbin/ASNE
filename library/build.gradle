@@ -1,10 +1,5 @@
 apply plugin: 'android-library'
-apply plugin: 'maven'
-apply plugin: 'signing'
-
-//version = "0.2.1-SNAPSHOT"
-version = "0.3.0"
-group = "com.github.androidsocialnetworks"
+//apply from: '../maven_push.gradle'
 
 android {
     packagingOptions {
@@ -17,8 +12,8 @@ android {
     defaultConfig {
         minSdkVersion 10
         targetSdkVersion 19
-        versionCode 1
-        versionName "1.0"
+        versionName project.VERSION_NAME
+        versionCode Integer.parseInt(project.VERSION_CODE)
     }
 
     buildTypes {
@@ -30,78 +25,11 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:19.1.0@jar'
+    compile 'com.android.support:support-v4:19.+'
     compile 'org.twitter4j:twitter4j-core:4.0.1'
     compile 'com.google.android.gms:play-services:4.3.23@aar'
-//    compile 'com.github.androidsocialnetworks:facebook:0.1.1-SNAPSHOT@aar'
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':facebook')
-    compile project(':vksdk_library')
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile('fr.avianey:facebook-android-api:3.16.0@aar') { exclude module: 'support-v4' }
+    compile('com.vk:androidsdk:1.3.1@aar') { exclude module: 'support-v4' }
 }
 
-//configurations {
-//    archives {
-//        extendsFrom configurations.default
-//    }
-//}
-//
-//signing {
-//    required { has("release") && gradle.taskGraph.hasTask("uploadArchives") }
-//    sign configurations.archives
-//}
-//
-//task sourcesJar(type: Jar) {
-//    classifier = 'sources'
-//    from android.sourceSets.main.allSource
-//}
-//
-//task javadocJar(type: Jar) {
-//    classifier = 'javadoc'
-//    from 'build/docs/javadoc'
-//}
-//
-//artifacts {
-//    archives sourcesJar
-//    archives javadocJar
-//}
-//
-//uploadArchives {
-//    configuration = configurations.archives
-//    repositories.mavenDeployer {
-//        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-//
-//        repository(url: sonatypeRepo) {
-//            authentication(userName: sonatypeUsername,
-//                    password: sonatypePassword)
-//        }
-//
-//        pom.project {
-//            name 'Android Social Networks Library'
-//            packaging 'aar'
-//            description 'Library for easy work with social networks on Android'
-//            url 'https://github.com/antonkrasov/AndroidSocialNetworks'
-//
-//            scm {
-//                url 'scm:git@github.com:antonkrasov/AndroidSocialNetworks'
-//                connection 'scm:git@github.com:antonkrasov/AndroidSocialNetworks.git'
-//                developerConnection 'scm:git@github.com:antonkrasov/AndroidSocialNetworks.git'
-//            }
-//
-//            licenses {
-//                license {
-//                    name 'The MIT License (MIT)'
-//                    url 'http://opensource.org/licenses/MIT'
-//                    distribution 'repo'
-//                }
-//            }
-//
-//            developers {
-//                developer {
-//                    id 'anton.krasov'
-//                    name 'Anton Krasov'
-//                    email 'anton.krasov@gmail.com'
-//                }
-//            }
-//        }
-//    }
-//}
