@@ -18,6 +18,10 @@ allprojects {
 
     repositories {
         mavenCentral()
+//        maven {
+////            url 'https://oss.sonatype.org/content/groups/public'
+//            url 'https://oss.sonatype.org/content/groups/staging'
+//        }
     }
 }
 
