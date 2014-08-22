@@ -44,7 +44,38 @@ ASNE это расширение библиотеки [Android Social Networks][
        src="https://developer.android.com//images/brand/ru_generic_rgb_wo_60.png" />
 </a>
 
-Подключение библиотеки
+Добавление библиотеки в проект
+=====================
+**Подключить зависимость Maven Central**
+
+Для подключения библиотеки достаточно подключить зависимость:
+
+```
+dependencies {
+...
+    compile 'com.github.asne.library:asne:0.1.3'
+...
+}
+```
+
+**Подключить как модуль**
+
+Например в AndroidStudio вы можете добавить библиотеку в Ваш проект с использованием Gradle: 
+
+ 1. Скопируйте директорию library в директорию Вашего проекта.
+ 2. Найдите settings.gradle. Скорее всего, оно содержит что-то вроде `include ':app'` - отредактируйте строку следующим образом `include ':library',':app' `
+ 3. Ваш проект теперь содержит модуль library. Необходимо добавить его как зависимость к Вашему приложению. Найдите build.gradle в поддиректории модуля Вашего приложения (например YOUR_PROJECT/app/build.gradle) Добавьте новую строку в dependencies: `compile project(':library') `
+
+Если Ваш проект не поддерживает Gradle, добавить SDK можно следующим образом: 
+ 1. Откройте Project Settings и выберите Modules. 
+ 2. Нажмите кнопку «Добавить» (+), и выберите Import module 
+ 3. Найдите директорию библиотеки и выберите library, нажмите «Добавить». 
+ 4. Выберите Create module from existing sources, затем два раза нажмите "Next" переименуйте модуль из "main" в "asne", снова нажмите "next". 
+ 5. Добавьте новый модуль asne зависимостью к модулю Вашего приложения. 
+
+**Не забудьте подключить необходимые библиотеки в проект - проведите те же действия с папкой ``third_party``**
+
+Использование библиотеки
 ----------------------
 Для начала необходимо создать и настроить приложения в необходимых социальных сетях:
  
@@ -54,7 +85,6 @@ ASNE это расширение библиотеки [Android Social Networks][
  - [Google Plus](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-Google-Plus) 
  - [Vkontakte](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-Vkontakte) 
  - [Odnoklassniki](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-Odnoklassniki)
-
 
 Далее необходимо создать `mSocialNetworkManager`, с помощью которого можно подключить необходимые социальные сети. Для этого можно воспользоваться `SocialNetworkManager.Builder` следующим образом:
 
@@ -71,7 +101,23 @@ mSocialNetworkManager = (SocialNetworkManager) getFragmentManager().findFragment
             .build();
         getFragmentManager().beginTransaction().add(mSocialNetworkManager, SOCIAL_NETWORK_TAG).commit();
 	}
-```            
+```         
+где `fbScope`, `linkedInScope`, `vkScope`, `okScope`- это **набор разрешений** необходимых вашему приложению, например я использовал:
+```java
+ArrayList<String> fbScope = new ArrayList<String>();
+fbScope.addAll(Arrays.asList("public_profile, email, user_friends, user_location, user_birthday"));
+String linkedInScope = "r_basicprofile+rw_nus+r_network+w_messages";
+String[] okScope = new String[] {
+         OkScope.VALUABLE_ACCESS
+};
+String[] vkScope = new String[] {
+         VKScope.FRIENDS,
+         VKScope.WALL,
+         VKScope.PHOTOS,
+         VKScope.NOHTTPS,
+         VKScope.STATUS,
+};
+```
  Далее вы можете отправлять запросы к социально сети следующим образом(на примере логина):
 ```java
 mSocialNetworkManager.getVKSocialNetwork().requestLogin(new OnLoginCompleteListener() {
@@ -88,30 +134,9 @@ mSocialNetworkManager.getVKSocialNetwork().requestLogin(new OnLoginCompleteListe
 ```
 Или обращаться напрямую к объекту социальной сети и составлять свои запросы.
 
-Добавление библиотеки в проект
-=====================
-Библиотека находится в разработке, поэтому пока вы можете подключить ее как модуль в ваш проект, в дальнейшем проект библиотека может быть собрана в aar/jar
-
-Например в AndroidStudio вы можете добавить библиотеку в Ваш проект с использованием Gradle: 
-
- 1. Скопируйте директорию library в директорию Вашего проекта.
- 2. Найдите settings.gradle. Скорее всего, оно содержит что-то вроде `include ':app'` - отредактируйте строку следующим образом `include ':library',':app' `
- 3. Ваш проект теперь содержит модуль library. Необходимо добавить его как зависимость к Вашему приложению. Найдите build.gradle в поддиректории модуля Вашего приложения (например YOUR_PROJECT/app/build.gradle) Добавьте новую строку в dependencies: `compile project(':library') `
-
-Если Ваш проект не поддерживает Gradle, добавить SDK можно следующим образом: 
- 1. Откройте Project Settings и выберите Modules. 
- 2. Нажмите кнопку «Добавить» (+), и выберите Import module 
- 3. Найдите директорию с VK SDK и выберите library, нажмите «Добавить». 
- 4. Выберите Create module from existing sources, затем два раза нажмите "Next" переименуйте модуль из "main" в "asne", снова нажмите "next". 
- 5. Добавьте новый модуль asne зависимостью к модулю Вашего приложения. 
-
-**Не забудьте подключить необходимые библиотеки в проект - проведите те же действия с папкой ``third_party``**
-
 Важные замечания
 =====================
 **Библиотека находится в стадии разработки, поэтому возможны ошибки - обращайтесь исправлю**
-
-**Библиотека не заботиться о состоянии вашего приложения и жизненого цикла, вы должны делать это сами!**
 
 **Если Вы используете Google Plus, добавьте этот код в вашу активити:**
 ```java
@@ -137,9 +162,6 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 После последнего обновления API, Facebook отдает лишь список Ваших друзей использующих это же приложение - что приведет к пустому списку друзей, но если вы добавите меня в друзья, то увидите как минимум меня([профиль][6])
 
-**Проблемы с LinkedIn**
-
-Иногда отваливается связь с LinkedIn сервером, но при этом при следующем запросе восстанавливается - решаю данную проблему
 
 Лицензия
 =====================
