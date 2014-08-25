@@ -5,11 +5,11 @@ android {
     packagingOptions {
         exclude 'jaxb.properties'
     }
-    compileSdkVersion 19
-    buildToolsVersion '19.1.0'
+    compileSdkVersion Integer.parseInt(project.ANDROID_BUILD_SDK_VERSION)
+    buildToolsVersion project.ANDROID_BUILD_TOOLS_VERSION
     defaultConfig {
-        minSdkVersion 10
-        targetSdkVersion 19
+        minSdkVersion Integer.parseInt(project.ANDROID_BUILD_MIN_SDK_VERSION)
+        targetSdkVersion Integer.parseInt(project.ANDROID_BUILD_TARGET_SDK_VERSION)
         versionName project.VERSION_NAME
     }
     buildTypes {
@@ -32,6 +32,6 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile('com.vk:androidsdk:1.3.1@aar') { exclude module: 'support-v4' }
     compile 'org.twitter4j:twitter4j-core:4.0.1@jar'
-    compile ('com.github.asne.facebook:facebook:3.15.0@aar') { exclude module: 'support-v4' }
+    compile ('com.github.asne.facebook:facebook:3.17.2@aar') { exclude module: 'support-v4' }
 }
 
