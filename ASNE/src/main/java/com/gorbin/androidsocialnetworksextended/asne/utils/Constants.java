@@ -15,8 +15,11 @@ public class Constants {
         POST_DIALOG
     }
 
-    public static final String[] logo = {"{icon-twitter}","{icon-linkedin}","{icon-gplus}",
-            "{icon-facebook}","{icon-vk}","{icon-ok}"};
+//    public static final String[] logo = {"{icon-twitter}","{icon-linkedin}","{icon-gplus}",
+//            "{icon-facebook}","{icon-vk}","{icon-ok}"};
+    public static final int[] logo = {R.drawable.ic_twitter, R.drawable.ic_linkedin,
+            R.drawable.ic_googleplus, R.drawable.ic_facebook, R.drawable.ic_vk,
+            R.drawable.ic_odnoklassniki};
     public static final String[] socialName = {"Twitter","LinkedIn","Google+","Facebook",
             "Vkontakte","Odnoklassniki"};
     public static final int[] userPhoto = {R.drawable.twitter_user, R.drawable.linkedin_user,

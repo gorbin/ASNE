@@ -86,11 +86,11 @@
         revision="19.1.0"
         sha1="7676c0cb230efa6ac41c47867d372ed5913029d4"/>
     <item
-        dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\release\classes-eb87e321c2430dc8af37dd2a4c45546ca84a729e.jar"
+        dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\debug\classes-eb87e321c2430dc8af37dd2a4c45546ca84a729e.jar"
         jar="D:\develop\ASNE\ASNE\build\intermediates\exploded-aar\com.github.asne.library\library\0.1.3\classes.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="dda5c5197552fa74943a0885a2087a10c946cfd4"/>
+        sha1="d5e5fd87d5ac7feff0e8f66b63f91a940191f497"/>
     <item
         dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\release\bugsense-3.6.1-277251378dd44ed31d9732b65fb4d1169cf79042.jar"
         jar="D:\develop\ASNE\ASNE\libs\bugsense-3.6.1.jar"

@@ -2,10 +2,10 @@ package com.gorbin.androidsocialnetworksextended.asne.utils;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.Button;
-import android.widget.IconButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -17,9 +17,9 @@ import com.squareup.picasso.Picasso;
 public class SocialCard extends RelativeLayout {
     private TextView name;
 	private TextView id;
-	public IconButton connect;
-	public IconButton share;
-    public IconButton friends;
+	public Button connect;
+	public Button share;
+    public Button friends;
     private ImageView image;
 	private ImageView divider;
 	private LinearLayout buttonLayout;
@@ -57,17 +57,21 @@ public class SocialCard extends RelativeLayout {
 		name = (TextView) findViewById(R.id.name);
         id = (TextView) findViewById(R.id.id);
         detail = (Button) findViewById(R.id.minfo);
-		connect = (IconButton) findViewById(R.id.connect);
-        friends = (IconButton) findViewById(R.id.info);
-		share = (IconButton) findViewById(R.id.share);
+		connect = (Button) findViewById(R.id.connect);
+        friends = (Button) findViewById(R.id.info);
+		share = (Button) findViewById(R.id.share);
         image = (ImageView) findViewById(R.id.image);
 		divider = (ImageView) findViewById(R.id.divider);
 		buttonLayout = (LinearLayout) findViewById(R.id.buttonLayout);
 
         setColors(color, textColor, darkColor, buttonTextColor);
         image.setImageResource(profileImage);
-		share.setText("{icon-share} Share");
-        friends.setText("{icon-friends} Friends");
+		share.setText("Share");
+        Drawable shareIcon = getContext().getResources().getDrawable(R.drawable.ic_share);
+        share.setCompoundDrawablesWithIntrinsicBounds(shareIcon, null, null, null);
+        friends.setText("Friends");
+        Drawable friendsIcon = getContext().getResources().getDrawable(R.drawable.ic_friends);
+        friends.setCompoundDrawablesWithIntrinsicBounds(friendsIcon, null, null, null);
 	}
     public void setColors(int color, int textColor, int darkColor){
         setColors(textColor, color, darkColor, getResources().getColor(R.color.gallery_white));
@@ -96,6 +100,11 @@ public class SocialCard extends RelativeLayout {
 	public void setConnectButtonText(String connectText){
 		connect.setText(connectText);
 	}
+
+    public void setConnectButtonIcon(int res){
+        Drawable icon = getContext().getResources().getDrawable(res);
+        connect.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null);
+    }
 	
 	public void setShareButtonText(String shareText){
 		share.setText(shareText);

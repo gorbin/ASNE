@@ -218,7 +218,8 @@ public class MainFragment  extends Fragment
         final SocialNetwork socialNetwork = mSocialNetworkManager.getSocialNetwork(networkId);//getSpecialSocialCard(networkId);
         if((socialNetwork != null) && (socialNetwork.isConnected())) {
 
-            socialCard.setConnectButtonText(Constants.logo[networkId-1] + " Logout");
+            socialCard.setConnectButtonIcon(Constants.logo[networkId-1]);
+            socialCard.setConnectButtonText("Logout");
             socialCard.connect.setVisibility(View.VISIBLE);
             socialCard.connect.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -321,7 +322,8 @@ public class MainFragment  extends Fragment
             socialOrDetailed(networkId, socialCard, socialNetwork);
         } else {
             socialCard.detail.setVisibility(View.GONE);
-            socialCard.setConnectButtonText(Constants.logo[networkId - 1] + " Login");
+            socialCard.setConnectButtonIcon(Constants.logo[networkId-1]);
+            socialCard.setConnectButtonText("Login");
             socialCard.connect.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
