@@ -1,1 +1,1 @@
-include ':ASNE', ':library', ':facebookSDK'
+include ':ASNE', ':facebookSDK', ':ASNECore', ':facebook', ':googleplus', ':linkedin', ':odnoklassniki', ':twitter', ':vk'
