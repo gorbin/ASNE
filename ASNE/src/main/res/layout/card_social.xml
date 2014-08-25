@@ -91,7 +91,7 @@
             android:layout_marginLeft="1dp"
             android:layout_marginRight="1dp">
 
-            <IconButton
+            <Button
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="FB Login"
@@ -100,7 +100,7 @@
                 android:background="@android:color/white"
 				android:layout_marginRight="1dp"
                 android:layout_weight="1" />
-            <IconButton
+            <Button
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="FB about"
@@ -108,7 +108,7 @@
                 android:padding="@dimen/size_8"
                 android:background="@android:color/white"
                 android:layout_weight="1" />
-			<IconButton
+			<Button
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="FB Login"
