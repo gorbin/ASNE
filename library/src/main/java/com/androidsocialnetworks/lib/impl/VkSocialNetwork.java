@@ -131,7 +131,6 @@ public class VkSocialNetwork extends SocialNetwork {
 
     @Override
     public boolean isConnected() {
-        boolean wat = VKSdk.isLoggedIn();
         return VKSdk.isLoggedIn();
     }
 
