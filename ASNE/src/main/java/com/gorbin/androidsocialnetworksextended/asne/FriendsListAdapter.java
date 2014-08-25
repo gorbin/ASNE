@@ -10,7 +10,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.androidsocialnetworks.lib.persons.SocialPerson;
+import com.github.gorbin.asne.core.persons.SocialPerson;
 import com.gorbin.androidsocialnetworksextended.asne.utils.Constants;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;

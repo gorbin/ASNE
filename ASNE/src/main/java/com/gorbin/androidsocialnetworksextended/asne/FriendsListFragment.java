@@ -13,11 +13,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.androidsocialnetworks.lib.SocialNetwork;
-import com.androidsocialnetworks.lib.listener.OnCheckIsFriendCompleteListener;
-import com.androidsocialnetworks.lib.listener.OnRequestAddFriendCompleteListener;
-import com.androidsocialnetworks.lib.listener.OnRequestGetFriendsCompleteListener;
-import com.androidsocialnetworks.lib.persons.SocialPerson;
+import com.github.gorbin.asne.core.SocialNetwork;
+import com.github.gorbin.asne.core.listener.OnCheckIsFriendCompleteListener;
+import com.github.gorbin.asne.core.listener.OnRequestAddFriendCompleteListener;
+import com.github.gorbin.asne.core.listener.OnRequestGetFriendsCompleteListener;
+import com.github.gorbin.asne.core.persons.SocialPerson;
 import com.gorbin.androidsocialnetworksextended.asne.utils.ADialogs;
 import com.gorbin.androidsocialnetworksextended.asne.utils.Constants;
 
@@ -52,26 +52,8 @@ public class FriendsListFragment extends Fragment implements OnRequestGetFriends
         listMenu.setOnItemClickListener(this);
 
         editDialog = new ADialogs(getActivity());
-        switch (socialNetworkId) {
-            case 1:
-                socialNetwork = MainFragment.mSocialNetworkManager.getTwitterSocialNetwork();
-                break;
-            case 2:
-                socialNetwork = MainFragment.mSocialNetworkManager.getLinkedInSocialNetwork();
-                break;
-            case 3:
-                socialNetwork = MainFragment.mSocialNetworkManager.getGooglePlusSocialNetwork();
-                break;
-            case 4:
-                socialNetwork = MainFragment.mSocialNetworkManager.getFacebookSocialNetwork();
-                break;
-            case 5:
-                socialNetwork = MainFragment.mSocialNetworkManager.getVKSocialNetwork();
-                break;
-            case 6:
-                socialNetwork = MainFragment.mSocialNetworkManager.getOKSocialNetwork();
-                break;
-        }
+
+        socialNetwork = MainFragment.mSocialNetworkManager.getSocialNetwork(socialNetworkId);
         socialNetwork.setOnRequestGetFriendsCompleteListener(this);
         socialNetwork.requestGetFriends();
         setHasOptionsMenu(true);
