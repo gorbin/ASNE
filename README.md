@@ -1,11 +1,11 @@
 ![enter image description here][1]
 
-Android Social Networks Extended
+ASNE
 =====================
-ASNE это расширение библиотеки [Android Social Networks][2] добавляющее множество новых возможностей. Она сохранила простоту использования и интеграции в ваши проекты! Интеграция социальных сетей никогда не была настолько проста.
+ASNE library created for simple integration of Social Networks. If you want to integrate your application with multiple social networks just choose ASNE modules and add them to your project. You just need to: add module, build SocialNetworkManager and configure your AndroidManiferst. 
+ASNE contains common interface for most popular social networks, but you can easily make module for another.
 
-Социальные сети:
-
+ASNE contains modules for social networks:
  - Twitter  
  - LinkedIn  
  - Facebook 
@@ -13,114 +13,108 @@ ASNE это расширение библиотеки [Android Social Networks][
  - Vkontakte 
  - Odnoklassniki
 
-Возможности
+Features
 -----------
-Библиотека охватывает [практически все необходимые запросы](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BF%D0%B8%D1%81%D0%BE%D0%BA-%D0%BC%D0%B5%D1%82%D0%BE%D0%B4%D0%BE%D0%B2-SocialNetwork) к социальным сетям
+ASNE got [almost all necessary requests](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BF%D0%B8%D1%81%D0%BE%D0%BA-%D0%BC%D0%B5%D1%82%D0%BE%D0%B4%D0%BE%D0%B2-SocialNetwork) к to social networks
 
- - Подключение и вход в социальные сети
- - Настройка необходимых вам разрешений для социальных сетей
- - Получение Access Token
- - Получение профиля текущего пользователя
- - Получение профиля любого пользователя
- - Получение профилей массива пользователей
- - Детальная информация о пользователе
- - Отправка сообщений в ленту пользователя
- - Прикрепление изображений в ленту пользователя
- - Отправка ссылки в ленту пользователя
- - Вызов диалогового окна с предварительно составленным сообщением
- - Проверка является ли пользователь другом текущего пользователя
- - Запрос списка друзей
- - Добавление друга
- - Удаление друга
+ - Login
+ - Configure necessary permissions
+ - Get Access Token
+ - Get current person social profile
+ - Get social profile of user by id
+ - Get social profile for array of users 
+ - Get detailed user profile
+ - Share message
+ - Share photo
+ - Share link
+ - Request Share dialog with message/photo/link
+ - Check is user(by id) is friend of current
+ - Get list of Friends
+ - Adding friends by id
+ - Remove friend from friend list
  
 ![enter image description here][3]
 
-Демо
+Demo app
 ====
-[Ссылка на страницу загрузки версий демо приложения][4]
+[Link for releases][4]
 
 <a href="https://play.google.com/store/apps/details?id=com.gorbin.androidsocialnetworksextended.asne">
   <img alt="Get it on Google Play"
        src="https://developer.android.com//images/brand/ru_generic_rgb_wo_60.png" />
 </a>
 
-Добавление библиотеки в проект
+Getting started
 =====================
-**Подключить зависимость Maven Central**
 
-Для подключения библиотеки достаточно подключить зависимость:
+**Adding library**
+
+_1) Using Maven Central_
+
+Add dependency for choosen module, here example for all modules, you can choose one or two
 
 ```
 dependencies {
 ...
-    compile 'com.github.asne.library:asne:0.1.3'
+    compile 'com.github.asne:asne-facebook:0.2.0'
+	compile 'com.github.asne:asne-twitter:0.2.0'
+    compile 'com.github.asne:asne-googleplus:0.2.0'
+    compile 'com.github.asne:asne-linkedin:0.2.0'
+	compile 'com.github.asne:asne-vk:0.2.0'
+    compile 'com.github.asne:asne-odnoklassniki:0.2.0'
 ...
 }
 ```
 
-**Подключить как модуль**
+_2) Import module to your project_
 
-Например в AndroidStudio вы можете добавить библиотеку в Ваш проект с использованием Gradle: 
+For example, in AndroidStudio you can add modules via Gradle: 
 
- 1. Скопируйте директорию library в директорию Вашего проекта.
- 2. Найдите settings.gradle. Скорее всего, оно содержит что-то вроде `include ':app'` - отредактируйте строку следующим образом `include ':library',':app' `
- 3. Ваш проект теперь содержит модуль library. Необходимо добавить его как зависимость к Вашему приложению. Найдите build.gradle в поддиректории модуля Вашего приложения (например YOUR_PROJECT/app/build.gradle) Добавьте новую строку в dependencies: `compile project(':library') `
+ 1. Copy social module to your project.
+ 2. In settings.gradle include `':ASNECore', ':socialNetworkModuleName'`
+ 3. In build.gradle of your app (YOUR_PROJECT/app/build.gradle) add new dependencies: `compile project(':socialNetworkModuleName') `
 
-Если Ваш проект не поддерживает Gradle, добавить SDK можно следующим образом: 
- 1. Откройте Project Settings и выберите Modules. 
- 2. Нажмите кнопку «Добавить» (+), и выберите Import module 
- 3. Найдите директорию библиотеки и выберите library, нажмите «Добавить». 
- 4. Выберите Create module from existing sources, затем два раза нажмите "Next" переименуйте модуль из "main" в "asne", снова нажмите "next". 
- 5. Добавьте новый модуль asne зависимостью к модулю Вашего приложения. 
+Without Gradle, add ASNE like: 
+ 1. Open Project Settings and choose Modules. 
+ 2. Find button "Add" (+), and choose Import module 
+ 3. Find ASNECore and socialNetworkModuleName directories - «Add». 
+ 4. Choose Create module from existing sources, then click "Next" rename module from "main" to "ASNECore". 
+ 5. Add new asne-module in dependencies to your app. 
 
-**Не забудьте подключить необходимые библиотеки в проект - проведите те же действия с папкой ``third_party``**
+**Using library**
 
-Использование библиотеки
-----------------------
-Для начала необходимо создать и настроить приложения в необходимых социальных сетях:
- 
- - [Twitter](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-Twitter)  
- - [LinkedIn](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-LinkedIn)  
- - [Facebook](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-Facebook) 
+Firstly, you need to create app in social network. You can read about main steps:
+
+ - [Twitter](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-Twitter)
+ - [LinkedIn](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-LinkedIn)
+ - [Facebook](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-Facebook)
  - [Google Plus](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-Google-Plus) 
  - [Vkontakte](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-Vkontakte) 
  - [Odnoklassniki](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-Odnoklassniki)
 
-Далее необходимо создать `mSocialNetworkManager`, с помощью которого можно подключить необходимые социальные сети. Для этого можно воспользоваться `SocialNetworkManager.Builder` следующим образом:
+Second, you need to initialize `mSocialNetworkManager`, it contain common interface for all ASNE social network modules. Initialize chosen social network and add social network to SocialNetworkManager(example: FacebookSocialNetwork):
 
 ```java
 mSocialNetworkManager = (SocialNetworkManager) getFragmentManager().findFragmentByTag(SOCIAL_NETWORK_TAG);
 	if (mSocialNetworkManager == null) {
-        mSocialNetworkManager = SocialNetworkManager.Builder.from(getActivity())
-            .twitter(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET)
-            .facebook(fbScope)
-            .googlePlus()
-            .linkedIn(LINKEDIN_CONSUMER_KEY, LINKEDIN_CONSUMER_SECRET, linkedInScope)
-            .vk(VK_KEY, vkScope)
-            .ok(OK_APP_ID, OK_PUBLIC_KEY, OK_SECRET_KEY, okScope)
-            .build();
+        mSocialNetworkManager = new SocialNetworkManager();
+		FacebookSocialNetwork fbNetwork = new FacebookSocialNetwork(this, fbScope);
+        mSocialNetworkManager.addSocialNetwork(fbNetwork);
         getFragmentManager().beginTransaction().add(mSocialNetworkManager, SOCIAL_NETWORK_TAG).commit();
 	}
-```         
-где `fbScope`, `linkedInScope`, `vkScope`, `okScope`- это **набор разрешений** необходимых вашему приложению, например я использовал:
+```    
+     
+where `fbScope` is **permissions** for your app, for example I used:
+
 ```java
 ArrayList<String> fbScope = new ArrayList<String>();
 fbScope.addAll(Arrays.asList("public_profile, email, user_friends, user_location, user_birthday"));
-String linkedInScope = "r_basicprofile+rw_nus+r_network+w_messages";
-String[] okScope = new String[] {
-         OkScope.VALUABLE_ACCESS
-};
-String[] vkScope = new String[] {
-         VKScope.FRIENDS,
-         VKScope.WALL,
-         VKScope.PHOTOS,
-         VKScope.NOHTTPS,
-         VKScope.STATUS,
-};
 ```
- Далее вы можете отправлять запросы к социально сети следующим образом(на примере логина):
-```java
-mSocialNetworkManager.getVKSocialNetwork().requestLogin(new OnLoginCompleteListener() {
+
+ Then you can send requests to social network like:
+
+ ```java
+	mSocialNetworkManager.getVKSocialNetwork().requestLogin(new OnLoginCompleteListener() {
         @Override
         public void onLoginSuccess(int socialNetworkID) {
 
@@ -132,13 +126,17 @@ mSocialNetworkManager.getVKSocialNetwork().requestLogin(new OnLoginCompleteListe
         }
     });
 ```
-Или обращаться напрямую к объекту социальной сети и составлять свои запросы.
 
-Важные замечания
+Or get Social network directly like:
+
+```java
+	Session session = Session.getActiveSession();
+```
+
+Important
 =====================
-**Библиотека находится в стадии разработки, поэтому возможны ошибки - обращайтесь исправлю**
 
-**Если Вы используете Google Plus, добавьте этот код в вашу активити:**
+**If you want to use Google Plus, add this to your MainActivity:**
 ```java
 @Override
 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -155,17 +153,22 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     }
 ```
 
-**Ограничения Facebook**
+**Facebook Upgrades**
 
-Политика Facebook позволяет отправлять сообщения в ленту пользователя в обход диалога и получить день рождение или расположение только после одобрения приложения командой Facebook, поэтому чать функционала вам может быть не доступна, так как они все никак не одобрять мое приложение.
-Но есть выход - вы можете отправить мне ваш facebook id и я добавлю вас в качестве тестера, тогда вы сможете воспользоваться полным функционалом. email для связи: gorbin.e.o@gmail.com
+Facebook some permissions you can get only after Facebook submission, so my demo app wasn't submitted due low functionality. So if you want to use it with all functionality send me your facebook id and I add you as tester - this is easy way to to fully use demo app
+email: gorbin.e.o@gmail.com
 
-После последнего обновления API, Facebook отдает лишь список Ваших друзей использующих это же приложение - что приведет к пустому списку друзей, но если вы добавите меня в друзья, то увидите как минимум меня([профиль][6])
+Apps are no longer able to retrieve the full list of a user's friends (only those friends who have specifically authorized your app using the user_friends permission) but if you add me as friend you will see me in friendlist([profile][6])
 
-
-Лицензия
+Developed By
 =====================
-ASNE доступна по лицензии [MIT license](http://opensource.org/licenses/MIT):
+ASNE developed on the basis of ([Android Social Networks][2]) mostly redone and add new features(some features are pulled to Android Social Networks)
+
+Evgeny Gorbin - <gorbin.e.o@gmail.com>
+
+License
+=====================
+ASNE is made available under the MIT license: [MIT license](http://opensource.org/licenses/MIT):
 
 <pre>
 The MIT License (MIT)
