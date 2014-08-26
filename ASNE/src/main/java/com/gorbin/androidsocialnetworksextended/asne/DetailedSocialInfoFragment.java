@@ -10,11 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.androidsocialnetworks.lib.SocialNetwork;
-import com.androidsocialnetworks.lib.listener.OnRequestDetailedSocialPersonCompleteListener;
-import com.androidsocialnetworks.lib.listener.OnRequestRemoveFriendCompleteListener;
-import com.androidsocialnetworks.lib.listener.OnRequestSocialPersonCompleteListener;
-import com.androidsocialnetworks.lib.persons.SocialPerson;
+import com.github.gorbin.asne.core.SocialNetwork;
+import com.github.gorbin.asne.core.listener.OnRequestDetailedSocialPersonCompleteListener;
+import com.github.gorbin.asne.core.listener.OnRequestRemoveFriendCompleteListener;
+import com.github.gorbin.asne.core.listener.OnRequestSocialPersonCompleteListener;
+import com.github.gorbin.asne.core.persons.SocialPerson;
 import com.gorbin.androidsocialnetworksextended.asne.utils.Constants;
 import com.gorbin.androidsocialnetworksextended.asne.utils.SocialCard;
 
@@ -50,44 +50,39 @@ public class DetailedSocialInfoFragment extends Fragment implements OnRequestDet
         int textColor = getResources().getColor(R.color.dark);
         int color = getResources().getColor(R.color.dark);
         int image = R.drawable.user;
+        socialNetwork = MainFragment.mSocialNetworkManager.getSocialNetwork(socialNetworkID);
         switch (socialNetworkID) {
             case 1:
-                socialNetwork = MainFragment.mSocialNetworkManager.getTwitterSocialNetwork();
                 color = getResources().getColor(R.color.twitter);
                 textColor = getResources().getColor(R.color.twitter);
                 darkColor = getResources().getColor(R.color.twitter_light);
                 image = R.drawable.twitter_user;
                 break;
             case 2:
-                socialNetwork = MainFragment.mSocialNetworkManager.getLinkedInSocialNetwork();
                 color = getResources().getColor(R.color.linkedin);
                 textColor = getResources().getColor(R.color.linkedin);
                 darkColor = getResources().getColor(R.color.linkedin_light);
                 image = R.drawable.linkedin_user;
                 break;
             case 3:
-                socialNetwork = MainFragment.mSocialNetworkManager.getGooglePlusSocialNetwork();
                 color = getResources().getColor(R.color.google_plus);
                 textColor = getResources().getColor(R.color.google_plus);
                 darkColor = getResources().getColor(R.color.google_plus_light);
                 image = R.drawable.g_plus_user;
                 break;
             case 4:
-                socialNetwork = MainFragment.mSocialNetworkManager.getFacebookSocialNetwork();
                 color = getResources().getColor(R.color.facebook);
                 textColor = getResources().getColor(R.color.facebook);
                 darkColor = getResources().getColor(R.color.facebook_light);
                 image = R.drawable.com_facebook_profile_picture_blank_square;
                 break;
             case 5:
-                socialNetwork = MainFragment.mSocialNetworkManager.getVKSocialNetwork();
                 color = getResources().getColor(R.color.vk);
                 textColor = getResources().getColor(R.color.vk);
                 darkColor = getResources().getColor(R.color.vk_light);
                 image = R.drawable.vk_user;
                 break;
             case 6:
-                socialNetwork = MainFragment.mSocialNetworkManager.getOKSocialNetwork();
                 color = getResources().getColor(R.color.ok);
                 textColor = getResources().getColor(R.color.ok);
                 darkColor = getResources().getColor(R.color.ok_light);

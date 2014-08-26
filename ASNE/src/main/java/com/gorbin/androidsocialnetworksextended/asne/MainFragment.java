@@ -11,14 +11,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.androidsocialnetworks.lib.SocialNetwork;
-import com.androidsocialnetworks.lib.SocialNetworkException;
-import com.androidsocialnetworks.lib.SocialNetworkManager;
-import com.androidsocialnetworks.lib.listener.OnLoginCompleteListener;
-import com.androidsocialnetworks.lib.listener.OnPostingCompleteListener;
-import com.androidsocialnetworks.lib.listener.OnRequestDetailedSocialPersonCompleteListener;
-import com.androidsocialnetworks.lib.listener.OnRequestSocialPersonCompleteListener;
-import com.androidsocialnetworks.lib.persons.SocialPerson;
+import com.github.gorbin.asne.core.SocialNetwork;
+import com.github.gorbin.asne.core.SocialNetworkException;
+import com.github.gorbin.asne.core.SocialNetworkManager;
+import com.github.gorbin.asne.core.listener.OnLoginCompleteListener;
+import com.github.gorbin.asne.core.listener.OnPostingCompleteListener;
+import com.github.gorbin.asne.core.listener.OnRequestDetailedSocialPersonCompleteListener;
+import com.github.gorbin.asne.core.listener.OnRequestSocialPersonCompleteListener;
+import com.github.gorbin.asne.core.persons.SocialPerson;
+import com.github.gorbin.asne.facebook.FacebookSocialNetwork;
+import com.github.gorbin.asne.googleplus.GooglePlusSocialNetwork;
+import com.github.gorbin.asne.linkedin.LinkedInSocialNetwork;
+import com.github.gorbin.asne.odnoklassniki.OkSocialNetwork;
+import com.github.gorbin.asne.twitter.TwitterSocialNetwork;
+import com.github.gorbin.asne.vk.VkSocialNetwork;
 import com.gorbin.androidsocialnetworksextended.asne.utils.ADialogs;
 import com.gorbin.androidsocialnetworksextended.asne.utils.Constants;
 import com.gorbin.androidsocialnetworksextended.asne.utils.SocialCard;
@@ -92,14 +98,26 @@ public class MainFragment  extends Fragment
         mSocialNetworkManager = (SocialNetworkManager) getFragmentManager().findFragmentByTag(SOCIAL_NETWORK_TAG);
 
         if (mSocialNetworkManager == null) {
-            mSocialNetworkManager = SocialNetworkManager.Builder.from(getActivity())
-                    .twitter(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET)
-                    .facebook(fbScope)
-                    .googlePlus()
-                    .linkedIn(LINKEDIN_CONSUMER_KEY, LINKEDIN_CONSUMER_SECRET, linkedInScope)
-                    .vk(VK_KEY, vkScope)
-                    .ok(OK_APP_ID, OK_PUBLIC_KEY, OK_SECRET_KEY, okScope)
-                    .build();
+            mSocialNetworkManager = new SocialNetworkManager();
+
+            FacebookSocialNetwork fbNetwork = new FacebookSocialNetwork(this, fbScope);
+            mSocialNetworkManager.addSocialNetwork(fbNetwork);
+
+            TwitterSocialNetwork twNetwork = new TwitterSocialNetwork(this, TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
+            mSocialNetworkManager.addSocialNetwork(twNetwork);
+
+            LinkedInSocialNetwork liNetwork = new LinkedInSocialNetwork(this, LINKEDIN_CONSUMER_KEY, LINKEDIN_CONSUMER_SECRET, linkedInScope);
+            mSocialNetworkManager.addSocialNetwork(liNetwork);
+
+            GooglePlusSocialNetwork gpNetwork = new GooglePlusSocialNetwork(this);
+            mSocialNetworkManager.addSocialNetwork(gpNetwork);
+
+            VkSocialNetwork vkNetwork = new VkSocialNetwork(this, VK_KEY, vkScope);
+            mSocialNetworkManager.addSocialNetwork(vkNetwork);
+
+            OkSocialNetwork okNetwork = new OkSocialNetwork(this, OK_APP_ID, OK_PUBLIC_KEY, OK_SECRET_KEY, okScope);
+            mSocialNetworkManager.addSocialNetwork(okNetwork);
+
             getFragmentManager().beginTransaction().add(mSocialNetworkManager, SOCIAL_NETWORK_TAG).commit();
             mSocialNetworkManager.setOnInitializationCompleteListener(this);
         } else {
@@ -218,7 +236,7 @@ public class MainFragment  extends Fragment
         final SocialNetwork socialNetwork = mSocialNetworkManager.getSocialNetwork(networkId);//getSpecialSocialCard(networkId);
         if((socialNetwork != null) && (socialNetwork.isConnected())) {
 
-            socialCard.setConnectButtonIcon(Constants.logo[networkId-1]);
+            socialCard.setConnectButtonIcon(Constants.logo[networkId - 1]);
             socialCard.setConnectButtonText("Logout");
             socialCard.connect.setVisibility(View.VISIBLE);
             socialCard.connect.setOnClickListener(new View.OnClickListener() {

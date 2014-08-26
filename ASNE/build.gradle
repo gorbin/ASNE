@@ -25,9 +25,14 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-//    compile project(':iconify_custom')
-    compile project(':library')
     compile 'com.android.support:appcompat-v7:19.+'
     compile 'com.android.support:support-v4:19.+'
+    compile project(':ASNECore')
+    compile project(':twitter')
+    compile project(':linkedin')
+    compile project(':googleplus')
+    compile project(':vk')
+    compile project(':odnoklassniki')
+    compile project(':facebook')
 }
 
