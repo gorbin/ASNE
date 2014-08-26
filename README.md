@@ -166,6 +166,14 @@ ASNE developed on the basis of ([Android Social Networks][2]) mostly redone and 
 
 Evgeny Gorbin - <gorbin.e.o@gmail.com>
 
+<a href="https://plus.google.com/108381948947848082245">
+  <img alt="Follow me on Google+"
+       src="https://raw.githubusercontent.com/gorbin/ASNE/master/resources/gp.png" />
+</a>
+<a href="https://twitter.com/egorbin">
+  <img alt="Follow me on Twitter"
+       src="https://raw.githubusercontent.com/gorbin/ASNE/master/resources/twitter.png" />
+</a>
 License
 =====================
 ASNE is made available under the MIT license: [MIT license](http://opensource.org/licenses/MIT):
@@ -194,9 +202,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 </pre>
 
-  [1]: http://i.imgur.com/njXNyEC.png
+  [1]: https://raw.githubusercontent.com/gorbin/ASNE/master/resources/header.png
   [2]: https://github.com/gorbin/AndroidSocialNetworks
-  [3]: http://i.imgur.com/J3WhMQ0.png
+  [3]: https://raw.githubusercontent.com/gorbin/ASNE/master/resources/main.png
   [4]: https://github.com/gorbin/ASNE/releases
   [5]: https://github.com/gorbin/ASNE/releases/download/0.2/ASNE-debug-unaligned.apk
   [6]: https://www.facebook.com/evgeny.gorbin
