@@ -17,7 +17,7 @@
 			custom:color="@color/facebook"
 			custom:text_color="@color/facebook"
 			custom:dark_color="@color/facebook_light"
-            custom:profile_image="@drawable/com_facebook_profile_picture_blank_square"
+            custom:profile_image="@drawable/user"
 			android:id="@+id/fb_card"/>
         <com.gorbin.androidsocialnetworksextended.asne.utils.SocialCard
 			android:layout_width="match_parent"

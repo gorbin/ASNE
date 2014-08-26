@@ -190,6 +190,8 @@ public class MainFragment  extends Fragment
         for(int i = 0; i < socialCards.length; i++){
             updateSocialCard(socialCards[i], i+1);
         }
+
+
     }
     @Override
     public void onLoginSuccess(int id) {
