@@ -51,7 +51,7 @@ Getting started
 
 _1) Using Maven Central_
 
-Add dependency for choosen module, here example for all modules, you can choose one or two
+Add dependency for chosen module, here example for all modules, you can choose one or two
 
 ```
 dependencies {
