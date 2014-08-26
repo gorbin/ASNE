@@ -15,7 +15,7 @@ ASNE contains modules for social networks:
 
 Features
 -----------
-ASNE got [almost all necessary requests](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BF%D0%B8%D1%81%D0%BE%D0%BA-%D0%BC%D0%B5%D1%82%D0%BE%D0%B4%D0%BE%D0%B2-SocialNetwork) к to social networks
+ASNE got [almost all necessary requests](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BF%D0%B8%D1%81%D0%BE%D0%BA-%D0%BC%D0%B5%D1%82%D0%BE%D0%B4%D0%BE%D0%B2-SocialNetwork) to social networks
 
  - Login
  - Configure necessary permissions
