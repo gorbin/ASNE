@@ -19,5 +19,7 @@
 	<color name="vk_light">#666699</color>
 	<color name="ok">#cf6700</color>
 	<color name="ok_light">#1daa09</color>
+    <color name="instagram">#1C5380</color>
+    <color name="instagram_light">#3f729b</color>
 	
 </resources>

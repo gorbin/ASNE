@@ -21,6 +21,7 @@ import com.github.gorbin.asne.core.listener.OnRequestSocialPersonCompleteListene
 import com.github.gorbin.asne.core.persons.SocialPerson;
 import com.github.gorbin.asne.facebook.FacebookSocialNetwork;
 import com.github.gorbin.asne.googleplus.GooglePlusSocialNetwork;
+import com.github.gorbin.asne.instagram.InstagramSocialNetwork;
 import com.github.gorbin.asne.linkedin.LinkedInSocialNetwork;
 import com.github.gorbin.asne.odnoklassniki.OkSocialNetwork;
 import com.github.gorbin.asne.twitter.TwitterSocialNetwork;
@@ -53,6 +54,8 @@ public class MainFragment  extends Fragment
     public static final String OK_APP_ID =  "OK_APP_ID";
     public static final String OK_PUBLIC_KEY =  "OK_PUBLIC_KEY";
     public static final String OK_SECRET_KEY =  "OK_SECRET_KEY";
+    public static final String INSTAGRAM_CLIENT_KEY = "INSTAGRAM_KEY";
+    public static final String INSTAGRAM_CLIENT_SECRET = "INSTAGRAM_SECRET";
 
     private SocialCard socialCards[] =  new SocialCard[Constants.logo.length];
     private boolean isDetailed[] = new boolean[Constants.logo.length];
@@ -79,6 +82,7 @@ public class MainFragment  extends Fragment
         socialCards[3] = (SocialCard) rootView.findViewById(R.id.fb_card);
         socialCards[4] = (SocialCard) rootView.findViewById(R.id.vk_card);
         socialCards[5] = (SocialCard) rootView.findViewById(R.id.ok_card);
+        socialCards[6] = (SocialCard) rootView.findViewById(R.id.insta_card);
 
 //      Connect ASNE SocialNetworks
 
@@ -100,23 +104,26 @@ public class MainFragment  extends Fragment
         if (mSocialNetworkManager == null) {
             mSocialNetworkManager = new SocialNetworkManager();
 
-            FacebookSocialNetwork fbNetwork = new FacebookSocialNetwork(this, fbScope);
-            mSocialNetworkManager.addSocialNetwork(fbNetwork);
+//            FacebookSocialNetwork fbNetwork = new FacebookSocialNetwork(this, fbScope);
+//            mSocialNetworkManager.addSocialNetwork(fbNetwork);
+//
+//            TwitterSocialNetwork twNetwork = new TwitterSocialNetwork(this, TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
+//            mSocialNetworkManager.addSocialNetwork(twNetwork);
+//
+//            LinkedInSocialNetwork liNetwork = new LinkedInSocialNetwork(this, LINKEDIN_CONSUMER_KEY, LINKEDIN_CONSUMER_SECRET, linkedInScope);
+//            mSocialNetworkManager.addSocialNetwork(liNetwork);
+//
+//            GooglePlusSocialNetwork gpNetwork = new GooglePlusSocialNetwork(this);
+//            mSocialNetworkManager.addSocialNetwork(gpNetwork);
+//
+//            VkSocialNetwork vkNetwork = new VkSocialNetwork(this, VK_KEY, vkScope);
+//            mSocialNetworkManager.addSocialNetwork(vkNetwork);
+//
+//            OkSocialNetwork okNetwork = new OkSocialNetwork(this, OK_APP_ID, OK_PUBLIC_KEY, OK_SECRET_KEY, okScope);
+//            mSocialNetworkManager.addSocialNetwork(okNetwork);
 
-            TwitterSocialNetwork twNetwork = new TwitterSocialNetwork(this, TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
-            mSocialNetworkManager.addSocialNetwork(twNetwork);
-
-            LinkedInSocialNetwork liNetwork = new LinkedInSocialNetwork(this, LINKEDIN_CONSUMER_KEY, LINKEDIN_CONSUMER_SECRET, linkedInScope);
-            mSocialNetworkManager.addSocialNetwork(liNetwork);
-
-            GooglePlusSocialNetwork gpNetwork = new GooglePlusSocialNetwork(this);
-            mSocialNetworkManager.addSocialNetwork(gpNetwork);
-
-            VkSocialNetwork vkNetwork = new VkSocialNetwork(this, VK_KEY, vkScope);
-            mSocialNetworkManager.addSocialNetwork(vkNetwork);
-
-            OkSocialNetwork okNetwork = new OkSocialNetwork(this, OK_APP_ID, OK_PUBLIC_KEY, OK_SECRET_KEY, okScope);
-            mSocialNetworkManager.addSocialNetwork(okNetwork);
+            InstagramSocialNetwork instagramNetwork = new InstagramSocialNetwork(this, INSTAGRAM_CLIENT_KEY, INSTAGRAM_CLIENT_SECRET);
+            mSocialNetworkManager.addSocialNetwork(instagramNetwork);
 
             getFragmentManager().beginTransaction().add(mSocialNetworkManager, SOCIAL_NETWORK_TAG).commit();
             mSocialNetworkManager.setOnInitializationCompleteListener(this);
@@ -127,9 +134,14 @@ public class MainFragment  extends Fragment
                     socialNetwork.setOnRequestCurrentPersonCompleteListener(this);
                     socialNetwork.setOnRequestDetailedSocialPersonCompleteListener(this);
                 }
-                for (int i = 0; i < socialCards.length; i++){
-                    updateSocialCard(socialCards[i], i + 1);
-                }
+//                for (int i = 0; i < socialCards.length; i++){
+//                    updateSocialCard(socialCards[i], i + 1);
+//                }
+                updateSocialCard(socialCards[6], 7);
+//                updateSocialCard(socialCards[1], 2);
+//                updateSocialCard(socialCards[0], 1);
+
+
             }
         }
         return rootView;
@@ -187,9 +199,14 @@ public class MainFragment  extends Fragment
             socialNetwork.setOnRequestCurrentPersonCompleteListener(this);
             socialNetwork.setOnRequestDetailedSocialPersonCompleteListener(this);
         }
-        for(int i = 0; i < socialCards.length; i++){
-            updateSocialCard(socialCards[i], i+1);
-        }
+//        for(int i = 0; i < socialCards.length; i++){
+//            updateSocialCard(socialCards[i], i+1);
+//        }
+        updateSocialCard(socialCards[6], 7);
+//        updateSocialCard(socialCards[1], 2);
+//        updateSocialCard(socialCards[0], 1);
+
+
     }
     @Override
     public void onLoginSuccess(int id) {

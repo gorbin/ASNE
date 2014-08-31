@@ -66,6 +66,8 @@ public class OAuthActivity extends Activity {
         progressBar.setLayoutParams(progressBarLayoutParams);
         progressContainer.addView(progressBar);
 
+        webView.setHorizontalScrollBarEnabled(false);
+        webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -83,7 +85,7 @@ public class OAuthActivity extends Activity {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.contains(paramCallback)) {
+                if (url.startsWith(paramCallback)) {
                     Intent intent = new Intent();
                     intent.setData(Uri.parse(url));
                     setResult(RESULT_OK, intent);

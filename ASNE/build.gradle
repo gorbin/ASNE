@@ -34,5 +34,6 @@ dependencies {
     compile project(':vk')
     compile project(':odnoklassniki')
     compile project(':facebook')
+    compile project(':instagram')
 }
 

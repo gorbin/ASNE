@@ -155,7 +155,6 @@ public class FriendsListFragment extends Fragment implements OnRequestGetFriends
                 .replace(R.id.container, friends)
                 .commit();
         } else{
-            //todo
             Toast.makeText(getActivity(), Constants.socialName[socialNetworkId-1] + "SocialNetwork "
                     + "can't show custom SocialPerson", Toast.LENGTH_LONG).show();
         }

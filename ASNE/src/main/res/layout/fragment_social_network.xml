@@ -9,7 +9,15 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
+        <com.gorbin.androidsocialnetworksextended.asne.utils.SocialCard
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            custom:color="@color/instagram"
+            custom:text_color="@color/instagram"
+            custom:dark_color="@color/instagram_light"
+            custom:profile_image="@drawable/instagram_user"
+            android:id="@+id/insta_card"/>
         <com.gorbin.androidsocialnetworksextended.asne.utils.SocialCard
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -18,7 +26,8 @@
 			custom:text_color="@color/facebook"
 			custom:dark_color="@color/facebook_light"
             custom:profile_image="@drawable/com_facebook_profile_picture_blank_square"
-			android:id="@+id/fb_card"/>
+            android:layout_below="@id/insta_card"
+            android:id="@+id/fb_card"/>
         <com.gorbin.androidsocialnetworksextended.asne.utils.SocialCard
 			android:layout_width="match_parent"
             android:layout_height="wrap_content"
