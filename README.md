@@ -10,6 +10,7 @@ ASNE contains modules for social networks:
  - LinkedIn  
  - Facebook 
  - Google Plus 
+ - Instagram
  - Vkontakte 
  - Odnoklassniki
 
