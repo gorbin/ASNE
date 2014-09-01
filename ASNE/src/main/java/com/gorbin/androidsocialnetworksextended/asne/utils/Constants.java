@@ -15,18 +15,16 @@ public class Constants {
         POST_DIALOG
     }
 
-//    public static final String[] logo = {"{icon-twitter}","{icon-linkedin}","{icon-gplus}",
-//            "{icon-facebook}","{icon-vk}","{icon-ok}"};
     public static final int[] logo = {R.drawable.ic_twitter, R.drawable.ic_linkedin,
             R.drawable.ic_googleplus, R.drawable.ic_facebook, R.drawable.ic_vk,
-            R.drawable.ic_odnoklassniki};
+            R.drawable.ic_odnoklassniki, R.drawable.ic_instagram};
     public static final String[] socialName = {"Twitter","LinkedIn","Google+","Facebook",
-            "Vkontakte","Odnoklassniki"};
+            "Vkontakte","Odnoklassniki", "Instagram"};
     public static final int[] userPhoto = {R.drawable.twitter_user, R.drawable.linkedin_user,
             R.drawable.g_plus_user, R.drawable.com_facebook_profile_picture_blank_square,
-            R.drawable.vk_user, R.drawable.ok_user};
+            R.drawable.vk_user, R.drawable.ok_user, R.drawable.instagram_user};
     public static final int[] color = {R.color.twitter, R.color.linkedin, R.color.google_plus,
-            R.color.facebook, R.color.vk, R.color.ok};
+            R.color.facebook, R.color.vk, R.color.ok, R.color.instagram};
 
     public static final String[] fbShare ={"Post status update","Post photo","Post Link",
             "Post Dialog"};
@@ -43,12 +41,14 @@ public class Constants {
             SharePost.POST_LINK};
     public static final String[] okShare ={"Post Link"};
     public static final SharePost[] okShareNum ={SharePost.POST_LINK};
-    public static final String[][] share = {twShare, inShare, gpShare, fbShare, vkShare, okShare};
+    public static final String[] instagramShare ={"Post Photo"};
+    public static final SharePost[] instagramShareNum ={SharePost.POST_PHOTO};
+    public static final String[][] share = {twShare, inShare, gpShare, fbShare, vkShare, okShare, instagramShare};
     public static final SharePost[][] shareNum = {twShareNum, inShareNum, gpShareNum, fbShareNum,
-            vkShareNum, okShareNum};
+            vkShareNum, okShareNum, instagramShareNum};
 
     public static final String message = "Hello from ASNE!";
-    public static final String link = "https://github.com/gorbin";
+    public static final String link = "https://github.com/gorbin/ASNE";
 
     public static String handleError(int socialNetworkID, String requestID, String errorMessage){
         return "ERROR: " + errorMessage + "in "

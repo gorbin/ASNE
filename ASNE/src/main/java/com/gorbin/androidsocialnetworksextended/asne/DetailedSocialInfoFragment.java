@@ -88,6 +88,12 @@ public class DetailedSocialInfoFragment extends Fragment implements OnRequestDet
                 darkColor = getResources().getColor(R.color.ok_light);
                 image = R.drawable.ok_user;
                 break;
+            case 7:
+                color = getResources().getColor(R.color.instagram);
+                textColor = getResources().getColor(R.color.instagram);
+                darkColor = getResources().getColor(R.color.instagram_light);
+                image = R.drawable.instagram_user;
+                break;
         }
         infoCard.setColors(color, textColor, darkColor);
         infoCard.setImageResource(image);

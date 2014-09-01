@@ -47,7 +47,7 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
     private static final String URL_TWITTER_OAUTH_VERIFIER = "oauth_verifier";
     // max 16 bit to use in startActivityForResult
     private static final int REQUEST_AUTH = UUID.randomUUID().hashCode() & 0xFFFF;
-    private final String TWITTER_CALLBACK_URL = "oauth://AndroidSocialNetworks";
+    private final String TWITTER_CALLBACK_URL = "oauth://ASNE";
     private final String fConsumerKey;
     private final String fConsumerSecret;
     private Twitter mTwitter;

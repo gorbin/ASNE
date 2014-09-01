@@ -81,13 +81,13 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
             executeRequest(new RequestGetDetailedPersonAsyncTask(), requestBundle, REQUEST_GET_DETAIL_PERSON);
         } else if (mLocalListeners.containsKey(REQUEST_GET_PERSON)) {
             mRequests.remove(REQUEST_GET_PERSON);
-            executeRequest(new RequestSocialPersonsAsyncTask(), requestBundle, REQUEST_GET_PERSON);
+            executeRequest(new RequestGetSocialPersonAsyncTask(), requestBundle, REQUEST_GET_PERSON);
         } else if(mLocalListeners.containsKey(REQUEST_GET_CURRENT_PERSON)){
             mRequests.remove(REQUEST_GET_CURRENT_PERSON);
             executeRequest(new RequestGetSocialPersonAsyncTask(), requestBundle, REQUEST_GET_CURRENT_PERSON);
         } else if(mLocalListeners.containsKey(REQUEST_GET_PERSONS)){
             mRequests.remove(REQUEST_GET_PERSONS);
-            executeRequest(new RequestGetSocialPersonAsyncTask(), requestBundle, REQUEST_GET_PERSONS);
+            executeRequest(new RequestSocialPersonsAsyncTask(), requestBundle, REQUEST_GET_PERSONS);
         } else if (mLocalListeners.containsKey(REQUEST_POST_LINK)) {
             mRequests.remove(REQUEST_POST_LINK);
             executeRequest(new RequestPostLinkAsyncTask(), requestBundle, REQUEST_POST_LINK);
@@ -204,7 +204,7 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
         super.requestSocialPersons(userID, onRequestSocialPersonsCompleteListener);
         Bundle args = new Bundle();
         args.putStringArray(RequestSocialPersonsAsyncTask.PARAM_USER_ID, userID);
-        executeRequest(new RequestSocialPersonsAsyncTask(), args, REQUEST_GET_PERSON);
+        executeRequest(new RequestSocialPersonsAsyncTask(), args, REQUEST_GET_PERSONS);
     }
 
     @Override
