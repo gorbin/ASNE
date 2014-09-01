@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Social Networks</string>
+    <string name="app_name">Dev-test Social Networks</string>
     <string name="item">Item #</string>
     <string name="facebook_app_id">1646388738920557</string>
     <string name="vk_app_id">4352648</string>
     <!-- Error -->
     <string name="error">Error!</string>
     <string name="json_error">JSON Error!</string>
-    <string name="custom_view_dialog_error">Error while seting CustomView dialog!</string>
-    <string name="blur_background_error">BlurBackground Error!</string>
-    <string name="blur_task_error">Blur task Error!</string>
     <string name="close">Close</string>
     <!-- DialogsMain -->
     <string name="message">Message</string>

@@ -27,11 +27,12 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:19.+'
     compile 'com.android.support:support-v4:19.+'
-    compile 'com.github.asne:asne-facebook:0.2.0'
-    compile 'com.github.asne:asne-vk:0.2.0'
-    compile 'com.github.asne:asne-twitter:0.2.0'
-    compile 'com.github.asne:asne-odnoklassniki:0.2.0'
-    compile 'com.github.asne:asne-googleplus:0.2.0'
-    compile 'com.github.asne:asne-linkedin:0.2.0'
+    compile 'com.github.asne:asne-facebook:0.2.1'
+    compile 'com.github.asne:asne-vk:0.2.1'
+    compile 'com.github.asne:asne-twitter:0.2.1'
+    compile 'com.github.asne:asne-odnoklassniki:0.2.1'
+    compile 'com.github.asne:asne-googleplus:0.2.1'
+    compile 'com.github.asne:asne-linkedin:0.2.1'
+    compile 'com.github.asne:asne-instagram:0.2.1'
 }
 

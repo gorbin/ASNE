@@ -151,11 +151,10 @@ public class FriendsListFragment extends Fragment implements OnRequestGetFriends
         if(socialNetworkId != 4) {
             DetailedSocialInfoFragment friends = DetailedSocialInfoFragment.newInstannce(socialNetworkId, socialPersons.get(i).id);
             getActivity().getSupportFragmentManager().beginTransaction()
-                .addToBackStack("info")
-                .replace(R.id.container, friends)
-                .commit();
+                    .addToBackStack("info")
+                    .replace(R.id.container, friends)
+                    .commit();
         } else{
-            //todo
             Toast.makeText(getActivity(), Constants.socialName[socialNetworkId-1] + "SocialNetwork "
                     + "can't show custom SocialPerson", Toast.LENGTH_LONG).show();
         }

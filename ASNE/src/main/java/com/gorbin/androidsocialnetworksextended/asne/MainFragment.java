@@ -21,6 +21,7 @@ import com.github.gorbin.asne.core.listener.OnRequestSocialPersonCompleteListene
 import com.github.gorbin.asne.core.persons.SocialPerson;
 import com.github.gorbin.asne.facebook.FacebookSocialNetwork;
 import com.github.gorbin.asne.googleplus.GooglePlusSocialNetwork;
+import com.github.gorbin.asne.instagram.InstagramSocialNetwork;
 import com.github.gorbin.asne.linkedin.LinkedInSocialNetwork;
 import com.github.gorbin.asne.odnoklassniki.OkSocialNetwork;
 import com.github.gorbin.asne.twitter.TwitterSocialNetwork;
@@ -53,6 +54,8 @@ public class MainFragment  extends Fragment
     public static final String OK_APP_ID =  "OK_APP_ID";
     public static final String OK_PUBLIC_KEY =  "OK_PUBLIC_KEY";
     public static final String OK_SECRET_KEY =  "OK_SECRET_KEY";
+    public static final String INSTAGRAM_CLIENT_KEY = "INSTAGRAM_KEY";
+    public static final String INSTAGRAM_CLIENT_SECRET = "INSTAGRAM_SECRET";
 
     private SocialCard socialCards[] =  new SocialCard[Constants.logo.length];
     private boolean isDetailed[] = new boolean[Constants.logo.length];
@@ -79,6 +82,8 @@ public class MainFragment  extends Fragment
         socialCards[3] = (SocialCard) rootView.findViewById(R.id.fb_card);
         socialCards[4] = (SocialCard) rootView.findViewById(R.id.vk_card);
         socialCards[5] = (SocialCard) rootView.findViewById(R.id.ok_card);
+        socialCards[6] = (SocialCard) rootView.findViewById(R.id.insta_card);
+
 
 //      Connect ASNE SocialNetworks
 
@@ -95,6 +100,8 @@ public class MainFragment  extends Fragment
                 VKScope.NOHTTPS,
                 VKScope.STATUS,
         };
+        String instagramScope = "likes+comments+relationships";
+
         mSocialNetworkManager = (SocialNetworkManager) getFragmentManager().findFragmentByTag(SOCIAL_NETWORK_TAG);
 
         if (mSocialNetworkManager == null) {
@@ -117,6 +124,9 @@ public class MainFragment  extends Fragment
 
             OkSocialNetwork okNetwork = new OkSocialNetwork(this, OK_APP_ID, OK_PUBLIC_KEY, OK_SECRET_KEY, okScope);
             mSocialNetworkManager.addSocialNetwork(okNetwork);
+
+            InstagramSocialNetwork instagramNetwork = new InstagramSocialNetwork(this, INSTAGRAM_CLIENT_KEY, INSTAGRAM_CLIENT_SECRET, instagramScope);
+            mSocialNetworkManager.addSocialNetwork(instagramNetwork);
 
             getFragmentManager().beginTransaction().add(mSocialNetworkManager, SOCIAL_NETWORK_TAG).commit();
             mSocialNetworkManager.setOnInitializationCompleteListener(this);
