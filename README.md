@@ -1,6 +1,6 @@
 ![enter image description here][1]
 
-ASNE        [![ASNE Maven Central](http://img.shields.io/badge/ASNE%20Maven%20Central-0.2.0-brightgreen.svg?style=flat)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.asne%22) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-ASNE-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/868)
+ASNE        [![ASNE Maven Central](http://img.shields.io/badge/ASNE%20Maven%20Central-0.2.1-brightgreen.svg?style=flat)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.asne%22) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-ASNE-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/868)
 =====================
 ASNE library created for simple integration of Social Networks. If you want to integrate your application with multiple social networks just choose ASNE modules and add them to your project. You just need to: add module, build SocialNetworkManager and configure your AndroidManiferst. 
 ASNE contains common interface for most popular social networks, but you can easily make module for another.
@@ -33,6 +33,7 @@ ASNE got [almost all necessary requests](https://github.com/gorbin/ASNE/wiki/%D0
  - Get list of Friends
  - Adding friends by id
  - Remove friend from friend list
+ - Any request to chosen social network - you got full SDK/API
  
 ![enter image description here][3]
 
@@ -57,12 +58,13 @@ Add dependency for chosen module, here example for all modules, you can choose o
 ```
 dependencies {
 ...
-    compile 'com.github.asne:asne-facebook:0.2.0'
-	compile 'com.github.asne:asne-twitter:0.2.0'
-    compile 'com.github.asne:asne-googleplus:0.2.0'
-    compile 'com.github.asne:asne-linkedin:0.2.0'
-	compile 'com.github.asne:asne-vk:0.2.0'
-    compile 'com.github.asne:asne-odnoklassniki:0.2.0'
+    compile 'com.github.asne:asne-facebook:0.2.1'
+    compile 'com.github.asne:asne-twitter:0.2.1'
+    compile 'com.github.asne:asne-googleplus:0.2.1'
+    compile 'com.github.asne:asne-linkedin:0.2.1'
+    compile 'com.github.asne:asne-instagram:0.2.1'
+    compile 'com.github.asne:asne-vk:0.2.1'
+    compile 'com.github.asne:asne-odnoklassniki:0.2.1'
 ...
 }
 ```
@@ -86,12 +88,13 @@ Without Gradle, add ASNE like:
 
 Firstly, you need to create app in social network. You can read about main steps:
 
- - [Twitter](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-Twitter)
- - [LinkedIn](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-LinkedIn)
- - [Facebook](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-Facebook)
- - [Google Plus](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-Google-Plus) 
- - [Vkontakte](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-Vkontakte) 
- - [Odnoklassniki](https://github.com/gorbin/ASNE/wiki/%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-Odnoklassniki)
+ - [Twitter](https://github.com/gorbin/ASNE/wiki/Create-Twitter-App)
+ - [LinkedIn](https://github.com/gorbin/ASNE/wiki/Create-LinkedIn-App)
+ - [Facebook](https://github.com/gorbin/ASNE/wiki/Create-Facebook-App)
+ - [Google Plus](https://github.com/gorbin/ASNE/wiki/Create-Google-Plus-app) 
+ - [Instagram](https://github.com/gorbin/ASNE/wiki/Create-Instagram-App)
+ - [Vkontakte](https://github.com/gorbin/ASNE/wiki/Create-Vkontakte-App) 
+ - [Odnoklassniki](https://github.com/gorbin/ASNE/wiki/Create-Odnoklassniki-App)
 
 Second, you need to initialize `mSocialNetworkManager`, it contain common interface for all ASNE social network modules. Initialize chosen social network and add social network to SocialNetworkManager(example: FacebookSocialNetwork):
 
