@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.github.gorbin.asne.core.AccessToken;
 import com.github.gorbin.asne.core.OAuthActivity;
@@ -60,7 +59,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
     private static final String ERROR_CODE = "InstagramSocialNetwork.ERROR_CODE";
     private Bundle requestBundle;
 
-    public InstagramSocialNetwork(Fragment fragment, String clientId, String clientSecret) {
+    public InstagramSocialNetwork(Fragment fragment, String clientId, String clientSecret, String scope) {
         super(fragment);
 
         this.clientId = clientId;
@@ -69,10 +68,12 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
         if (TextUtils.isEmpty(clientId) || TextUtils.isEmpty(clientSecret)) {
             throw new IllegalArgumentException("clientId and clientSecret are invalid");
         }
-
+        if(scope == null) {
+            scope = "basic";
+        }
         String INSTAGRAM_AUTHURL = "https://api.instagram.com/oauth/authorize/";
         authURLString = INSTAGRAM_AUTHURL + "?client_id=" + clientId + "&redirect_uri="
-                + INSTAGRAM_CALLBACK_URL + "&response_type=code&display=touch&scope=likes+comments+relationships";
+                + INSTAGRAM_CALLBACK_URL + "&response_type=code&display=touch&scope=" + scope;
 
         tokenURLString = INSTAGRAM_TOKENURL + "?client_id=" + clientId + "&client_secret="
                 + clientSecret + "&redirect_uri=" + INSTAGRAM_CALLBACK_URL + "&grant_type=authorization_code";
@@ -220,15 +221,15 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
             Intent normalIntent = new Intent(Intent.ACTION_SEND);
             normalIntent.setType("image/*");
             normalIntent.setPackage(instagramPackage);
-            Uri uri = Uri.fromFile(photo);
+            File media = new File(photo.getAbsolutePath());
+            Uri uri = Uri.fromFile(media);
             normalIntent.putExtra(Intent.EXTRA_STREAM, uri);
             normalIntent.putExtra(Intent.EXTRA_TEXT, message);
-            mLocalListeners.remove(REQUEST_POST_PHOTO);
             mSocialNetworkManager.getActivity().startActivity(normalIntent);
         } else {
-            mLocalListeners.remove(REQUEST_POST_PHOTO);
             mLocalListeners.get(REQUEST_POST_PHOTO).onError(getID(), REQUEST_POST_PHOTO, errorMessage, null);
         }
+        mLocalListeners.remove(REQUEST_POST_PHOTO);
     }
 
     @Override
@@ -346,8 +347,8 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
     }
 
     private boolean checkTokenError(Bundle result) {
-        restart = true;
-        if(result != null && result.containsKey(ERROR_CODE) && result.getString(ERROR_CODE).contains("400")) {
+        if(result != null && result.containsKey(ERROR_CODE) && result.getString(ERROR_CODE).contains("400") && result.getString(ERROR_CODE).contains("OAuth")) {
+            restart = true;
             requestBundle = result;
             requestBundle.remove(ERROR_CODE);
             requestBundle.remove(SocialNetworkAsyncTask.RESULT_ERROR);
@@ -366,6 +367,14 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
             queryRequests = true;
         }
         return queryRequests;
+    }
+
+    private void checkExeption(Exception e, Bundle result){
+        if(e.getMessage().contains("ERROR CODE") && e.getMessage().contains("OAuth")){
+            result.putString(ERROR_CODE, e.getMessage());
+        } else {
+            result.putString(SocialNetworkAsyncTask.RESULT_ERROR, e.getMessage());
+        }
     }
 
     private void restartRequests(){
@@ -500,11 +509,8 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                 getSocialPerson(socialPerson, jsonResponse);
                 result.putParcelable(REQUEST_GET_PERSON, socialPerson);
             } catch (Exception e) {
-                if(e.getMessage().contains("ERROR CODE")){
-                    result.putString(ERROR_CODE, e.getMessage());
-                } else {
-                    result.putString(RESULT_ERROR, e.getMessage());
-                }            }
+                checkExeption(e, result);
+            }
             return result;
         }
 
@@ -549,11 +555,8 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                 getDetailedSocialPerson(instagramPerson, jsonResponse);
                 result.putParcelable(REQUEST_GET_DETAIL_PERSON, instagramPerson);
             } catch (Exception e) {
-                if(e.getMessage().contains("ERROR CODE")){
-                    result.putString(ERROR_CODE, e.getMessage());
-                } else {
-                    result.putString(RESULT_ERROR, e.getMessage());
-                }             }
+                checkExeption(e, result);
+            }
             return result;
         }
 
@@ -593,12 +596,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                     getSocialPerson(socialPerson, jsonResponse);
                     socialPersons.add(socialPerson);
                 } catch (Exception e) {
-                    if(e.getMessage().contains("ERROR CODE")){
-                        result.putString(ERROR_CODE, e.getMessage());
-                    } else {
-                        result.putString(RESULT_ERROR, e.getMessage());
-                    }
-                    return result;
+                    checkExeption(e, result);
                 }
             }
             result.putParcelableArrayList(RESULT_USERS_ARRAY, socialPersons);
@@ -631,11 +629,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                 result.putStringArray(RESULT_GET_FRIENDS_ID, ids.toArray(new String[ids.size()]));
                 result.putParcelableArrayList(RESULT_GET_FRIENDS, socialPersons);
             } catch (Exception e) {
-                if(e.getMessage().contains("ERROR CODE")){
-                    result.putString(ERROR_CODE, e.getMessage());
-                } else {
-                    result.putString(RESULT_ERROR, e.getMessage());
-                }
+                checkExeption(e, result);
             }
 
             return result;
@@ -714,11 +708,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                     result.putBoolean(RESULT_IS_FRIEND, false);
                 }
             } catch (Exception e) {
-                if(e.getMessage().contains("ERROR CODE")){
-                    result.putString(ERROR_CODE, e.getMessage());
-                } else {
-                    result.putString(RESULT_ERROR, e.getMessage());
-                }
+                checkExeption(e, result);
             }
             return result;
         }
@@ -774,11 +764,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                     result.putString(RESULT_ERROR, "REQUEST_ADD_FRIEND Error");
                 }
             } catch (Exception e) {
-                if(e.getMessage().contains("ERROR CODE")){
-                    result.putString(ERROR_CODE, e.getMessage());
-                } else {
-                    result.putString(RESULT_ERROR, e.getMessage());
-                }
+                checkExeption(e, result);
             }
             return result;
         }
@@ -833,11 +819,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                     result.putString(RESULT_ERROR, "REQUEST_ADD_FRIEND Error");
                 }
             } catch (Exception e) {
-                if(e.getMessage().contains("ERROR CODE")){
-                    result.putString(ERROR_CODE, e.getMessage());
-                } else {
-                    result.putString(RESULT_ERROR, e.getMessage());
-                }
+                checkExeption(e, result);
             }
             return result;
         }

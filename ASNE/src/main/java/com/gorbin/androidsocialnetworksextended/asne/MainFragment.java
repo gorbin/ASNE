@@ -99,30 +99,31 @@ public class MainFragment  extends Fragment
                 VKScope.NOHTTPS,
                 VKScope.STATUS,
         };
+        String instagramScope = "likes+comments+relationships";
         mSocialNetworkManager = (SocialNetworkManager) getFragmentManager().findFragmentByTag(SOCIAL_NETWORK_TAG);
 
         if (mSocialNetworkManager == null) {
             mSocialNetworkManager = new SocialNetworkManager();
 
-//            FacebookSocialNetwork fbNetwork = new FacebookSocialNetwork(this, fbScope);
-//            mSocialNetworkManager.addSocialNetwork(fbNetwork);
-//
-//            TwitterSocialNetwork twNetwork = new TwitterSocialNetwork(this, TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
-//            mSocialNetworkManager.addSocialNetwork(twNetwork);
-//
-//            LinkedInSocialNetwork liNetwork = new LinkedInSocialNetwork(this, LINKEDIN_CONSUMER_KEY, LINKEDIN_CONSUMER_SECRET, linkedInScope);
-//            mSocialNetworkManager.addSocialNetwork(liNetwork);
-//
-//            GooglePlusSocialNetwork gpNetwork = new GooglePlusSocialNetwork(this);
-//            mSocialNetworkManager.addSocialNetwork(gpNetwork);
-//
-//            VkSocialNetwork vkNetwork = new VkSocialNetwork(this, VK_KEY, vkScope);
-//            mSocialNetworkManager.addSocialNetwork(vkNetwork);
-//
-//            OkSocialNetwork okNetwork = new OkSocialNetwork(this, OK_APP_ID, OK_PUBLIC_KEY, OK_SECRET_KEY, okScope);
-//            mSocialNetworkManager.addSocialNetwork(okNetwork);
+            FacebookSocialNetwork fbNetwork = new FacebookSocialNetwork(this, fbScope);
+            mSocialNetworkManager.addSocialNetwork(fbNetwork);
 
-            InstagramSocialNetwork instagramNetwork = new InstagramSocialNetwork(this, INSTAGRAM_CLIENT_KEY, INSTAGRAM_CLIENT_SECRET);
+            TwitterSocialNetwork twNetwork = new TwitterSocialNetwork(this, TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
+            mSocialNetworkManager.addSocialNetwork(twNetwork);
+
+            LinkedInSocialNetwork liNetwork = new LinkedInSocialNetwork(this, LINKEDIN_CONSUMER_KEY, LINKEDIN_CONSUMER_SECRET, linkedInScope);
+            mSocialNetworkManager.addSocialNetwork(liNetwork);
+
+            GooglePlusSocialNetwork gpNetwork = new GooglePlusSocialNetwork(this);
+            mSocialNetworkManager.addSocialNetwork(gpNetwork);
+
+            VkSocialNetwork vkNetwork = new VkSocialNetwork(this, VK_KEY, vkScope);
+            mSocialNetworkManager.addSocialNetwork(vkNetwork);
+
+            OkSocialNetwork okNetwork = new OkSocialNetwork(this, OK_APP_ID, OK_PUBLIC_KEY, OK_SECRET_KEY, okScope);
+            mSocialNetworkManager.addSocialNetwork(okNetwork);
+
+            InstagramSocialNetwork instagramNetwork = new InstagramSocialNetwork(this, INSTAGRAM_CLIENT_KEY, INSTAGRAM_CLIENT_SECRET, instagramScope);
             mSocialNetworkManager.addSocialNetwork(instagramNetwork);
 
             getFragmentManager().beginTransaction().add(mSocialNetworkManager, SOCIAL_NETWORK_TAG).commit();
@@ -134,10 +135,10 @@ public class MainFragment  extends Fragment
                     socialNetwork.setOnRequestCurrentPersonCompleteListener(this);
                     socialNetwork.setOnRequestDetailedSocialPersonCompleteListener(this);
                 }
-//                for (int i = 0; i < socialCards.length; i++){
-//                    updateSocialCard(socialCards[i], i + 1);
-//                }
-                updateSocialCard(socialCards[6], 7);
+                for (int i = 0; i < socialCards.length; i++){
+                    updateSocialCard(socialCards[i], i + 1);
+                }
+//                updateSocialCard(socialCards[6], 7);
 //                updateSocialCard(socialCards[1], 2);
 //                updateSocialCard(socialCards[0], 1);
 
@@ -199,10 +200,10 @@ public class MainFragment  extends Fragment
             socialNetwork.setOnRequestCurrentPersonCompleteListener(this);
             socialNetwork.setOnRequestDetailedSocialPersonCompleteListener(this);
         }
-//        for(int i = 0; i < socialCards.length; i++){
-//            updateSocialCard(socialCards[i], i+1);
-//        }
-        updateSocialCard(socialCards[6], 7);
+        for(int i = 0; i < socialCards.length; i++){
+            updateSocialCard(socialCards[i], i+1);
+        }
+//        updateSocialCard(socialCards[6], 7);
 //        updateSocialCard(socialCards[1], 2);
 //        updateSocialCard(socialCards[0], 1);
 
@@ -398,7 +399,7 @@ public class MainFragment  extends Fragment
     }
 
     public File getPhotoFile(){
-        File f = new File(getActivity().getCacheDir(), "logo.png");
+        File f = new File(getActivity().getExternalCacheDir(), "logo.png");
         try {
             f.createNewFile();
         } catch (IOException e) {
