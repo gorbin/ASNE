@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Dev-test Social Networks</string>
+    <string name="app_name">Social Networks</string>
     <string name="item">Item #</string>
     <string name="facebook_app_id">1646388738920557</string>
     <string name="vk_app_id">4352648</string>
