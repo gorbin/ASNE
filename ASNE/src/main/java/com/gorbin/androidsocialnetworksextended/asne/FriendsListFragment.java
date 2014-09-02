@@ -3,6 +3,7 @@ package com.gorbin.androidsocialnetworksextended.asne;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +22,7 @@ import com.github.gorbin.asne.core.persons.SocialPerson;
 import com.gorbin.androidsocialnetworksextended.asne.utils.ADialogs;
 import com.gorbin.androidsocialnetworksextended.asne.utils.Constants;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 public class FriendsListFragment extends Fragment implements OnRequestGetFriendsCompleteListener, AdapterView.OnItemClickListener {
@@ -29,6 +31,10 @@ public class FriendsListFragment extends Fragment implements OnRequestGetFriends
     private int socialNetworkId;
     private ArrayList<SocialPerson> socialPersons = new ArrayList<SocialPerson>();
     private ADialogs editDialog;
+    private ADialogs loadingDialog;
+
+    public FriendsListFragment() {
+    }
 
     public static FriendsListFragment newInstannce(int id) {
         FriendsListFragment fragment = new FriendsListFragment();
@@ -36,9 +42,6 @@ public class FriendsListFragment extends Fragment implements OnRequestGetFriends
         args.putInt(Constants.NETWORK_ID, id);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public FriendsListFragment() {
     }
 
     @Override
@@ -52,10 +55,17 @@ public class FriendsListFragment extends Fragment implements OnRequestGetFriends
         listMenu.setOnItemClickListener(this);
 
         editDialog = new ADialogs(getActivity());
+        loadingDialog = new ADialogs(getActivity());
+        loadingDialog.progress(false, "Loading friends...");
+        ADialogs alert = new ADialogs(getActivity());
+        if(socialNetworkId == 4){
+             alert.alert(true,"Facebook me/friends", Constants.facebookFriends, null, "Continue");
+        }
 
         socialNetwork = MainFragment.mSocialNetworkManager.getSocialNetwork(socialNetworkId);
         socialNetwork.setOnRequestGetFriendsCompleteListener(this);
         socialNetwork.requestGetFriends();
+        loadingDialog.showProgress();
         setHasOptionsMenu(true);
         return rootView;
     }
@@ -81,18 +91,22 @@ public class FriendsListFragment extends Fragment implements OnRequestGetFriends
                 editDialog.setADialogsEditListener(new ADialogs.ADialogsEditListener() {
                     @Override
                     public void onADialogsPositiveClick(DialogInterface dialog, String text) {
-                        socialNetwork.requestAddFriend(text, new OnRequestAddFriendCompleteListener() {
-                            @Override
-                            public void onRequestAddFriendComplete(int socialNetworkID, String userID) {
-                                Toast.makeText(getActivity(), userID + " added as friend", Toast.LENGTH_LONG).show();
-                                socialNetwork.requestGetFriends();
-                            }
+                        if(text!=null && !TextUtils.isEmpty(text) && checkUserId(text)) {
+                            socialNetwork.requestAddFriend(text, new OnRequestAddFriendCompleteListener() {
+                                @Override
+                                public void onRequestAddFriendComplete(int socialNetworkID, String userID) {
+                                    Toast.makeText(getActivity(), userID + " added as friend", Toast.LENGTH_LONG).show();
+                                    socialNetwork.requestGetFriends();
+                                }
 
-                            @Override
-                            public void onError(int socialNetworkID, String requestID, String errorMessage, Object data) {
-                                Toast.makeText(getActivity(), Constants.handleError(socialNetworkID, requestID, errorMessage), Toast.LENGTH_LONG).show();
-                            }
-                        });
+                                @Override
+                                public void onError(int socialNetworkID, String requestID, String errorMessage, Object data) {
+                                    Toast.makeText(getActivity(), Constants.handleError(socialNetworkID, requestID, errorMessage), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        } else {
+                            Toast.makeText(getActivity(), "You should enter valid Id", Toast.LENGTH_LONG).show();
+                        }
                     }
                     @Override
                     public void onADialogsNegativeClick(DialogInterface dialog) {}
@@ -106,16 +120,20 @@ public class FriendsListFragment extends Fragment implements OnRequestGetFriends
                 editDialog.setADialogsEditListener(new ADialogs.ADialogsEditListener() {
                     @Override
                     public void onADialogsPositiveClick(DialogInterface dialog, String text) {
-                        socialNetwork.requestCheckIsFriend(text, new OnCheckIsFriendCompleteListener() {
-                            @Override
-                            public void onCheckIsFriendComplete(int socialNetworkID, String userID, boolean isFriend) {
-                                Toast.makeText(getActivity(), "You and " + userID + " are friends - " + isFriend, Toast.LENGTH_LONG).show();
-                            }
-                            @Override
-                            public void onError(int socialNetworkID, String requestID, String errorMessage, Object data) {
-                                Toast.makeText(getActivity(), Constants.handleError(socialNetworkID, requestID, errorMessage), Toast.LENGTH_LONG).show();
-                            }
-                        });
+                        if(text!=null && !TextUtils.isEmpty(text) && checkUserId(text)) {
+                            socialNetwork.requestCheckIsFriend(text, new OnCheckIsFriendCompleteListener() {
+                                @Override
+                                public void onCheckIsFriendComplete(int socialNetworkID, String userID, boolean isFriend) {
+                                    Toast.makeText(getActivity(), "You and " + userID + " are friends - " + isFriend, Toast.LENGTH_LONG).show();
+                                }
+                                @Override
+                                public void onError(int socialNetworkID, String requestID, String errorMessage, Object data) {
+                                    Toast.makeText(getActivity(), Constants.handleError(socialNetworkID, requestID, errorMessage), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        } else {
+                            Toast.makeText(getActivity(), "You should enter valid Id", Toast.LENGTH_LONG).show();
+                        }
                     }
                     @Override
                     public void onADialogsNegativeClick(DialogInterface dialog) {}
@@ -138,6 +156,7 @@ public class FriendsListFragment extends Fragment implements OnRequestGetFriends
         this.socialPersons = socialFriends;
         FriendsListAdapter adapter = new FriendsListAdapter(getActivity(), socialFriends, socialNetworkID);
         listMenu.setAdapter(adapter);
+        loadingDialog.cancelProgress();
     }
 
     @Override
@@ -151,12 +170,34 @@ public class FriendsListFragment extends Fragment implements OnRequestGetFriends
         if(socialNetworkId != 4) {
             DetailedSocialInfoFragment friends = DetailedSocialInfoFragment.newInstannce(socialNetworkId, socialPersons.get(i).id);
             getActivity().getSupportFragmentManager().beginTransaction()
-                .addToBackStack("info")
-                .replace(R.id.container, friends)
-                .commit();
+                    .addToBackStack("info")
+                    .replace(R.id.container, friends)
+                    .commit();
         } else{
             Toast.makeText(getActivity(), Constants.socialName[socialNetworkId-1] + "SocialNetwork "
                     + "can't show custom SocialPerson", Toast.LENGTH_LONG).show();
+        }
+    }
+    public boolean checkUserId(String userId){
+        switch (socialNetworkId){
+            case 1:
+                try {
+                    Long d = Long.parseLong(userId);
+                }
+                catch(NumberFormatException nfe) {
+                    return false;
+                }
+                return true;
+            case 5:
+                try {
+                    int d = Integer.parseInt(userId);
+                }
+                catch(NumberFormatException nfe) {
+                    return false;
+                }
+                return true;
+            default:
+                return true;
         }
     }
 }

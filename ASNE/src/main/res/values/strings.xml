@@ -8,9 +8,6 @@
     <!-- Error -->
     <string name="error">Error!</string>
     <string name="json_error">JSON Error!</string>
-    <string name="custom_view_dialog_error">Error while seting CustomView dialog!</string>
-    <string name="blur_background_error">BlurBackground Error!</string>
-    <string name="blur_task_error">Blur task Error!</string>
     <string name="close">Close</string>
     <!-- DialogsMain -->
     <string name="message">Message</string>

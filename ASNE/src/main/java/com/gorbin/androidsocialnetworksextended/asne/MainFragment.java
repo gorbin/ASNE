@@ -56,11 +56,23 @@ public class MainFragment  extends Fragment
     public static final String OK_SECRET_KEY =  "OK_SECRET_KEY";
     public static final String INSTAGRAM_CLIENT_KEY = "INSTAGRAM_KEY";
     public static final String INSTAGRAM_CLIENT_SECRET = "INSTAGRAM_SECRET";
-
-    private SocialCard socialCards[] =  new SocialCard[Constants.logo.length];
-    private boolean isDetailed[] = new boolean[Constants.logo.length];
+    
     public static final String SOCIAL_NETWORK_TAG = "SocialIntegrationMain.SOCIAL_NETWORK_TAG";
     public static SocialNetworkManager mSocialNetworkManager;
+    ADialogs loginProgressDialog;
+    private SocialCard socialCards[] =  new SocialCard[Constants.logo.length];
+    private boolean isDetailed[] = new boolean[Constants.logo.length];
+    private OnPostingCompleteListener postingComplete = new OnPostingCompleteListener() {
+        @Override
+        public void onPostSuccessfully(int socialNetworkID) {
+            Toast.makeText(getActivity(), "Sent", Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onError(int socialNetworkID, String requestID, String errorMessage, Object data) {
+            Toast.makeText(getActivity(), "Error while sending: " + errorMessage, Toast.LENGTH_LONG).show();
+        }
+    };
 
     public MainFragment() {
     }
@@ -70,6 +82,9 @@ public class MainFragment  extends Fragment
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_social_network, container, false);
         ((MainActivity)getActivity()).getSupportActionBar().setTitle(R.string.app_name);
+
+        loginProgressDialog = new ADialogs(getActivity());
+        loginProgressDialog.progress(false, "Login in progress...");
 
 //      Get VK fingerprints for app
 //        String[] fingerprints = VKUtil.getCertificateFingerprint(getActivity(), getActivity().getPackageName());
@@ -83,6 +98,7 @@ public class MainFragment  extends Fragment
         socialCards[4] = (SocialCard) rootView.findViewById(R.id.vk_card);
         socialCards[5] = (SocialCard) rootView.findViewById(R.id.ok_card);
         socialCards[6] = (SocialCard) rootView.findViewById(R.id.insta_card);
+
 
 //      Connect ASNE SocialNetworks
 
@@ -100,6 +116,7 @@ public class MainFragment  extends Fragment
                 VKScope.STATUS,
         };
         String instagramScope = "likes+comments+relationships";
+
         mSocialNetworkManager = (SocialNetworkManager) getFragmentManager().findFragmentByTag(SOCIAL_NETWORK_TAG);
 
         if (mSocialNetworkManager == null) {
@@ -138,20 +155,9 @@ public class MainFragment  extends Fragment
                 for (int i = 0; i < socialCards.length; i++){
                     updateSocialCard(socialCards[i], i + 1);
                 }
-//                updateSocialCard(socialCards[6], 7);
-//                updateSocialCard(socialCards[1], 2);
-//                updateSocialCard(socialCards[0], 1);
-
-
             }
         }
         return rootView;
-    }
-
-    private void defaultSocialCardData(SocialCard socialCard, int id) {
-        socialCard.setName("NoName");
-        socialCard.setId("unknown");
-        socialCard.setImageResource(Constants.userPhoto[id-1]);
     }
 
 // Print hashKey for FB app
@@ -175,20 +181,17 @@ public class MainFragment  extends Fragment
 
 //==================================================================================================
 
-    private OnPostingCompleteListener postingComplete = new OnPostingCompleteListener() {
-        @Override
-        public void onPostSuccessfully(int socialNetworkID) {
-            Toast.makeText(getActivity(), "Sent", Toast.LENGTH_LONG).show();
-        }
-
-        @Override
-        public void onError(int socialNetworkID, String requestID, String errorMessage, Object data) {
-            Toast.makeText(getActivity(), "Error while sending: " + errorMessage, Toast.LENGTH_LONG).show();
-        }
-    };
+    private void defaultSocialCardData(SocialCard socialCard, int id) {
+        socialCard.setName("NoName");
+        socialCard.setId("unknown");
+        socialCard.setImageResource(Constants.userPhoto[id - 1]);
+    }
 
     @Override
     public void onError(int socialNetworkID, String requestID, String errorMessage, Object data) {
+        if(loginProgressDialog != null) {
+            loginProgressDialog.cancelProgress();
+        }
         Log.d("TAG Login failed: ", "onLoginFailed: " + requestID + " : " + errorMessage);
         Toast.makeText(getActivity(), Constants.handleError(socialNetworkID, requestID, errorMessage), Toast.LENGTH_LONG).show();
     }
@@ -203,15 +206,15 @@ public class MainFragment  extends Fragment
         for(int i = 0; i < socialCards.length; i++){
             updateSocialCard(socialCards[i], i+1);
         }
-//        updateSocialCard(socialCards[6], 7);
-//        updateSocialCard(socialCards[1], 2);
-//        updateSocialCard(socialCards[0], 1);
-
-
     }
+
     @Override
     public void onLoginSuccess(int id) {
+        if(id != 6) {
+            loginProgressDialog.cancelProgress();
+        }
         updateSocialCard(socialCards[id-1], id);
+
     }
 
     @Override
@@ -336,6 +339,10 @@ public class MainFragment  extends Fragment
                     });
                     listDialog.listDialog(true, "Share via " + Constants.socialName[networkId-1],
                             Constants.share[networkId-1], Constants.shareNum[networkId-1]);
+                    ADialogs alert = new ADialogs(getActivity());
+                    if(networkId == 4){
+                        alert.alert(true,"Facebook share warning", Constants.facebookShare, null, "Continue");
+                    }
                 }
             });
             socialCard.friends.setVisibility(View.VISIBLE);
@@ -364,6 +371,9 @@ public class MainFragment  extends Fragment
                 @Override
                 public void onClick(View view) {
                     socialNetwork.requestLogin();
+                    if(networkId != 6) {
+                        loginProgressDialog.showProgress();
+                    }
                 }
             });
             socialCard.share.setVisibility(View.GONE);
@@ -399,7 +409,7 @@ public class MainFragment  extends Fragment
     }
 
     public File getPhotoFile(){
-        File f = new File(getActivity().getExternalCacheDir(), "logo.png");
+        File f = new File(getActivity().getCacheDir(), "logo.png");
         try {
             f.createNewFile();
         } catch (IOException e) {

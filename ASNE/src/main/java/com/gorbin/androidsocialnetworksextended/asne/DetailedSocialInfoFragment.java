@@ -15,6 +15,7 @@ import com.github.gorbin.asne.core.listener.OnRequestDetailedSocialPersonComplet
 import com.github.gorbin.asne.core.listener.OnRequestRemoveFriendCompleteListener;
 import com.github.gorbin.asne.core.listener.OnRequestSocialPersonCompleteListener;
 import com.github.gorbin.asne.core.persons.SocialPerson;
+import com.gorbin.androidsocialnetworksextended.asne.utils.ADialogs;
 import com.gorbin.androidsocialnetworksextended.asne.utils.Constants;
 import com.gorbin.androidsocialnetworksextended.asne.utils.SocialCard;
 
@@ -24,6 +25,10 @@ public class DetailedSocialInfoFragment extends Fragment implements OnRequestDet
     private int socialNetworkID;
     private boolean detailsIsShown;
     private String userId;
+    private ADialogs loadingDialog;
+
+    public DetailedSocialInfoFragment() {
+    }
 
     public static DetailedSocialInfoFragment newInstannce(int socialNetworkId, String userId) {
         DetailedSocialInfoFragment fragment = new DetailedSocialInfoFragment();
@@ -34,67 +39,23 @@ public class DetailedSocialInfoFragment extends Fragment implements OnRequestDet
         return fragment;
     }
 
-    public DetailedSocialInfoFragment() {
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         socialNetworkID = getArguments().getInt(Constants.NETWORK_ID);
         userId = getArguments().getString(Constants.USER_ID);
         setHasOptionsMenu(true);
+        loadingDialog = new ADialogs(getActivity());
+        loadingDialog.progress(false, "Loading social person...");
         ((MainActivity)getActivity()).getSupportActionBar().setTitle("Social Person");
         View rootView = inflater.inflate(R.layout.card_social_fragment, container, false);
         infoCard = (SocialCard) rootView.findViewById(R.id.info_card);
-        int darkColor = getResources().getColor(R.color.grey_light);
-        int textColor = getResources().getColor(R.color.dark);
-        int color = getResources().getColor(R.color.dark);
-        int image = R.drawable.user;
+        int darkColor = getResources().getColor(Constants.color_light[socialNetworkID - 1]);
+        int textColor = getResources().getColor(Constants.color[socialNetworkID - 1]);
+        int color = getResources().getColor(Constants.color[socialNetworkID - 1]);
+        int image = Constants.userPhoto[socialNetworkID - 1];
         socialNetwork = MainFragment.mSocialNetworkManager.getSocialNetwork(socialNetworkID);
-        switch (socialNetworkID) {
-            case 1:
-                color = getResources().getColor(R.color.twitter);
-                textColor = getResources().getColor(R.color.twitter);
-                darkColor = getResources().getColor(R.color.twitter_light);
-                image = R.drawable.twitter_user;
-                break;
-            case 2:
-                color = getResources().getColor(R.color.linkedin);
-                textColor = getResources().getColor(R.color.linkedin);
-                darkColor = getResources().getColor(R.color.linkedin_light);
-                image = R.drawable.linkedin_user;
-                break;
-            case 3:
-                color = getResources().getColor(R.color.google_plus);
-                textColor = getResources().getColor(R.color.google_plus);
-                darkColor = getResources().getColor(R.color.google_plus_light);
-                image = R.drawable.g_plus_user;
-                break;
-            case 4:
-                color = getResources().getColor(R.color.facebook);
-                textColor = getResources().getColor(R.color.facebook);
-                darkColor = getResources().getColor(R.color.facebook_light);
-                image = R.drawable.com_facebook_profile_picture_blank_square;
-                break;
-            case 5:
-                color = getResources().getColor(R.color.vk);
-                textColor = getResources().getColor(R.color.vk);
-                darkColor = getResources().getColor(R.color.vk_light);
-                image = R.drawable.vk_user;
-                break;
-            case 6:
-                color = getResources().getColor(R.color.ok);
-                textColor = getResources().getColor(R.color.ok);
-                darkColor = getResources().getColor(R.color.ok_light);
-                image = R.drawable.ok_user;
-                break;
-            case 7:
-                color = getResources().getColor(R.color.instagram);
-                textColor = getResources().getColor(R.color.instagram);
-                darkColor = getResources().getColor(R.color.instagram_light);
-                image = R.drawable.instagram_user;
-                break;
-        }
+
         infoCard.setColors(color, textColor, darkColor);
         infoCard.setImageResource(image);
         socialNetwork.setOnRequestDetailedSocialPersonCompleteListener(this);
@@ -177,12 +138,13 @@ public class DetailedSocialInfoFragment extends Fragment implements OnRequestDet
             socialCard.detail.setText("show details...");
             socialNetwork.requestSocialPerson(userId);
         }
+        loadingDialog.showProgress();
     }
 
     private void defaultSocialCardData(SocialCard socialCard, int id) {
         socialCard.setName("NoName");
         socialCard.setId("unknown");
-        socialCard.setImageResource(Constants.userPhoto[id-1]);
+        socialCard.setImageResource(Constants.userPhoto[id - 1]);
     }
 
     public void setSocialCardFromUser(SocialPerson socialPerson, SocialCard socialCard, int id){
@@ -191,6 +153,6 @@ public class DetailedSocialInfoFragment extends Fragment implements OnRequestDet
         String infoString = detailedSocialPersonString.substring(detailedSocialPersonString.indexOf("{")+1, detailedSocialPersonString.lastIndexOf("}"));
         socialCard.setId(infoString.replace(", ", "\n"));
         socialCard.setImage(socialPerson.avatarURL, Constants.userPhoto[id], R.drawable.error);
+        loadingDialog.cancelProgress();
     }
-
 }
