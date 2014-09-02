@@ -56,6 +56,7 @@ public class MainFragment  extends Fragment
     public static final String OK_SECRET_KEY =  "OK_SECRET_KEY";
     public static final String INSTAGRAM_CLIENT_KEY = "INSTAGRAM_KEY";
     public static final String INSTAGRAM_CLIENT_SECRET = "INSTAGRAM_SECRET";
+    
     public static final String SOCIAL_NETWORK_TAG = "SocialIntegrationMain.SOCIAL_NETWORK_TAG";
     public static SocialNetworkManager mSocialNetworkManager;
     ADialogs loginProgressDialog;
