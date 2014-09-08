@@ -246,7 +246,13 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
 
     @Override
     public void requestPostLink(Bundle bundle, String message, OnPostingCompleteListener onPostingCompleteListener) {
-        throw new SocialNetworkException("requestPostLink isn't allowed for TwitterSocialNetwork");
+        super.requestPostLink(bundle, message, onPostingCompleteListener);
+        Bundle args = bundle;
+        args.putString(RequestUpdateStatusAsyncTask.PARAM_MESSAGE, message);
+
+        executeRequest(new RequestUpdateStatusAsyncTask(), args, REQUEST_POST_LINK);
+
+//        throw new SocialNetworkException("requestPostLink isn't allowed for TwitterSocialNetwork");
     }
     
     @Override
@@ -538,6 +544,8 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
         public static final String PARAM_MESSAGE = "RequestUpdateStatusAsyncTask.PARAM_MESSAGE";
         public static final String PARAM_PHOTO_PATH = "RequestUpdateStatusAsyncTask.PARAM_PHOTO_PATH";
         private static final String RESULT_POST_PHOTO = "RequestUpdateStatusAsyncTask.RESULT_POST_PHOTO";
+        private static final String RESULT_POST_LINK = "RequestUpdateStatusAsyncTask.RESULT_POST_LINK";
+
 
         @Override
         protected Bundle doInBackground(Bundle... params) {
@@ -545,6 +553,7 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
             Bundle result = new Bundle();
             String paramMessage = "";
             String paramPhotoPath = null;
+            String paramLink = null;
 
             if (args.containsKey(PARAM_MESSAGE)) {
                 paramMessage = args.getString(PARAM_MESSAGE);
@@ -558,11 +567,22 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
                 result.putBoolean(RESULT_POST_PHOTO, false);
             }
 
+            if (args.containsKey(BUNDLE_LINK)) {
+                paramLink = args.getString(BUNDLE_LINK);
+
+                result.putBoolean(RESULT_POST_LINK, true);
+            } else {
+                result.putBoolean(RESULT_POST_LINK, false);
+            }
+
             try {
                 StatusUpdate status = new StatusUpdate(paramMessage);
 
                 if (paramPhotoPath != null) {
                     status.setMedia(new File(paramPhotoPath));
+                }
+                if (paramLink != null) {
+                    status = new StatusUpdate(paramMessage + " " + paramLink);
                 }
 
                 mTwitter.updateStatus(status);
@@ -575,7 +595,14 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
 
         @Override
         protected void onPostExecute(Bundle result) {
-            String requestID = result.getBoolean(RESULT_POST_PHOTO) ? REQUEST_POST_PHOTO : REQUEST_POST_MESSAGE;
+            String requestID = null;
+            if(result.getBoolean(RESULT_POST_PHOTO)){
+                requestID = REQUEST_POST_PHOTO;
+            } else if (result.getBoolean(RESULT_POST_LINK)) {
+                requestID = REQUEST_POST_LINK;
+            } else {
+                requestID = REQUEST_POST_MESSAGE;
+            }
 
             mRequests.remove(requestID);
 
@@ -594,7 +621,6 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
 
         @Override
         protected void onCancelled() {
-//            Log.d(TAG, "RequestUpdateStatusAsyncTask.onCancelled");
         }
     }
 

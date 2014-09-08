@@ -22,8 +22,8 @@ public class Constants {
             "Post Dialog"};
     public static final SharePost[] fbShareNum ={SharePost.POST_MESSAGE,SharePost.POST_PHOTO,
             SharePost.POST_LINK,SharePost.POST_DIALOG};
-    public static final String[] twShare ={"Tweet","Tweet with image"};
-    public static final SharePost[] twShareNum ={SharePost.POST_MESSAGE,SharePost.POST_PHOTO};
+    public static final String[] twShare ={"Tweet","Tweet with image","Tweet with link"};
+    public static final SharePost[] twShareNum ={SharePost.POST_MESSAGE,SharePost.POST_PHOTO,SharePost.POST_LINK};
     public static final String[] gpShare ={"Share Dialog"};
     public static final SharePost[] gpShareNum ={SharePost.POST_DIALOG};
     public static final String[] inShare ={"Post status update", "Post share Link"};
