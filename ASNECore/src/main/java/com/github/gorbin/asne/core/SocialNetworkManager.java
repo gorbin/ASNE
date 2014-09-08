@@ -77,11 +77,10 @@ public class SocialNetworkManager extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
         for (SocialNetwork socialNetwork : mSocialNetworksMap.values()) {
             socialNetwork.onSaveInstanceState(outState);
         }
+        super.onSaveInstanceState(outState);
     }
 
     @Override

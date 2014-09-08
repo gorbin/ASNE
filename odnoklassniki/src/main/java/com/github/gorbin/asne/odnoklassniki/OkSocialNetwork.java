@@ -138,8 +138,7 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
                 .remove(TOKEN)
                 .apply();
         mOdnoklassniki.clearTokens(activity);
-        mOdnoklassniki.removeTokenRequestListener();
-
+//        mOdnoklassniki.removeTokenRequestListener();
     }
 
     @Override
