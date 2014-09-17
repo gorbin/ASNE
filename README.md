@@ -98,7 +98,25 @@ Firstly, you need to create app in social network. You can read about main steps
  - [Vkontakte](https://github.com/gorbin/ASNE/wiki/Create-Vkontakte-App) 
  - [Odnoklassniki](https://github.com/gorbin/ASNE/wiki/Create-Odnoklassniki-App)
 
-Second, you need to initialize `mSocialNetworkManager`, it contain common interface for all ASNE social network modules. Initialize chosen social network and add social network to SocialNetworkManager(example: FacebookSocialNetwork):
+Second, we need to catch response after login via social network login dialog:
+
+```java
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
+    /**
+     * This is required only if you are using Google Plus, the issue is that there SDK
+     * require Activity to launch Auth, so library can't receive onActivityResult in fragment
+     */
+    Fragment fragment = getSupportFragmentManager().findFragmentByTag(BaseDemoFragment.SOCIAL_NETWORK_TAG);
+    if (fragment != null) {
+            fragment.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+```
+
+Then, you need to initialize `mSocialNetworkManager`, it contain common interface for all ASNE social network modules. Initialize chosen social network and add social network to SocialNetworkManager(example: FacebookSocialNetwork):
 
 ```java
 mSocialNetworkManager = (SocialNetworkManager) getFragmentManager().findFragmentByTag(SOCIAL_NETWORK_TAG);
@@ -141,23 +159,6 @@ Or get Social network directly like:
 
 Important
 =====================
-
-**If you want to use Google Plus, add this to your MainActivity:**
-```java
-@Override
-protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-
-    /**
-     * This is required only if you are using Google Plus, the issue is that there SDK
-     * require Activity to launch Auth, so library can't receive onActivityResult in fragment
-     */
-    Fragment fragment = getSupportFragmentManager().findFragmentByTag(BaseDemoFragment.SOCIAL_NETWORK_TAG);
-    if (fragment != null) {
-            fragment.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-```
 
 **Facebook Upgrades**
 
