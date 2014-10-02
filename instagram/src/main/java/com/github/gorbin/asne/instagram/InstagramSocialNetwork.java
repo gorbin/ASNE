@@ -43,20 +43,21 @@ import java.util.UUID;
 import javax.net.ssl.HttpsURLConnection;
 
 public class InstagramSocialNetwork extends OAuthSocialNetwork {
+    /*** Social network ID in asne modules, should be unique*/
     public static final int ID = 7;
     private static final String SAVE_STATE_KEY_OAUTH_TOKEN = "InstagramSocialNetwork.SAVE_STATE_KEY_OAUTH_TOKEN";
     private static final String SAVE_STATE_KEY_OAUTH_REQUEST_TOKEN = "InstagramSocialNetwork.SAVE_STATE_KEY_OAUTH_SECRET";
     // max 16 bit to use in startActivityForResult
     private static final int REQUEST_AUTH = UUID.randomUUID().hashCode() & 0xFFFF;
     private static final String INSTAGRAM_TOKENURL ="https://api.instagram.com/oauth/access_token";
-    public static final String INSTAGRAM_APIURL = "https://api.instagram.com/v1";
+    private static final String INSTAGRAM_APIURL = "https://api.instagram.com/v1";
+    private static final String ERROR_CODE = "InstagramSocialNetwork.ERROR_CODE";
     private final String INSTAGRAM_CALLBACK_URL = "oauth://ASNE";
     private final String authURLString;
     private final String tokenURLString;
     private final String clientId;
     private final String clientSecret;
     private boolean restart = false;
-    private static final String ERROR_CODE = "InstagramSocialNetwork.ERROR_CODE";
     private Bundle requestBundle;
 
     public InstagramSocialNetwork(Fragment fragment, String clientId, String clientSecret, String scope) {
@@ -79,6 +80,10 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                 + clientSecret + "&redirect_uri=" + INSTAGRAM_CALLBACK_URL + "&grant_type=authorization_code";
     }
 
+    /**
+     * Check is social network connected
+     * @return true if connected to Instagram and false if not
+     */
     @Override
     public boolean isConnected() {
         String accessToken = mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null);
@@ -86,6 +91,10 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
         return accessToken != null && requestToken != null;
     }
 
+    /**
+     * Make login request - authorize in Instagram social network
+     * @param onLoginCompleteListener listener to trigger when Login complete
+     */
     @Override
     public void requestLogin(OnLoginCompleteListener onLoginCompleteListener) {
         super.requestLogin(onLoginCompleteListener);
@@ -99,6 +108,9 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
         mSocialNetworkManager.getActivity().startActivityForResult(intent, REQUEST_AUTH);
     }
 
+    /**
+     * Logout from Instagram social network
+     */
     @Override
     public void logout() {
         mSharedPreferences.edit()
@@ -107,11 +119,19 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                 .apply();
     }
 
+    /**
+     * Get id of Instagram social network
+     * @return Social network id for Instagram = 7
+     */
     @Override
     public int getID() {
         return ID;
     }
 
+    /**
+     * Method to get AccessToken of Instagram social network
+     * @return {@link com.github.gorbin.asne.core.AccessToken}
+     */
     @Override
     public AccessToken getAccessToken() {
         return new com.github.gorbin.asne.core.AccessToken(
@@ -120,6 +140,10 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
         );
     }
 
+    /**
+     * Request {@link com.github.gorbin.asne.core.AccessToken} of Instagram social network that you can get from onRequestAccessTokenCompleteListener
+     * @param onRequestAccessTokenCompleteListener listener for {@link com.github.gorbin.asne.core.AccessToken} request
+     */
     @Override
     public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
         super.requestAccessToken(onRequestAccessTokenCompleteListener);
@@ -130,12 +154,21 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                 ));
     }
 
+    /**
+     * Request current user {@link com.github.gorbin.asne.core.persons.SocialPerson}
+     * @param onRequestSocialPersonCompleteListener listener for {@link com.github.gorbin.asne.core.persons.SocialPerson} request
+     */
     @Override
     public void requestCurrentPerson(OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
         super.requestCurrentPerson(onRequestSocialPersonCompleteListener);
         executeRequest(new RequestGetSocialPersonAsyncTask(), null, REQUEST_GET_CURRENT_PERSON);
     }
 
+    /**
+     * Request {@link com.github.gorbin.asne.core.persons.SocialPerson} by user id
+     * @param userID id of Instagram user
+     * @param onRequestSocialPersonCompleteListener listener for {@link com.github.gorbin.asne.core.persons.SocialPerson} request
+     */
     @Override
     public void requestSocialPerson(String userID, OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
         super.requestSocialPerson(userID, onRequestSocialPersonCompleteListener);
@@ -147,6 +180,11 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
         executeRequest(new RequestGetSocialPersonAsyncTask(), args, REQUEST_GET_PERSON);
     }
 
+    /**
+     * Request ArrayList of {@link com.github.gorbin.asne.core.persons.SocialPerson} by array of userIds
+     * @param userID array of Instagram users id
+     * @param onRequestSocialPersonsCompleteListener listener for array of {@link com.github.gorbin.asne.core.persons.SocialPerson} request
+     */
     @Override
     public void requestSocialPersons(String[] userID, OnRequestSocialPersonsCompleteListener onRequestSocialPersonsCompleteListener) {
         super.requestSocialPersons(userID, onRequestSocialPersonsCompleteListener);
@@ -155,6 +193,11 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
         executeRequest(new RequestSocialPersonsAsyncTask(), args, REQUEST_GET_PERSONS);
     }
 
+    /**
+     * Request user {@link com.github.gorbin.asne.instagram.InstagramPerson} by userId - detailed user data
+     * @param userId id of Instagram user
+     * @param onRequestDetailedSocialPersonCompleteListener listener for {@link com.github.gorbin.asne.instagram.InstagramPerson} request
+     */
     @Override
     public void requestDetailedSocialPerson(String userId, OnRequestDetailedSocialPersonCompleteListener onRequestDetailedSocialPersonCompleteListener) {
         super.requestDetailedSocialPerson(userId, onRequestDetailedSocialPersonCompleteListener);
@@ -206,12 +249,23 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
         return instagramPerson;
     }
 
+    /**
+     * Post message to social network
+     * @param message  message that should be shared
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostMessage(String message, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostMessage(message, onPostingCompleteListener);
         throw new SocialNetworkException("requestPostMessage isn't allowed for InstagramSocialNetwork");
     }
 
+    /**
+     * Post photo to social network
+     * @param photo photo that should be shared
+     * @param message message that should be shared with photo
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostPhoto(File photo, String message, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostPhoto(photo, message, onPostingCompleteListener);
@@ -232,16 +286,34 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
         mLocalListeners.remove(REQUEST_POST_PHOTO);
     }
 
+    /**
+     * Not supported via Instagram api.
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param bundle bundle containing information that should be shared(Bundle constants in {@link com.github.gorbin.asne.core.SocialNetwork})
+     * @param message message that should be shared with bundle
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostLink(Bundle bundle, String message, OnPostingCompleteListener onPostingCompleteListener) {
         throw new SocialNetworkException("requestPostLink isn't allowed for InstagramSocialNetwork");
     }
 
+    /**
+     * Not supported via Instagram api.
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param bundle bundle containing information that should be shared(Bundle constants in {@link com.github.gorbin.asne.core.SocialNetwork})
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostDialog(Bundle bundle, OnPostingCompleteListener onPostingCompleteListener) {
         throw new SocialNetworkException("requestPostDialog isn't allowed for InstagramSocialNetwork");
     }
 
+    /**
+     * Check if user by id is friend of current user
+     * @param userID user id that should be checked as friend of current user
+     * @param onCheckIsFriendCompleteListener listener for checking friend request
+     */
     @Override
     public void requestCheckIsFriend(String userID, OnCheckIsFriendCompleteListener onCheckIsFriendCompleteListener) {
         super.requestCheckIsFriend(userID, onCheckIsFriendCompleteListener);
@@ -249,12 +321,21 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
         args.putString(RequestCheckIsFriendAsyncTask.PARAM_USER_ID, userID);
         executeRequest(new RequestCheckIsFriendAsyncTask(), args, REQUEST_CHECK_IS_FRIEND);    }
 
+    /**
+     * Get current user friends list
+     * @param onRequestGetFriendsCompleteListener listener for getting list of current user friends
+     */
     @Override
     public void requestGetFriends(OnRequestGetFriendsCompleteListener onRequestGetFriendsCompleteListener) {
         super.requestGetFriends(onRequestGetFriendsCompleteListener);
         executeRequest(new RequestGetFriendsAsyncTask(), null, REQUEST_GET_FRIENDS);
     }
 
+    /**
+     * Invite friend by id to current user
+     * @param userID id of user that should be invited
+     * @param onRequestAddFriendCompleteListener listener for invite result
+     */
     @Override
     public void requestAddFriend(String userID, OnRequestAddFriendCompleteListener onRequestAddFriendCompleteListener) {
         super.requestAddFriend(userID, onRequestAddFriendCompleteListener);
@@ -263,6 +344,11 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
         executeRequest(new RequestAddFriendAsyncTask(), args, REQUEST_ADD_FRIEND);
     }
 
+    /**
+     * Remove friend by id from current user friends
+     * @param userID user id that should be removed from friends
+     * @param onRequestRemoveFriendCompleteListener listener to remove friend request response
+     */
     @Override
     public void requestRemoveFriend(String userID, OnRequestRemoveFriendCompleteListener onRequestRemoveFriendCompleteListener) {
         super.requestRemoveFriend(userID, onRequestRemoveFriendCompleteListener);
@@ -271,6 +357,12 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
         executeRequest(new RequestRemoveFriendAsyncTask(), args, REQUEST_REMOVE_FRIEND);
     }
 
+    /**
+     * Overrided for Instagram support
+     * @param requestCode The integer request code originally supplied to startActivityForResult(), allowing you to identify who this result came from.
+     * @param resultCode The integer result code returned by the child activity through its setResult().
+     * @param data An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         int sanitizedRequestCode = requestCode % 0x10000;
@@ -295,12 +387,15 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
         }
     }
 
+    /**
+     * Cancel login request
+     */
     @Override
     public void cancelLoginRequest() {
         super.cancelLoginRequest();
     }
 
-    public String streamToString(InputStream p_is) {
+    private String streamToString(InputStream p_is) {
         try {
             BufferedReader m_br;
             StringBuilder m_outString = new StringBuilder();
@@ -318,7 +413,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
         }
     }
 
-    public String checkInputStream(HttpURLConnection connection){
+    private String checkInputStream(HttpURLConnection connection){
         String errorType = null, code = null, errorMessage = null;
         InputStream inputStream = connection.getErrorStream();
         String response = streamToString(inputStream);

@@ -40,6 +40,7 @@ import twitter4j.auth.RequestToken;
 import twitter4j.conf.ConfigurationBuilder;
 
 public class TwitterSocialNetwork extends OAuthSocialNetwork {
+    /*** Social network ID in asne modules, should be unique*/
     public static final int ID = 1;
     private static final String SAVE_STATE_KEY_OAUTH_TOKEN = "TwitterSocialNetwork.SAVE_STATE_KEY_OAUTH_TOKEN";
     private static final String SAVE_STATE_KEY_OAUTH_SECRET = "TwitterSocialNetwork.SAVE_STATE_KEY_OAUTH_SECRET";
@@ -90,6 +91,10 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
         }
     }
 
+    /**
+     * Check is social network connected
+     * @return true if connected to Twitter social network and false if not
+     */
     @Override
     public boolean isConnected() {
         String accessToken = mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null);
@@ -97,12 +102,19 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
         return accessToken != null && accessTokenSecret != null;
     }
 
+    /**
+     * Make login request - authorize in Twitter social network
+     * @param onLoginCompleteListener listener to trigger when Login complete
+     */
     @Override
     public void requestLogin(OnLoginCompleteListener onLoginCompleteListener) {
         super.requestLogin(onLoginCompleteListener);
         executeRequest(new RequestLoginAsyncTask(), null, REQUEST_LOGIN);
     }
 
+    /**
+     * Logout from Twitter social network
+     */
     @Override
     public void logout() {
         mSharedPreferences.edit()
@@ -115,11 +127,19 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
         initTwitterClient();
     }
 
+    /**
+     * Get id of Twitter social network
+     * @return Social network id for Twitter = 1
+     */
     @Override
     public int getID() {
         return ID;
     }
 
+    /**
+     * Method to get AccessToken of Twitter social network
+     * @return {@link com.github.gorbin.asne.core.AccessToken}
+     */
     @Override
     public com.github.gorbin.asne.core.AccessToken getAccessToken() {
         return new com.github.gorbin.asne.core.AccessToken(
@@ -128,6 +148,10 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
         );
     }
 
+    /**
+     * Request {@link com.github.gorbin.asne.core.AccessToken} of Twitter social network that you can get from onRequestAccessTokenCompleteListener
+     * @param onRequestAccessTokenCompleteListener listener for {@link com.github.gorbin.asne.core.AccessToken} request
+     */
     @Override
     public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
         super.requestAccessToken(onRequestAccessTokenCompleteListener);
@@ -138,12 +162,21 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
                 ));
     }
 
+    /**
+     * Request current user {@link com.github.gorbin.asne.core.persons.SocialPerson}
+     * @param onRequestSocialPersonCompleteListener listener for request {@link com.github.gorbin.asne.core.persons.SocialPerson}
+     */
     @Override
     public void requestCurrentPerson(OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
         super.requestCurrentPerson(onRequestSocialPersonCompleteListener);
         executeRequest(new RequestGetSocialPersonAsyncTask(), null, REQUEST_GET_CURRENT_PERSON);
     }
 
+    /**
+     * Request {@link com.github.gorbin.asne.core.persons.SocialPerson} by user id
+     * @param userID id of Twitter user
+     * @param onRequestSocialPersonCompleteListener listener for {@link com.github.gorbin.asne.core.persons.SocialPerson} request
+     */
 	@Override
     public void requestSocialPerson(String userID, OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
         super.requestSocialPerson(userID, onRequestSocialPersonCompleteListener);
@@ -159,6 +192,11 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
         executeRequest(new RequestGetSocialPersonAsyncTask(), args, REQUEST_GET_PERSON);
     }
 
+    /**
+     * Request ArrayList of {@link com.github.gorbin.asne.core.persons.SocialPerson} by array of userIds
+     * @param userID array of user ids in social network
+     * @param onRequestSocialPersonsCompleteListener listener for request ArrayList of {@link com.github.gorbin.asne.core.persons.SocialPerson}
+     */
     @Override
     public void requestSocialPersons(String[] userID, OnRequestSocialPersonsCompleteListener onRequestSocialPersonsCompleteListener) {
         super.requestSocialPersons(userID, onRequestSocialPersonsCompleteListener);
@@ -183,6 +221,11 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
         executeRequest(new RequestSocialPersonsAsyncTask(), args, REQUEST_GET_PERSON);
     }
 
+    /**
+     * Request user {@link com.github.gorbin.asne.twitter.TwitterPerson} by userId - detailed user data
+     * @param userId id of Twitter user
+     * @param onRequestDetailedSocialPersonCompleteListener listener for request detailed social person
+     */
     @Override
     public void requestDetailedSocialPerson(String userId, OnRequestDetailedSocialPersonCompleteListener onRequestDetailedSocialPersonCompleteListener) {
         super.requestDetailedSocialPerson(userId, onRequestDetailedSocialPersonCompleteListener);
@@ -226,6 +269,11 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
         return  twitterPerson;
     }
 
+    /**
+     * Post message to social network
+     * @param message  message that should be shared
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostMessage(String message, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostMessage(message, onPostingCompleteListener);
@@ -236,6 +284,12 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
         executeRequest(new RequestUpdateStatusAsyncTask(), args, REQUEST_POST_MESSAGE);
     }
 
+    /**
+     * Post photo with message to social network
+     * @param photo photo that should be shared
+     * @param message message that should be shared with photo
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostPhoto(File photo, String message, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostPhoto(photo, message, onPostingCompleteListener);
@@ -245,22 +299,36 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
         executeRequest(new RequestUpdateStatusAsyncTask(), args, REQUEST_POST_PHOTO);
     }
 
+    /**
+     * Post link with message
+     * @param bundle bundle containing information that should be shared(Bundle constants in {@link com.github.gorbin.asne.core.SocialNetwork})
+     * @param message message that should be shared with bundle
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostLink(Bundle bundle, String message, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostLink(bundle, message, onPostingCompleteListener);
         Bundle args = bundle;
         args.putString(RequestUpdateStatusAsyncTask.PARAM_MESSAGE, message);
-
         executeRequest(new RequestUpdateStatusAsyncTask(), args, REQUEST_POST_LINK);
-
-//        throw new SocialNetworkException("requestPostLink isn't allowed for TwitterSocialNetwork");
     }
-    
+
+    /**
+     * Not supported via Twitter api - in development
+     * @throws SocialNetworkException
+     * @param bundle bundle containing information that should be shared(Bundle constants in {@link com.github.gorbin.asne.core.SocialNetwork})
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostDialog(Bundle bundle, OnPostingCompleteListener onPostingCompleteListener) {
         throw new SocialNetworkException("requestPostDialog isn't allowed for TwitterSocialNetwork");
     }
 
+    /**
+     * Check if user by id is friend of current user
+     * @param userID user id that should be checked as friend of current user
+     * @param onCheckIsFriendCompleteListener listener for checking friend request
+     */
     @Override
     public void requestCheckIsFriend(String userID, OnCheckIsFriendCompleteListener onCheckIsFriendCompleteListener) {
         super.requestCheckIsFriend(userID, onCheckIsFriendCompleteListener);
@@ -273,12 +341,21 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
         executeRequest(new RequestCheckIsFriendAsyncTask(), args, REQUEST_CHECK_IS_FRIEND);
     }
 
+    /**
+     * Get current user friends list
+     * @param onRequestGetFriendsCompleteListener listener for getting list of current user friends
+     */
     @Override
     public void requestGetFriends(OnRequestGetFriendsCompleteListener onRequestGetFriendsCompleteListener) {
         super.requestGetFriends(onRequestGetFriendsCompleteListener);
         executeRequest(new RequestGetFriendsAsyncTask(), null, REQUEST_GET_FRIENDS);
     }
 
+    /**
+     * Follow friend by id to current user
+     * @param userID id of user that should be invited
+     * @param onRequestAddFriendCompleteListener listener for invite result
+     */
     @Override
     public void requestAddFriend(String userID, OnRequestAddFriendCompleteListener onRequestAddFriendCompleteListener) {
         super.requestAddFriend(userID, onRequestAddFriendCompleteListener);
@@ -291,6 +368,11 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
         executeRequest(new RequestAddFriendAsyncTask(), args, REQUEST_ADD_FRIEND);
     }
 
+    /**
+     * Remove follows by id from current user
+     * @param userID user id that should be removed from friends
+     * @param onRequestRemoveFriendCompleteListener listener to remove friend request response
+     */
     @Override
     public void requestRemoveFriend(String userID, OnRequestRemoveFriendCompleteListener onRequestRemoveFriendCompleteListener) {
         super.requestRemoveFriend(userID, onRequestRemoveFriendCompleteListener);
@@ -303,6 +385,12 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
         executeRequest(new RequestRemoveFriendAsyncTask(), args, REQUEST_REMOVE_FRIEND);
     }
 
+    /**
+     * Overrided for Twitter support
+     * @param requestCode The integer request code originally supplied to startActivityForResult(), allowing you to identify who this result came from.
+     * @param resultCode The integer result code returned by the child activity through its setResult().
+     * @param data An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         int sanitizedRequestCode = requestCode % 0x10000;
@@ -336,6 +424,9 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
         }
     }
 
+    /**
+     * Cancel login request
+     */
     @Override
     public void cancelLoginRequest() {
         super.cancelLoginRequest();

@@ -17,12 +17,17 @@ public class InstagramPerson extends SocialPerson implements Parcelable {
             return new InstagramPerson[size];
         }
     };
-
+    /*** Bio of social person*/
     public String bio;
+    /*** Website of social person from user contacts*/
     public String website;
+    /*** Full name of social person*/
     public String fullName;
+    /*** Count of social person's media*/
     public int media;
+    /*** Count of social person's followers*/
     public int followedBy;
+    /*** Count of social person's follows*/
     public int follows;
 
     public InstagramPerson() {

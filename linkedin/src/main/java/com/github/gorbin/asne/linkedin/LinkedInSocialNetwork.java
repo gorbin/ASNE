@@ -48,18 +48,17 @@ import java.util.Set;
 import java.util.UUID;
 
 public class LinkedInSocialNetwork extends OAuthSocialNetwork {
+    /*** Social network ID in asne modules, should be unique*/
     public static final int ID = 2;
 
-    public static final String OAUTH_CALLBACK_SCHEME = "x-oauthflow-linkedin";
-    public static final String OAUTH_CALLBACK_HOST = "linkedinApiTestCallback";
-    public static final String OAUTH_CALLBACK_URL = String.format("%s://%s", OAUTH_CALLBACK_SCHEME, OAUTH_CALLBACK_HOST);
-    public static final String OAUTH_QUERY_TOKEN = "oauth_token";
-    public static final String OAUTH_QUERY_VERIFIER = "oauth_verifier";
-    public static final String OAUTH_QUERY_PROBLEM = "oauth_problem";
+    private static final String OAUTH_CALLBACK_SCHEME = "x-oauthflow-linkedin";
+    private static final String OAUTH_CALLBACK_HOST = "linkedinApiTestCallback";
+    private static final String OAUTH_CALLBACK_URL = String.format("%s://%s", OAUTH_CALLBACK_SCHEME, OAUTH_CALLBACK_HOST);
+    private static final String OAUTH_QUERY_TOKEN = "oauth_token";
+    private static final String OAUTH_QUERY_VERIFIER = "oauth_verifier";
+    private static final String OAUTH_QUERY_PROBLEM = "oauth_problem";
     private static final String SAVE_STATE_KEY_OAUTH_TOKEN = "LinkedInSocialNetwork.SAVE_STATE_KEY_OAUTH_TOKEN";
     private static final String SAVE_STATE_KEY_OAUTH_SECRET = "LinkedInSocialNetwork.SAVE_STATE_KEY_OAUTH_SECRET";
-    //    internal server error
-//    private static final EnumSet<ProfileField> PROFILE_PARAMETERS = EnumSet.allOf(ProfileField.class);
     private static final EnumSet<ProfileField> PROFILE_PARAMETERS = EnumSet.of(
             ProfileField.ID,
             ProfileField.FIRST_NAME,
@@ -99,6 +98,10 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
         mLinkedInApiClientFactory = LinkedInApiClientFactory.newInstance(consumerKey, consumerSecret);
     }
 
+    /**
+     * Check is social network connected
+     * @return true if connected to LinkedIn social network and false if not
+     */
     @Override
     public boolean isConnected() {
         String accessToken = mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null);
@@ -106,22 +109,37 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
         return accessToken != null && accessTokenSecret != null;
     }
 
+    /**
+     * Make login request - authorize in LinkedIn social network
+     * @param onLoginCompleteListener listener to trigger when Login complete
+     */
     @Override
     public void requestLogin(OnLoginCompleteListener onLoginCompleteListener) {
         super.requestLogin(onLoginCompleteListener);
         executeRequest(new RequestLoginAsyncTask(), null, REQUEST_LOGIN);
     }
 
+    /**
+     * Logout from LinkedIn social network
+     */
     @Override
     public void logout() {
         fatalError();
     }
 
+    /**
+     * Get id of LinkedIn social network
+     * @return Social network id for LinkedIn = 2
+     */
     @Override
     public int getID() {
         return ID;
     }
 
+    /**
+     * Method to get AccessToken of LinkedIn social network
+     * @return {@link com.github.gorbin.asne.core.AccessToken}
+     */
     @Override
     public AccessToken getAccessToken() {
         return new AccessToken(
@@ -130,6 +148,10 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
         );
     }
 
+    /**
+     * Request {@link com.github.gorbin.asne.core.AccessToken} of LinkedIn social network that you can get from onRequestAccessTokenCompleteListener
+     * @param onRequestAccessTokenCompleteListener listener for {@link com.github.gorbin.asne.core.AccessToken} request
+     */
     @Override
     public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
         super.requestAccessToken(onRequestAccessTokenCompleteListener);
@@ -140,12 +162,21 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
                 ));
     }
 
+    /**
+     * Request current user {@link com.github.gorbin.asne.core.persons.SocialPerson}
+     * @param onRequestSocialPersonCompleteListener listener for {@link com.github.gorbin.asne.core.persons.SocialPerson} request
+     */
     @Override
     public void requestCurrentPerson(OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
         super.requestCurrentPerson(onRequestSocialPersonCompleteListener);
         executeRequest(new RequestSocialPersonAsyncTask(), null, REQUEST_GET_CURRENT_PERSON);
     }
 
+    /**
+     * Request {@link com.github.gorbin.asne.core.persons.SocialPerson} by user id
+     * @param userID user id in social network
+     * @param onRequestSocialPersonCompleteListener listener for request {@link com.github.gorbin.asne.core.persons.SocialPerson}
+     */
     @Override
     public void requestSocialPerson(String userID, OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
         super.requestSocialPerson(userID, onRequestSocialPersonCompleteListener);
@@ -157,11 +188,22 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
         executeRequest(new RequestSocialPersonAsyncTask(), args, REQUEST_GET_PERSON);
     }
 
+    /**
+     * Not supported via LinkedIn api
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param userID array of user ids in social network
+     * @param onRequestSocialPersonsCompleteListener listener for request ArrayList of {@link com.github.gorbin.asne.core.persons.SocialPerson}
+     */
     @Override
     public void requestSocialPersons(String[] userID, OnRequestSocialPersonsCompleteListener onRequestSocialPersonsCompleteListener) {
         throw new SocialNetworkException("requestSocialPersons isn't allowed for LinkedInSocialNetwork");
     }
 
+    /**
+     * Request user {@link com.github.gorbin.asne.linkedin.LinkedInPerson} by userId - detailed user data
+     * @param userId id of LinkedIn user
+     * @param onRequestDetailedSocialPersonCompleteListener listener for request detailed social person
+     */
     @Override
     public void requestDetailedSocialPerson(String userId, OnRequestDetailedSocialPersonCompleteListener onRequestDetailedSocialPersonCompleteListener) {
         super.requestDetailedSocialPerson(userId, onRequestDetailedSocialPersonCompleteListener);
@@ -218,6 +260,11 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
         return  linkedinPerson;
     }
 
+    /**
+     * Post message to social network
+     * @param message  message that should be shared
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostMessage(String message, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostMessage(message, onPostingCompleteListener);
@@ -226,22 +273,46 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
         executeRequest(new RequestPostMessageAsyncTask(), args, REQUEST_POST_MESSAGE);
     }
 
+    /**
+     * Not supported via LinkedIn api
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param photo photo that should be shared
+     * @param message message that should be shared with photo
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostPhoto(File photo, String message, OnPostingCompleteListener onPostingCompleteListener) {
         throw new SocialNetworkException("requestPostPhoto isn't allowed for LinkedInSocialNetwork");
     }
 
+    /**
+     * Post link with comment to social network
+     * @param bundle bundle containing information that should be shared(Bundle constants in {@link com.github.gorbin.asne.core.SocialNetwork})
+     * @param message message that should be shared with bundle
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostLink(Bundle bundle, String message, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostLink(bundle, message, onPostingCompleteListener);
         executeRequest(new RequestPostLinkAsyncTask(), bundle, REQUEST_POST_LINK);
     }
 
+    /**
+     * Not supported via LinkedIn api
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param bundle bundle containing information that should be shared(Bundle constants in {@link com.github.gorbin.asne.core.SocialNetwork})
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostDialog(Bundle bundle, OnPostingCompleteListener onPostingCompleteListener) {
         throw new SocialNetworkException("requestPostDialog isn't allowed for LinkedInSocialNetwork");
     }
 
+    /**
+     * Check if user by id is friend of current user
+     * @param userID user id that should be checked as friend of current user
+     * @param onCheckIsFriendCompleteListener listener for checking friend request
+     */
     @Override
     public void requestCheckIsFriend(String userID, OnCheckIsFriendCompleteListener onCheckIsFriendCompleteListener) {
         super.requestCheckIsFriend(userID, onCheckIsFriendCompleteListener);
@@ -251,12 +322,21 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
         executeRequest(new RequestCheckIsFriendAsyncTask(), args, REQUEST_CHECK_IS_FRIEND);
     }
 
+    /**
+     * Get current user friends list
+     * @param onRequestGetFriendsCompleteListener listener for getting list of current user friends
+     */
     @Override
     public void requestGetFriends(OnRequestGetFriendsCompleteListener onRequestGetFriendsCompleteListener) {
         super.requestGetFriends(onRequestGetFriendsCompleteListener);
         executeRequest(new RequestGetFriendsAsyncTask(), null, REQUEST_GET_FRIENDS);
     }
 
+    /**
+     * Invite friend by id to current user
+     * @param userID id of user that should be invited
+     * @param onRequestAddFriendCompleteListener listener for invite result
+     */
     @Override
     public void requestAddFriend(String userID, OnRequestAddFriendCompleteListener onRequestAddFriendCompleteListener) {
         super.requestAddFriend(userID, onRequestAddFriendCompleteListener);
@@ -265,11 +345,23 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
         executeRequest(new RequestSendInviteAsyncTask(), args, REQUEST_ADD_FRIEND);
     }
 
+    /**
+     * Not supported via LinkedIn api
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param userID user id that should be removed from friends
+     * @param onRequestRemoveFriendCompleteListener listener to remove friend request response
+     */
     @Override
     public void requestRemoveFriend(String userID, OnRequestRemoveFriendCompleteListener onRequestRemoveFriendCompleteListener) {
         throw new SocialNetworkException("requestRemoveFriend isn't allowed for LinkedInSocialNetwork");
     }
 
+    /**
+     * Overrided for LinkedIn support
+     * @param requestCode The integer request code originally supplied to startActivityForResult(), allowing you to identify who this result came from.
+     * @param resultCode The integer result code returned by the child activity through its setResult().
+     * @param data An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         int sanitizedRequestCode = requestCode % 0x10000;

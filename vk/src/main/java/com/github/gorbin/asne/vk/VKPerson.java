@@ -17,25 +17,40 @@ public class VKPerson extends SocialPerson implements Parcelable {
             return new VKPerson[size];
         }
     };
-
+    /*** Sex of social person.  1 - female, 2 - male, 0 - not presented. */
     public int sex;
+    /*** Birthday of social person like dd.MM.yyyy or dd.mm if year not permitted*/
     public String birthday;
+    /*** City of social person from user contacts*/
     public String city;
+    /*** Country of social person from user contacts*/
     public String country;
+    /*** Max sized image url of social person avatar*/
     public String photoMaxOrig;
+    /*** Is social person online now. 1 - true, 0 - false*/
     public boolean online;
+    /*** Username of social person*/
     public String username;
+    /*** If social person has mobile. 1 - true, 0 - false*/
     public boolean hasMobile;
+    /*** Mobile phone of social person from contacts*/
     public String mobilePhone;
+    /*** Home phone of social person from contacts*/
     public String homePhone;
+    /*** University name of social person*/
     public String universityName;
+    /*** Faculty name of social person*/
     public String facultyName;
+    /*** Year when social person was\will graduate*/
     public String graduationYear;
+    /*** Current social person status*/
     public String status;
+    /*** Is it permitted to post on social person wall*/
     public boolean canPost;
+    /*** Is it permitted to see all posts from social person wall*/
     public boolean canSeeAllPosts;
+    /*** Is it permitted to write private messages to social person*/
     public boolean canWritePrivateMessage;
-
 
 
     public VKPerson() {

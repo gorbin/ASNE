@@ -18,21 +18,37 @@ public class LinkedInPerson extends SocialPerson implements Parcelable {
         }
     };
 
+    /*** Current organization with which this person is associated.*/
     public String company;
+    /*** The person's job title or role within the organization.*/
     public String position;
+    /*** First name of social person*/
     public String firstName;
+    /*** Last name of social person*/
 	public String lastName;
+    /*** Headline of social person*/
 	public String headLine;
+    /*** Postal code of social person from contacts*/
 	public String postalCode;
+    /*** Location description of social person from contacts*/
 	public String locationDescription;
+    /*** Location address of social person from contacts*/
 	public String locationAddress;
+    /*** The person's job industry within the organization.*/
 	public String industry;
+    /*** Summary of social person*/
 	public String summary;
+    /*** Birthday of social person in the format MM/DD/YYYY*/
 	public String birthday;
+    /*** Main address of social person from contacts*/
 	public String mainAdress;
+    /*** Current status of social person*/
 	public String currentStatus;
+    /*** Interests of social person*/
 	public String interests;
+    /*** Specialties of social person*/
 	public String specialties;
+    /*** Phone of social person from contacts*/
     public String phone;
 	
     public LinkedInPerson() {

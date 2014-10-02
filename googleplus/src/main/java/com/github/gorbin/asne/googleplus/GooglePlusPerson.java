@@ -18,20 +18,35 @@ public class GooglePlusPerson extends SocialPerson implements Parcelable {
         }
     };
 
+    /*** About me string in google plus user profile*/
 	public String aboutMe;
+    /*** The person's date of birth, represented as YYYY-MM-DD.*/
 	public String birthday;
+    /*** The "bragging rights" line of this person.*/
 	public String braggingRights;
+    /*** The cover photo content.*/
 	public String coverURL;
+    /*** If a Google+ Page and for followers who are visible, the number of people who have added this page to a circle.*/
 	public int friendsCount;
+    /*** The current location for this person.*/
 	public String currentLocation;
+    /*** The person's gender. Possible values include, but are not limited to, the following values: - "male" - Male gender. - "female" - Female gender. - "other" - Other.*/
 	public int gender;
+    /*** The user's preferred language for rendering.*/
 	public String lang;
+    /*** The nickname of this person.*/
 	public String nickname;
+    /*** Type of person within Google+. Possible values include, but are not limited to, the following values: - "person" - represents an actual person. - "page" - represents a page.*/
 	public int objectType;
+    /*** Current organization with which this person is associated.*/
 	public String company;
+    /*** The person's job title or role within the organization.*/
 	public String position;
+    /*** Last place where this person has lived.*/
 	public String placeLivedValue;
+    /*** The person's relationship status. Possible values include, but are not limited to, the following values: - "single" - Person is single. - "in_a_relationship" - Person is in a relationship. - "engaged" - Person is engaged. - "married" - Person is married. - "its_complicated" - The relationship is complicated. - "open_relationship" - Person is in an open relationship. - "widowed" - Person is widowed. - "in_domestic_partnership" - Person is in a domestic partnership. - "in_civil_union" - Person is in a civil union.*/
 	public int relationshipStatus;
+    /*** The brief description (tagline) of this person.*/
 	public String tagline;
 
     public GooglePlusPerson() {

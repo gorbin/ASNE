@@ -17,18 +17,29 @@ public class TwitterPerson extends SocialPerson implements Parcelable {
             return new TwitterPerson[size];
         }
     };
-
+    /*** Date when profile was created*/
 	public Long createdDate;
+    /*** Description of twitter user*/
 	public String description;
+    /*** Count of favorites for twitter user*/
 	public int favoritesCount;
+    /*** Count of followers for twitter user*/
 	public int followersCount;
+    /*** Count of friends for twitter user*/
 	public int friendsCount;
+    /*** Preferred language for twitter user*/
 	public String lang;
+    /*** Location of twitter user*/
 	public String location;
+    /*** Screen name of twitter user*/
 	public String screenName;
+    /*** Last status of twitter user*/
 	public String status;
+    /*** Preferred timezone for twitter user*/
 	public String timezone;
+    /*** Check if twitter user is translator*/
 	public Boolean isTranslator;
+    /*** Check if twitter user is verified*/
 	public Boolean isVerified;
 
     public TwitterPerson() {

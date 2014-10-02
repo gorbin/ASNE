@@ -18,16 +18,27 @@ public class OkPerson extends SocialPerson implements Parcelable {
         }
     };
 
+    /*** First name of social person*/
 	public String firstName;
+    /*** Last name of social person*/
 	public String lastName;
+    /*** Sex of social person. female, male, not presented. */
 	public String gender;
+    /*** Birthday of social person*/
 	public String birthday;
+    /*** Age of social person*/
 	public String age;
-	public String locale; 
+    /*** Locale of social person*/
+	public String locale;
+    /*** Check if there is email*/
 	public boolean has_email;
+    /*** Current status of social person*/
 	public String current_status;
+    /*** Check online status of social person*/
 	public String online;
+    /*** City of social person from contacts*/
 	public String city;
+    /*** Country of social person from contacts*/
 	public String country; 
 	
     public OkPerson() {

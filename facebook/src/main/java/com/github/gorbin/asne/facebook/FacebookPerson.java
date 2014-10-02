@@ -18,12 +18,19 @@ public class FacebookPerson extends SocialPerson implements Parcelable {
         }
     };
 
+    /*** First name of social person*/
 	public String firstName;
+    /*** Middle name of social person*/
 	public String middleName;
+    /*** Last name of social person*/
 	public String lastName;
+    /*** Sex of social person*/
 	public String gender;
+    /*** Birthday of social person in the format MM/DD/YYYY*/
 	public String birthday;
+    /*** City of social person from user*/
 	public String city;
+    /*** Check if user is verified*/
     public String verified;
 
     public FacebookPerson() {

@@ -52,18 +52,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class VkSocialNetwork extends SocialNetwork {
+    /*** Social network ID in asne modules, should be unique*/
     public static final int ID = 5;
+    /*** Developer activity*/
     private Activity activity;
+    /*** VK app id*/
     private String key;
+    /*** VK access token*/
     private VKAccessToken accessToken;
+    /*** Id of current user*/
     private String userId;
+    /*** Permissions array*/
     private String[] permissions;
-    public VkSocialNetwork(Fragment fragment, String key, String[] permissions) {
-        super(fragment);
-        this.key = key;
-        this.permissions = permissions;
-    }
-
+    /*** VK SDK listener to catch authorization @see <a href="http://vkcom.github.io/vk-android-sdk/com/vk/sdk/VKSdkListener.html">VKSdkListener</a>*/
     private final VKSdkListener vkSdkListener = new VKSdkListener() {
         @Override
         public void onCaptchaError(VKError captchaError) {
@@ -99,6 +100,21 @@ public class VkSocialNetwork extends SocialNetwork {
         }
     };
 
+    public VkSocialNetwork(Fragment fragment, String key, String[] permissions) {
+        super(fragment);
+        this.key = key;
+        this.permissions = permissions;
+    }
+
+    private static boolean stringToBool(String s) {
+        if (s.equals("1"))
+            return true;
+        if (s.equals("0"))
+            return false;
+        throw new IllegalArgumentException(s+" is not a bool. Only 1 and 0 are.");
+    }
+
+    /*** Get current user id after authorization for inner use*/
     private void requestIdPerson() {
         VKRequest request = VKApi.users().get(VKParameters.from(VKApiConst.FIELDS,"id"));
         request.secure = false;
@@ -128,32 +144,55 @@ public class VkSocialNetwork extends SocialNetwork {
         });
     }
 
+    /**
+     * Check is social network connected
+     * @return true if connected to VK social network and false if not
+     */
     @Override
     public boolean isConnected() {
         return VKSdk.isLoggedIn();
     }
 
+    /**
+     * Make login request - authorize in VK social network
+     * @param onLoginCompleteListener listener to trigger when Login complete
+     */
     @Override
     public void requestLogin(OnLoginCompleteListener onLoginCompleteListener) {
         super.requestLogin(onLoginCompleteListener);
         VKSdk.authorize(permissions);
     }
 
+    /**
+     * Logout from VK social network
+     */
     @Override
     public void logout() {
         VKSdk.logout();
     }
 
+    /**
+     * Get id of VK social network
+     * @return Social network id for VK = 5
+     */
     @Override
     public int getID() {
         return ID;
     }
 
+    /**
+     * Method to get AccessToken of VK social network
+     * @return {@link com.github.gorbin.asne.core.AccessToken}
+     */
     @Override
     public AccessToken getAccessToken() {
         return new AccessToken(accessToken.toString(), null);
     }
 
+    /**
+     * Request {@link com.github.gorbin.asne.core.AccessToken} of VK social network that you can get from onRequestAccessTokenCompleteListener
+     * @param onRequestAccessTokenCompleteListener listener for {@link com.github.gorbin.asne.core.AccessToken} request
+     */
     @Override
     public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
         super.requestAccessToken(onRequestAccessTokenCompleteListener);
@@ -161,12 +200,21 @@ public class VkSocialNetwork extends SocialNetwork {
                 .onRequestAccessTokenComplete(getID(), new AccessToken(accessToken.toString(), null));
     }
 
+    /**
+     * Request current user {@link com.github.gorbin.asne.core.persons.SocialPerson}
+     * @param onRequestSocialPersonCompleteListener listener for {@link com.github.gorbin.asne.core.persons.SocialPerson} request
+     */
     @Override
     public void requestCurrentPerson(OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
         super.requestCurrentPerson(onRequestSocialPersonCompleteListener);
         requestSocialPerson(null, onRequestSocialPersonCompleteListener);
     }
 
+    /**
+     * Request {@link com.github.gorbin.asne.core.persons.SocialPerson} by user id
+     * @param userID id of VK user
+     * @param onRequestSocialPersonCompleteListener listener for {@link com.github.gorbin.asne.core.persons.SocialPerson} request
+     */
     @Override
     public void requestSocialPerson(String userID, OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
         super.requestSocialPerson(userID, onRequestSocialPersonCompleteListener);
@@ -215,6 +263,11 @@ public class VkSocialNetwork extends SocialNetwork {
         });
     }
 
+    /**
+     * Request ArrayList of {@link com.github.gorbin.asne.core.persons.SocialPerson} by array of userIds
+     * @param userID array of VK users id
+     * @param onRequestSocialPersonsCompleteListener listener for array of {@link com.github.gorbin.asne.core.persons.SocialPerson} request
+     */
     @Override
     public void requestSocialPersons(String[] userID, OnRequestSocialPersonsCompleteListener onRequestSocialPersonsCompleteListener) {
         super.requestSocialPersons(userID, onRequestSocialPersonsCompleteListener);
@@ -258,6 +311,11 @@ public class VkSocialNetwork extends SocialNetwork {
         });
     }
 
+    /**
+     * Request user {@link com.github.gorbin.asne.vk.VKPerson} by userId - detailed user data
+     * @param userId id of VK user
+     * @param onRequestDetailedSocialPersonCompleteListener listener for {@link com.github.gorbin.asne.vk.VKPerson} request
+     */
     @Override
     public void requestDetailedSocialPerson(String userId, OnRequestDetailedSocialPersonCompleteListener onRequestDetailedSocialPersonCompleteListener) {
         super.requestDetailedSocialPerson(userId, onRequestDetailedSocialPersonCompleteListener);
@@ -309,6 +367,13 @@ public class VkSocialNetwork extends SocialNetwork {
         });
     }
 
+    /**
+     * Get {@link com.github.gorbin.asne.core.persons.SocialPerson} from JSON response of VK
+     * @param socialPerson object that would be filled
+     * @param jsonResponse VK response
+     * @return filled {@link com.github.gorbin.asne.core.persons.SocialPerson}
+     * @throws JSONException
+     */
     private SocialPerson getSocialPerson(SocialPerson socialPerson, JSONObject jsonResponse) throws JSONException {
         String firstName = null;
         String lastName = null;
@@ -332,6 +397,13 @@ public class VkSocialNetwork extends SocialNetwork {
         return socialPerson;
     }
 
+    /**
+     * Get {@link com.github.gorbin.asne.vk.VKPerson} from JSON response of VK
+     * @param vkPerson object that would be filled
+     * @param jsonResponse VK response
+     * @return filled {@link com.github.gorbin.asne.vk.VKPerson}
+     * @throws JSONException
+     */
     private VKPerson getDetailedSocialPerson(VKPerson vkPerson, JSONObject jsonResponse) throws JSONException {
         getSocialPerson(vkPerson, jsonResponse);
         if(jsonResponse.has("sex")) {
@@ -388,20 +460,23 @@ public class VkSocialNetwork extends SocialNetwork {
         return vkPerson;
     }
 
-    private static boolean stringToBool(String s) {
-        if (s.equals("1"))
-            return true;
-        if (s.equals("0"))
-            return false;
-        throw new IllegalArgumentException(s+" is not a bool. Only 1 and 0 are.");
-    }
-
+    /**
+     * Post message to social network
+     * @param message message that should be shared
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostMessage(String message, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostMessage(message, onPostingCompleteListener);
         makePost(null, message, REQUEST_POST_MESSAGE);
     }
-    
+
+    /**
+     * Post photo to social network
+     * @param photo photo that should be shared
+     * @param message message that should be shared with photo
+     * @param onPostingCompleteListener listener for posting request
+     */
 	@Override
     public void requestPostPhoto(File photo, final String message, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostPhoto(photo, message, onPostingCompleteListener);
@@ -430,7 +505,13 @@ public class VkSocialNetwork extends SocialNetwork {
         }
         return b;
     }
- 
+
+    /**
+     * Post link with comment to social network
+     * @param bundle bundle containing information that should be shared(Bundle constants in {@link com.github.gorbin.asne.core.SocialNetwork})
+     * @param message message that should be shared with bundle
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostLink(Bundle bundle, String message, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostLink(bundle, message, onPostingCompleteListener);
@@ -449,6 +530,12 @@ public class VkSocialNetwork extends SocialNetwork {
         makePost(attachments, message, REQUEST_POST_LINK);
     }
 
+    /**
+     * Not supported via vk sdk - in development
+     * @throws SocialNetworkException
+     * @param bundle bundle containing information that should be shared(Bundle constants in {@link com.github.gorbin.asne.core.SocialNetwork})
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostDialog(Bundle bundle, OnPostingCompleteListener onPostingCompleteListener) {
         throw new SocialNetworkException("requestPostDialog isn't allowed for VKSocialNetwork");
@@ -463,6 +550,7 @@ public class VkSocialNetwork extends SocialNetwork {
                 super.onComplete(response);
                 ((OnPostingCompleteListener) mLocalListeners.get(requestID)).onPostSuccessfully(getID());
             }
+
             @Override
             public void onError(VKError error) {
                 mLocalListeners.get(requestID).onError(getID(), requestID, error.toString(), null);
@@ -471,6 +559,11 @@ public class VkSocialNetwork extends SocialNetwork {
         });
     }
 
+    /**
+     * Check if user by id is friend of current user
+     * @param userID user id that should be checked as friend of current user
+     * @param onCheckIsFriendCompleteListener listener for checking friend request
+     */
     @Override
     public void requestCheckIsFriend(final String userID, OnCheckIsFriendCompleteListener onCheckIsFriendCompleteListener) {
         super.requestCheckIsFriend(userID, onCheckIsFriendCompleteListener);
@@ -516,7 +609,11 @@ public class VkSocialNetwork extends SocialNetwork {
         });
 
     }
-    
+
+    /**
+     * Get current user friends list
+     * @param onRequestGetFriendsCompleteListener listener for getting list of current user friends
+     */
 	@Override
     public void requestGetFriends(OnRequestGetFriendsCompleteListener onRequestGetFriendsCompleteListener) {
         super.requestGetFriends(onRequestGetFriendsCompleteListener);
@@ -555,6 +652,11 @@ public class VkSocialNetwork extends SocialNetwork {
         });
     }
 
+    /**
+     * Invite friend by id to current user
+     * @param userID id of user that should be invited
+     * @param onRequestAddFriendCompleteListener listener for invite result
+     */
     @Override
     public void requestAddFriend(final String userID, OnRequestAddFriendCompleteListener onRequestAddFriendCompleteListener) {
         super.requestAddFriend(userID, onRequestAddFriendCompleteListener);
@@ -576,6 +678,11 @@ public class VkSocialNetwork extends SocialNetwork {
         });
     }
 
+    /**
+     * Remove friend by id from current user friends
+     * @param userID user id that should be removed from friends
+     * @param onRequestRemoveFriendCompleteListener listener to remove friend request response
+     */
     @Override
     public void requestRemoveFriend(final String userID, OnRequestRemoveFriendCompleteListener onRequestRemoveFriendCompleteListener) {
         super.requestRemoveFriend(userID, onRequestRemoveFriendCompleteListener);
@@ -597,6 +704,10 @@ public class VkSocialNetwork extends SocialNetwork {
         });
     }
 
+    /**
+     * Overrided for connect vk to activity
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle). Note: Otherwise it is null.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -608,6 +719,7 @@ public class VkSocialNetwork extends SocialNetwork {
             requestIdPerson();
         }
     }
+
 
     @Override
     public void onResume() {

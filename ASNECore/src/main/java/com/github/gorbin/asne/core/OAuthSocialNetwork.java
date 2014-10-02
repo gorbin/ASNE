@@ -36,7 +36,9 @@ public abstract class OAuthSocialNetwork extends SocialNetwork {
 
         mRequests.remove(requestID);
     }
-
+    /**
+     * Cancel login request
+     */
     @Override
     public void cancelLoginRequest() {
         super.cancelLoginRequest();
@@ -45,6 +47,9 @@ public abstract class OAuthSocialNetwork extends SocialNetwork {
         cancelRequest(REQUEST_LOGIN2);
     }
 
+    /**
+     * Cancel {@link com.github.gorbin.asne.core.AccessToken} request
+     */
     @Override
     public void cancelAccessTokenRequest() {
         super.cancelAccessTokenRequest();
@@ -52,6 +57,9 @@ public abstract class OAuthSocialNetwork extends SocialNetwork {
         cancelRequest(REQUEST_ACCESS_TOKEN);
     }
 
+    /**
+     * Cancel current user {@link com.github.gorbin.asne.core.persons.SocialPerson} request
+     */
     @Override
     public void cancelGetCurrentPersonRequest() {
         super.cancelGetCurrentPersonRequest();
@@ -59,24 +67,39 @@ public abstract class OAuthSocialNetwork extends SocialNetwork {
         cancelRequest(REQUEST_GET_PERSON);
     }
 
+    /**
+     * Cancel user by id {@link com.github.gorbin.asne.core.persons.SocialPerson} request
+     */
     @Override
     public void cancelGetSocialPersonRequest() {
         super.cancelGetSocialPersonRequest();
 
         cancelRequest(REQUEST_GET_PERSON);
     }
+
+    /**
+     * Cancel detailed user request
+     */
     @Override
     public void cancelGetDetailedSocialRequest() {
         super.cancelGetDetailedSocialRequest();
 
         cancelRequest(REQUEST_GET_DETAIL_PERSON);
     }
+
+    /**
+     * Cancel users by array of ids request
+     */
     @Override
     public void cancelGetSocialPersonsRequest() {
         super.cancelGetSocialPersonsRequest();
 
         cancelRequest(REQUEST_GET_PERSON);
     }
+
+    /**
+     * Cancel post message request
+     */
     @Override
     public void cancelPostMessageRequest() {
         super.cancelPostMessageRequest();
@@ -84,6 +107,9 @@ public abstract class OAuthSocialNetwork extends SocialNetwork {
         cancelRequest(REQUEST_POST_MESSAGE);
     }
 
+    /**
+     * Cancel post photo request
+     */
     @Override
     public void cancelPostPhotoRequest() {
         super.cancelPostPhotoRequest();
@@ -91,6 +117,9 @@ public abstract class OAuthSocialNetwork extends SocialNetwork {
         cancelRequest(REQUEST_POST_PHOTO);
     }
 
+    /**
+     * Cancel post link request
+     */
     @Override
     public void cancelPostLinkRequest() {
         super.cancelPostLinkRequest();
@@ -98,6 +127,9 @@ public abstract class OAuthSocialNetwork extends SocialNetwork {
         cancelRequest(REQUEST_POST_LINK);
     }
 
+    /**
+     * Cancel share dialog request
+     */
     @Override
     public void cancelPostDialogRequest() {
         super.cancelPostDialogRequest();
@@ -105,6 +137,9 @@ public abstract class OAuthSocialNetwork extends SocialNetwork {
         cancelRequest(REQUEST_POST_DIALOG);
     }
 
+    /**
+     * Cancel check friend request
+     */
     @Override
     public void cancelCheckIsFriendRequest() {
         super.cancelCheckIsFriendRequest();
@@ -112,6 +147,9 @@ public abstract class OAuthSocialNetwork extends SocialNetwork {
         cancelRequest(REQUEST_CHECK_IS_FRIEND);
     }
 
+    /**
+     * Cancel friends list request
+     */
     @Override
     public void cancelGetFriendsRequest() {
         super.cancelGetFriendsRequest();
@@ -119,6 +157,9 @@ public abstract class OAuthSocialNetwork extends SocialNetwork {
         cancelRequest(REQUEST_GET_FRIENDS);
     }
 
+    /**
+     * Cancel add friend request
+     */
     @Override
     public void cancelAddFriendRequest() {
         super.cancelAddFriendRequest();
@@ -126,6 +167,9 @@ public abstract class OAuthSocialNetwork extends SocialNetwork {
         cancelRequest(REQUEST_ADD_FRIEND);
     }
 
+    /**
+     * Cancel remove friend request
+     */
     @Override
     public void cancelRemoveFriendRequest() {
         super.cancelRemoveFriendRequest();
