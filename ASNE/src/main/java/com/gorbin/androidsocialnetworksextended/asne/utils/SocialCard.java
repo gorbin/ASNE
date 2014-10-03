@@ -1,3 +1,24 @@
+/*******************************************************************************
+ * Copyright (c) 2014 Evgeny Gorbin
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *******************************************************************************/
 package com.gorbin.androidsocialnetworksextended.asne.utils;
 
 import android.content.Context;
@@ -15,11 +36,12 @@ import com.gorbin.androidsocialnetworksextended.asne.R;
 import com.squareup.picasso.Picasso;
 
 public class SocialCard extends RelativeLayout {
-    private TextView name;
-	private TextView id;
 	public Button connect;
 	public Button share;
     public Button friends;
+    public Button detail;
+    private TextView name;
+	private TextView id;
     private ImageView image;
 	private ImageView divider;
 	private LinearLayout buttonLayout;
@@ -29,7 +51,6 @@ public class SocialCard extends RelativeLayout {
     private int buttonTextColor;
 	private int profileImage;
     private Context context;
-    public Button detail;
 
     public SocialCard(Context context, AttributeSet st) {
         super(context, st);
