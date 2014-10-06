@@ -2,7 +2,7 @@
 
 ASNE        [![ASNE Maven Central](http://img.shields.io/badge/ASNE%20Maven%20Central-0.2.1-brightgreen.svg?style=flat)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.asne%22) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-ASNE-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/868)
 =====================
-ASNE library created for simple integration of Social Networks. If you want to integrate your application with multiple social networks just choose ASNE modules and add them to your project. You just need to: add module, build SocialNetworkManager and configure your AndroidManiferst. 
+ASNE library created for simple integration of social setworks to android applications. If you want to integrate your application with multiple social networks just choose ASNE modules and add them to your project. You just need to: add module, build SocialNetworkManager and configure your AndroidManiferst. 
 ASNE contains common interface for most popular social networks, but you can easily make module for another.
 
 ASNE contains modules for social networks:
@@ -14,7 +14,15 @@ ASNE contains modules for social networks:
  - Vkontakte 
  - Odnoklassniki
 
-**Add tutorial** - https://github.com/gorbin/ASNETutorial
+Table of contents
+-----------
+[Features](https://github.com/gorbin/ASNE/blob/master/README.md#features)  
+[Documentation](https://github.com/gorbin/ASNE/blob/master/README.md#documentation)  
+[Demo app](https://github.com/gorbin/ASNE/blob/master/README.md#demo-app)  
+[Getting started](https://github.com/gorbin/ASNE/blob/master/README.md#getting-started)  
+[Important](https://github.com/gorbin/ASNE/blob/master/README.md#important)  
+[Developed By](https://github.com/gorbin/ASNE/blob/master/README.md#developed-by)  
+[License](https://github.com/gorbin/ASNE/blob/master/README.md#license)  
 
 Features
 -----------
@@ -38,6 +46,14 @@ ASNE got [almost all necessary requests](https://github.com/gorbin/ASNE/wiki/%D0
  - Any request to chosen social network - you got full SDK/API
  
 ![enter image description here][3]
+
+Documentation
+-----------
+[Javadoc](http://gorbin.github.io/ASNE/)
+
+[**Tutorial project on GitHub**](https://github.com/gorbin/ASNETutorial)
+
+[**Tutorial article on CodeProject**](http://www.codeproject.com/Articles/815900/Android-social-network-integration)
 
 Demo app
 ====
