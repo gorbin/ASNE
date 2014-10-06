@@ -221,7 +221,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 </pre>
 
-  [1]: https://raw.githubusercontent.com/gorbin/ASNE/master/resources/header.png
+  [1]: https://raw.githubusercontent.com/gorbin/ASNE/master/resources/recomended.png
   [2]: https://github.com/gorbin/AndroidSocialNetworks
   [3]: https://raw.githubusercontent.com/gorbin/ASNE/master/resources/main.png
   [4]: https://github.com/gorbin/ASNE/releases
