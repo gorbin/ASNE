@@ -1,3 +1,24 @@
+/*******************************************************************************
+ * Copyright (c) 2014 Evgeny Gorbin
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *******************************************************************************/
 package com.gorbin.androidsocialnetworksextended.asne.utils;
 
 import com.gorbin.androidsocialnetworksextended.asne.R;
@@ -22,11 +43,11 @@ public class Constants {
             "Post Dialog"};
     public static final SharePost[] fbShareNum ={SharePost.POST_MESSAGE,SharePost.POST_PHOTO,
             SharePost.POST_LINK,SharePost.POST_DIALOG};
-    public static final String[] twShare ={"Tweet","Tweet with image"};
-    public static final SharePost[] twShareNum ={SharePost.POST_MESSAGE,SharePost.POST_PHOTO};
+    public static final String[] twShare ={"Tweet","Tweet with image","Tweet with link"};
+    public static final SharePost[] twShareNum ={SharePost.POST_MESSAGE,SharePost.POST_PHOTO,SharePost.POST_LINK};
     public static final String[] gpShare ={"Share Dialog"};
     public static final SharePost[] gpShareNum ={SharePost.POST_DIALOG};
-    public static final String[] inShare ={"Post status update", "Post share Link"};
+    public static final String[] inShare ={"Share message", "Post share Link"};
     public static final SharePost[] inShareNum ={SharePost.POST_MESSAGE,SharePost.POST_LINK};
     public static final String[] vkShare ={"Post message","Post photo to wall","Post Link"};
     public static final SharePost[] vkShareNum ={SharePost.POST_MESSAGE,SharePost.POST_PHOTO,
@@ -39,6 +60,7 @@ public class Constants {
     public static final SharePost[][] shareNum = {twShareNum, inShareNum, gpShareNum, fbShareNum,
             vkShareNum, okShareNum, instagramShareNum};
     public static final String message = "Hello from ASNE!";
+    public static final String title = "Android social networks library";
     public static final String link = "https://github.com/gorbin/ASNE";
     public static final String facebookShare = "Some Facebook permissions you can get only after " +
             "Facebook submission, so my demo app wasn't submitted due low functionality. So if you " +

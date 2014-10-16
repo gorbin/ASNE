@@ -16,10 +16,15 @@ public class SocialPerson implements Parcelable {
         }
     };
 
+    /*** Id of social person from chosen social network.*/
     public String id;
+    /*** Name of social person from social network.*/
     public String name;
+    /*** Profile picture url of social person from social network.*/
     public String avatarURL;
-    public String profileURL; // url to users profile, can be generated for twitter, facebook, but need to get via api from LinkedIn
+    /*** Profile URL of social person from social network.*/
+    public String profileURL;
+    /*** Email of social person from social network if exist.*/
     public String email;
 
     public SocialPerson() {

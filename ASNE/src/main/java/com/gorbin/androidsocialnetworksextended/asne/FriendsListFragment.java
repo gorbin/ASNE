@@ -1,3 +1,24 @@
+/*******************************************************************************
+ * Copyright (c) 2014 Evgeny Gorbin
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *******************************************************************************/
 package com.gorbin.androidsocialnetworksextended.asne;
 
 import android.content.DialogInterface;
@@ -78,7 +99,7 @@ public class FriendsListFragment extends Fragment implements OnRequestGetFriends
             menu.findItem(R.id.action_add).setIcon(android.R.drawable.ic_menu_add);
             menu.findItem(R.id.action_search).setIcon(android.R.drawable.ic_menu_search);
         }
-        if (socialNetworkId == 6){
+        if (socialNetworkId == 6 || socialNetworkId == 2){
             menu.findItem(R.id.action_add).setVisible(false);
             menu.findItem(R.id.action_add).setEnabled(false);
         }
@@ -161,6 +182,9 @@ public class FriendsListFragment extends Fragment implements OnRequestGetFriends
 
     @Override
     public void onError(int socialNetworkID, String requestID, String errorMessage, Object data) {
+        if(loadingDialog != null) {
+            loadingDialog.cancelProgress();
+        }
         Toast.makeText(getActivity(), Constants.handleError(socialNetworkID, requestID, errorMessage),
                 Toast.LENGTH_LONG).show();
     }

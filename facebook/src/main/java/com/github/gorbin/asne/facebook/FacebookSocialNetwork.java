@@ -1,6 +1,26 @@
+/*******************************************************************************
+ * Copyright (c) 2014 Evgeny Gorbin
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *******************************************************************************/
 package com.github.gorbin.asne.facebook;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -44,10 +64,16 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class for Facebook social network integration
+ *
+ * @author Anton Krasov
+ * @author Evgeny Gorbin (gorbin.e.o@gmail.com)
+ */
 public class FacebookSocialNetwork extends SocialNetwork {
+    /*** Social network ID in asne modules, should be unique*/
     public static final int ID = 4;
 
-    private static final String TAG = FacebookSocialNetwork.class.getSimpleName();
     private static final String PERMISSION = "publish_actions";
     private SessionTracker mSessionTracker;
     private UiLifecycleHelper mUILifecycleHelper;
@@ -76,12 +102,20 @@ public class FacebookSocialNetwork extends SocialNetwork {
         this.permissions = permissions;
     }
 
+    /**
+     * Check is social network connected
+     * @return true if connected to Facebook social network and false if not
+     */
     @Override
     public boolean isConnected() {
         Session session = Session.getActiveSession();
         return (session != null && session.isOpened());
     }
 
+    /**
+     * Make login request - authorize in Facebook social network
+     * @param onLoginCompleteListener listener to trigger when Login complete
+     */
     @Override
     public void requestLogin(OnLoginCompleteListener onLoginCompleteListener) {
         super.requestLogin(onLoginCompleteListener);
@@ -116,6 +150,10 @@ public class FacebookSocialNetwork extends SocialNetwork {
         }
     }
 
+    /**
+     * Request {@link com.github.gorbin.asne.core.AccessToken} of Facebook social network that you can get from onRequestAccessTokenCompleteListener
+     * @param onRequestAccessTokenCompleteListener listener for {@link com.github.gorbin.asne.core.AccessToken} request
+     */
     @Override
     public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
         super.requestAccessToken(onRequestAccessTokenCompleteListener);
@@ -123,6 +161,9 @@ public class FacebookSocialNetwork extends SocialNetwork {
                 .onRequestAccessTokenComplete(getID(), new AccessToken(Session.getActiveSession().getAccessToken(), null));
     }
 
+    /**
+     * Logout from Facebook social network
+     */
     @Override
     public void logout() {
         if (mSessionTracker == null) return;
@@ -134,16 +175,28 @@ public class FacebookSocialNetwork extends SocialNetwork {
         }
     }
 
+    /**
+     * Get id of Facebook social network
+     * @return Social network id for Facebook = 4
+     */
     @Override
     public int getID() {
         return ID;
     }
 
+    /**
+     * Method to get AccessToken of Facebook social network
+     * @return {@link com.github.gorbin.asne.core.AccessToken}
+     */
 	@Override
     public AccessToken getAccessToken() {
         return new AccessToken(Session.getActiveSession().getAccessToken(), null);
     }
 
+    /**
+     * Request current user {@link com.github.gorbin.asne.core.persons.SocialPerson}
+     * @param onRequestSocialPersonCompleteListener listener for {@link com.github.gorbin.asne.core.persons.SocialPerson} request
+     */
     @Override
     public void requestCurrentPerson(OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
         super.requestCurrentPerson(onRequestSocialPersonCompleteListener);
@@ -180,16 +233,33 @@ public class FacebookSocialNetwork extends SocialNetwork {
         request.executeAsync();
     }
 
+    /**
+     * Not supported via Facebook sdk.
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param userID user id in social network
+     * @param onRequestSocialPersonCompleteListener listener for request {@link com.github.gorbin.asne.core.persons.SocialPerson}
+     */
     @Override
     public void requestSocialPerson(String userID, OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
         throw new SocialNetworkException("requestSocialPerson isn't allowed for FacebookSocialNetwork");
     }
 
+    /**
+     * Not supported via Facebook sdk.
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param userID array of user ids in social network
+     * @param onRequestSocialPersonsCompleteListener listener for request ArrayList of {@link com.github.gorbin.asne.core.persons.SocialPerson}
+     */
 	@Override
     public void requestSocialPersons(String[] userID, OnRequestSocialPersonsCompleteListener onRequestSocialPersonsCompleteListener) {
         throw new SocialNetworkException("requestSocialPersons isn't allowed for FacebookSocialNetwork");
     }
 
+    /**
+     * Request user {@link com.github.gorbin.asne.facebook.FacebookPerson} by userId - detailed user data
+     * @param userId user id in social network
+     * @param onRequestDetailedSocialPersonCompleteListener listener for request detailed social person
+     */
     @Override
     public void requestDetailedSocialPerson(String userId, OnRequestDetailedSocialPersonCompleteListener onRequestDetailedSocialPersonCompleteListener) {
         super.requestDetailedSocialPerson(userId, onRequestDetailedSocialPersonCompleteListener);
@@ -259,6 +329,11 @@ public class FacebookSocialNetwork extends SocialNetwork {
         return facebookPerson;
     }
 
+    /**
+     * Post message to social network
+     * @param message  message that should be shared
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostMessage(String message, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostMessage(message, onPostingCompleteListener);
@@ -266,6 +341,12 @@ public class FacebookSocialNetwork extends SocialNetwork {
         performPublish(PendingAction.POST_STATUS_UPDATE);
     }
 
+    /**
+     * Post photo with comment to social network
+     * @param photo photo that should be shared
+     * @param message message that should be shared with photo
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostPhoto(File photo, String message, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostPhoto(photo, message, onPostingCompleteListener);
@@ -273,6 +354,12 @@ public class FacebookSocialNetwork extends SocialNetwork {
         performPublish(PendingAction.POST_PHOTO);
     }
 
+    /**
+     * Post link with message to social network
+     * @param bundle bundle containing information that should be shared(Bundle constants in {@link com.github.gorbin.asne.core.SocialNetwork})
+     * @param message message that should be shared with bundle
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostLink(Bundle bundle, String message, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostLink(bundle, message, onPostingCompleteListener);
@@ -280,6 +367,11 @@ public class FacebookSocialNetwork extends SocialNetwork {
         performPublish(PendingAction.POST_LINK);
     }
 
+    /**
+     * Request facebook share dialog
+     * @param bundle bundle containing information that should be shared(Bundle constants in {@link com.github.gorbin.asne.core.SocialNetwork})
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostDialog(Bundle bundle, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostDialog(bundle, onPostingCompleteListener);
@@ -372,11 +464,20 @@ public class FacebookSocialNetwork extends SocialNetwork {
         }
     }
 
+    /**
+     * Not supported via Facebook sdk
+     * @param userID user id that should be checked as friend of current user
+     * @param onCheckIsFriendCompleteListener listener for checking friend request
+     */
     @Override
     public void requestCheckIsFriend(String userID, OnCheckIsFriendCompleteListener onCheckIsFriendCompleteListener) {
         throw new SocialNetworkException("requestCheckIsFriend isn't allowed for FacebookSocialNetwork");
     }
-	
+
+    /**
+     * Get current user friends list
+     * @param onRequestGetFriendsCompleteListener listener for getting list of current user friends
+     */
 	@Override
     public void requestGetFriends(OnRequestGetFriendsCompleteListener onRequestGetFriendsCompleteListener) {
         super.requestGetFriends(onRequestGetFriendsCompleteListener);
@@ -415,11 +516,23 @@ public class FacebookSocialNetwork extends SocialNetwork {
         request.executeAsync();
     }
 
+    /**
+     * Not supported via Facebook sdk.
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param userID id of user that should be invited
+     * @param onRequestAddFriendCompleteListener listener for invite result
+     */
     @Override
     public void requestAddFriend(String userID, OnRequestAddFriendCompleteListener onRequestAddFriendCompleteListener) {
         throw new SocialNetworkException("requestAddFriend isn't allowed for FacebookSocialNetwork");
     }
 
+    /**
+     * Not supported via Facebook sdk.
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param userID user id that should be removed from friends
+     * @param onRequestRemoveFriendCompleteListener listener to remove friend request response
+     */
     @Override
     public void requestRemoveFriend(String userID, OnRequestRemoveFriendCompleteListener onRequestRemoveFriendCompleteListener) {
         throw new SocialNetworkException("requestRemoveFriend isn't allowed for FacebookSocialNetwork");
@@ -470,6 +583,10 @@ public class FacebookSocialNetwork extends SocialNetwork {
         }
     }
 
+    /**
+     * Overrided for connect facebook to activity
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle). Note: Otherwise it is null.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -500,30 +617,49 @@ public class FacebookSocialNetwork extends SocialNetwork {
                 mSocialNetworkManager.getActivity(), mSessionStatusCallback, null, false);
     }
 
+    /**
+     * Overrided for facebook connect in resume activity
+     */
     @Override
     public void onResume() {
         super.onResume();
         mUILifecycleHelper.onResume();
     }
 
+    /**
+     * Overrided for facebook connect in pause
+     */
     @Override
     public void onPause() {
         super.onPause();
         mUILifecycleHelper.onPause();
     }
 
+    /**
+     * Overrided for destroying facebook session
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();
         mUILifecycleHelper.onDestroy();
     }
 
+    /**
+     * Overrided for facebook
+     * @param outState Bundle in which to place your saved state.
+     */
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mUILifecycleHelper.onSaveInstanceState(outState);
     }
 
+    /**
+     * Overrided for facebook
+     * @param requestCode The integer request code originally supplied to startActivityForResult(), allowing you to identify who this result came from.
+     * @param resultCode The integer result code returned by the child activity through its setResult().
+     * @param data An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

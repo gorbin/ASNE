@@ -1,3 +1,24 @@
+/*******************************************************************************
+ * Copyright (c) 2014 Evgeny Gorbin
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *******************************************************************************/
 package com.github.gorbin.asne.googleplus;
 
 import android.app.Activity;
@@ -7,7 +28,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 
 import com.github.gorbin.asne.core.AccessToken;
 import com.github.gorbin.asne.core.SocialNetwork;
@@ -41,8 +61,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Class for Google plus social network integration
+ *
+ * @author Anton Krasov
+ * @author Evgeny Gorbin (gorbin.e.o@gmail.com)
+ */
 public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
+    /*** Social network ID in asne modules, should be unique*/
     public static final int ID = 3;
 
     private static final String TAG = GooglePlusSocialNetwork.class.getSimpleName();
@@ -64,12 +91,20 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
         super(fragment);
     }
 
+    /**
+     * Check is social network connected
+     * @return true if connected to Google Plus social network and false if not
+     */
     @Override
     public boolean isConnected() {
 //        return googleApiClient.isConnecting() || googleApiClient.isConnected();
         return mSharedPreferences.getBoolean(SAVE_STATE_KEY_IS_CONNECTED, false);
     }
 
+    /**
+     * Make login request - authorize in Google plus social network
+     * @param onLoginCompleteListener listener for login complete
+     */
     @Override
     public void requestLogin(OnLoginCompleteListener onLoginCompleteListener) {
         super.requestLogin(onLoginCompleteListener);
@@ -77,13 +112,15 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
         try {
             mConnectionResult.startResolutionForResult(mSocialNetworkManager.getActivity(), REQUEST_AUTH);
         } catch (Exception e) {
-            Log.e(TAG, "ERROR", e);
             if (!googleApiClient.isConnecting()) {
                 googleApiClient.connect();
             }
         }
     }
 
+    /**
+     * Logout from Google plus social network
+     */
     @Override
     public void logout() {
         mConnectRequested = false;
@@ -96,16 +133,27 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
         }
     }
 
+    /**
+     * Get id of Google plus social network
+     * @return Social network id for Google Plus = 3
+     */
     @Override
     public int getID() {
         return ID;
     }
 
+    /**
+     * Not supported in Google plus sdk
+     */
     @Override
     public AccessToken getAccessToken() {
         throw new SocialNetworkException("Not supported for GooglePlusSocialNetwork");
     }
 
+    /**
+     * Request {@link com.github.gorbin.asne.core.AccessToken} of Google plus social network that you can get from onRequestAccessTokenCompleteListener
+     * @param onRequestAccessTokenCompleteListener listener for {@link com.github.gorbin.asne.core.AccessToken} request
+     */
     @Override
     public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
         super.requestAccessToken(onRequestAccessTokenCompleteListener);
@@ -138,18 +186,32 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
         task.execute();
     }
 
+    /**
+     * Request current user {@link com.github.gorbin.asne.core.persons.SocialPerson}
+     * @param onRequestSocialPersonCompleteListener listener for {@link com.github.gorbin.asne.core.persons.SocialPerson} request
+     */
     @Override
     public void requestCurrentPerson(OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
         super.requestCurrentPerson(onRequestSocialPersonCompleteListener);
         requestPerson("me", onRequestSocialPersonCompleteListener);
     }
 
+    /**
+     * Request {@link com.github.gorbin.asne.core.persons.SocialPerson} by user id
+     * @param userID id of Google plus user
+     * @param onRequestSocialPersonCompleteListener listener for {@link com.github.gorbin.asne.core.persons.SocialPerson} request
+     */
     @Override
     public void requestSocialPerson(String userID, OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
         super.requestSocialPerson(userID, onRequestSocialPersonCompleteListener);
         requestPerson(userID, onRequestSocialPersonCompleteListener);
     }
 
+    /**
+     * Request ArrayList of {@link com.github.gorbin.asne.core.persons.SocialPerson} by array of userIds
+     * @param userID array of user ids in social network
+     * @param onRequestSocialPersonsCompleteListener listener for request ArrayList of {@link com.github.gorbin.asne.core.persons.SocialPerson}
+     */
     @Override
     public void requestSocialPersons(final String[] userID, OnRequestSocialPersonsCompleteListener onRequestSocialPersonsCompleteListener) {
         super.requestSocialPersons(userID, onRequestSocialPersonsCompleteListener);
@@ -176,7 +238,6 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
                         personBuffer.close();
                     }
                 } else {
-                    Log.e(TAG, "Error requesting people data: " + loadPeopleResult.getStatus());
                     if (mLocalListeners.get(REQUEST_GET_PERSONS) != null) {
                             mLocalListeners.get(REQUEST_GET_PERSONS)
                                         .onError(getID(), REQUEST_GET_PERSONS, "Can't get persons"
@@ -188,6 +249,11 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
         });
     }
 
+    /**
+     * Request user {@link com.github.gorbin.asne.googleplus.GooglePlusPerson} by userId - detailed user data
+     * @param userId id of Google plus user
+     * @param onRequestDetailedSocialPersonCompleteListener listener for request detailed social person
+     */
     @Override
     public void requestDetailedSocialPerson(final String userId, OnRequestDetailedSocialPersonCompleteListener onRequestDetailedSocialPersonCompleteListener) {
         super.requestDetailedSocialPerson(userId, onRequestDetailedSocialPersonCompleteListener);
@@ -212,7 +278,6 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
                         personBuffer.close();
                     }
                 } else {
-                    Log.e(TAG, "Error requesting people data: " + loadPeopleResult.getStatus());
                     if (mLocalListeners.get(REQUEST_GET_DETAIL_PERSON) != null) {
                         mHandler.post(new Runnable() {
                             @Override
@@ -256,7 +321,6 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
                         personBuffer.close();
                     }
                 } else {
-//                    Log.e(TAG, "Error requesting people data: " + loadPeopleResult.getStatus());
                     if (mLocalListeners.get(REQUEST_GET_PERSON) != null) {
                         mLocalListeners.get(REQUEST_GET_PERSON).onError(getID(), REQUEST_GET_PERSON, "Can't get person"
                                 + loadPeopleResult.getStatus(), null);
@@ -327,21 +391,46 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
         return googlePlusPerson;
     }
 
+    /**
+     * Not supported via Google plus sdk.
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param message  message that should be shared
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostMessage(String message, OnPostingCompleteListener onPostingCompleteListener) {
         throw new SocialNetworkException("requestPostMessage isn't allowed for GooglePlusSocialNetwork");
     }
 
+    /**
+     * Not supported via Google plus sdk.
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param photo photo that should be shared
+     * @param message message that should be shared with photo
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostPhoto(File photo, String message, OnPostingCompleteListener onPostingCompleteListener) {
         throw new SocialNetworkException("requestPostPhoto isn't allowed for GooglePlusSocialNetwork");
     }
 
+    /**
+     * Not supported via Google plus sdk.
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param bundle bundle containing information that should be shared(Bundle constants in {@link com.github.gorbin.asne.core.SocialNetwork})
+     * @param message message that should be shared with bundle
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostLink(Bundle bundle, String message, OnPostingCompleteListener onPostingCompleteListener) {
         throw new SocialNetworkException("requestPostLink isn't allowed for GooglePlusSocialNetwork");
     }
 
+    /**
+     * Request Google plus share dialog
+     * @param bundle bundle containing information that should be shared(Bundle constants in {@link com.github.gorbin.asne.core.SocialNetwork})
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostDialog(Bundle bundle, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostDialog(bundle, onPostingCompleteListener);
@@ -359,11 +448,21 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
         mSocialNetworkManager.getActivity().startActivityForResult(shareIntent, 0);
     }
 
+    /**
+     * Not supported via Google plus sdk.
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param userID user id that should be checked as friend of current user
+     * @param onCheckIsFriendCompleteListener listener for checking friend request
+     */
     @Override
     public void requestCheckIsFriend(String userID, OnCheckIsFriendCompleteListener onCheckIsFriendCompleteListener) {
         throw new SocialNetworkException("requestCheckIsFriend isn't allowed for GooglePlusSocialNetwork");
     }
 
+    /**
+     * Get current user friends list
+     * @param onRequestGetFriendsCompleteListener listener for getting list of current user friends
+     */
     @Override
     public void requestGetFriends(OnRequestGetFriendsCompleteListener onRequestGetFriendsCompleteListener) {
         super.requestGetFriends(onRequestGetFriendsCompleteListener);
@@ -401,7 +500,6 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
                         personBuffer.close();
                     }
                 } else {
-                    Log.e(TAG, "Error requesting people data: " + loadPeopleResult.getStatus());
                     if (mLocalListeners.get(REQUEST_GET_FRIENDS) != null) {
                         mLocalListeners.get(REQUEST_GET_FRIENDS)
                                         .onError(getID(), REQUEST_GET_DETAIL_PERSON, "Can't get person"
@@ -412,16 +510,32 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
         });
     }
 
+    /**
+     * Not supported via Google plus sdk.
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param userID id of user that should be invited
+     * @param onRequestAddFriendCompleteListener listener for invite result
+     */
     @Override
     public void requestAddFriend(String userID, OnRequestAddFriendCompleteListener onRequestAddFriendCompleteListener) {
         throw new SocialNetworkException("requestAddFriend isn't allowed for GooglePlusSocialNetwork");
     }
 
+    /**
+     * Not supported via Google plus sdk.
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param userID user id that should be removed from friends
+     * @param onRequestRemoveFriendCompleteListener listener to remove friend request response
+     */
     @Override
     public void requestRemoveFriend(String userID, OnRequestRemoveFriendCompleteListener onRequestRemoveFriendCompleteListener) {
         throw new SocialNetworkException("requestRemoveFriend isn't allowed for GooglePlusSocialNetwork");
     }
 
+    /**
+     * Overrided for Google plus
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle). Note: Otherwise it is null.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -437,11 +551,17 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
                 .build();
     }
 
+    /**
+     * Overrided for Google plus
+     */
     @Override
     public void onStart() {
         googleApiClient.connect();
     }
 
+    /**
+     * Overrided for Google plus
+     */
     @Override
     public void onStop() {
         if (googleApiClient.isConnected()) {
@@ -449,6 +569,12 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
         }
     }
 
+    /**
+     * Overrided for Google plus
+     * @param requestCode The integer request code originally supplied to startActivityForResult(), allowing you to identify who this result came from.
+     * @param resultCode The integer result code returned by the child activity through its setResult().
+     * @param data An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -466,6 +592,10 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
         }
     }
 
+    /**
+     * After calling connect(), this method will be invoked asynchronously when the connect request has successfully completed.
+     * @param bundle Bundle of data provided to clients by Google Play services. May be null if no content is provided by the service.
+     */
     @Override
     public void onConnected(Bundle bundle) {
         if (mConnectRequested) {
@@ -482,6 +612,10 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
         mConnectRequested = false;
     }
 
+    /**
+     * Called when the client is temporarily in a disconnected state.
+     * @param i The reason for the disconnection. Defined by constants CAUSE_*.
+     */
     @Override
     public void onConnectionSuspended(int i) {
         if (mLocalListeners.get(REQUEST_LOGIN) != null) {
@@ -491,11 +625,18 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
         mConnectRequested = false;
     }
 
+    /**
+     * Called when the client is disconnected.
+     */
     @Override
     public void onDisconnected() {
         mConnectRequested = false;
     }
 
+    /**
+     * Called when there was an error connecting the client to the service.
+     * @param connectionResult A ConnectionResult that can be used for resolving the error, and deciding what sort of error occurred.
+     */
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         mConnectionResult = connectionResult;

@@ -1,3 +1,24 @@
+/*******************************************************************************
+ * Copyright (c) 2014 Evgeny Gorbin
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *******************************************************************************/
 package com.github.gorbin.asne.odnoklassniki;
 
 import android.app.Activity;
@@ -36,7 +57,13 @@ import java.util.Map;
 import ru.ok.android.sdk.Odnoklassniki;
 import ru.ok.android.sdk.OkTokenRequestListener;
 
+/**
+ * Class for OK social network integration
+ *
+ * @author Evgeny Gorbin (gorbin.e.o@gmail.com)
+ */
 public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenRequestListener {
+    /*** Social network ID in asne modules, should be unique*/
     public static final int ID = 6;
     private static final String FRIENDS = "OkSocialNetwork.FRIENDS";
     private static final String USERID = "OkSocialNetwork.USERID";
@@ -65,6 +92,10 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
         mOdnoklassniki.setTokenRequestListener(this);
     }
 
+    /**
+     * Called after successful authorization
+     * @param token token string of OK social network
+     */
     @Override
     public void onSuccess(String token) {
         mSharedPreferences.edit()
@@ -105,54 +136,88 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
         }
     }
 
+    /**
+     * Called after error authorization
+     */
     @Override
     public void onError() {
         mLocalListeners.get(REQUEST_LOGIN).onError(getID(), REQUEST_LOGIN, "OK Login Error!", null);
     }
 
+    /**
+     * Called after cancel authorization
+     */
     @Override
     public void onCancel() {
         mLocalListeners.get(REQUEST_LOGIN).onError(getID(), REQUEST_LOGIN, "ОK Login cancaled!", null);
     }
 
+    /**
+     * Overrided for OK support
+     * @param requestCode The integer request code originally supplied to startActivityForResult(), allowing you to identify who this result came from.
+     * @param resultCode The integer result code returned by the child activity through its setResult().
+     * @param data An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    /**
+     * Check is social network connected
+     * @return true if connected to OK social network and false if not
+     */
     @Override
     public boolean isConnected() {
         String accessToken = mSharedPreferences.getString(TOKEN, null);
         return accessToken != null;
     }
 
+    /**
+     * Make login request - authorize in OK social network
+     * @param onLoginCompleteListener listener to trigger when Login complete
+     */
     @Override
     public void requestLogin(OnLoginCompleteListener onLoginCompleteListener) {
         super.requestLogin(onLoginCompleteListener);
 		mOdnoklassniki.requestAuthorization(activity, false, permissions);
     }
 
+    /**
+     * Logout from OK social network
+     */
     @Override
     public void logout() {
         mSharedPreferences.edit()
                 .remove(TOKEN)
                 .apply();
         mOdnoklassniki.clearTokens(activity);
-        mOdnoklassniki.removeTokenRequestListener();
-
+//        mOdnoklassniki.removeTokenRequestListener();
     }
 
+    /**
+     * Get id of VK social network
+     * @return Social network id for VK = 6
+     */
     @Override
     public int getID() {
         return ID;
     }
 
+    /**
+     * Method to get AccessToken of OK social network
+     * @return {@link com.github.gorbin.asne.core.AccessToken}
+     */
     @Override
     public AccessToken getAccessToken() {
         String accessToken = mSharedPreferences.getString(TOKEN, null);
         return new AccessToken(accessToken, null);
     }
 
+    /**
+     * Request {@link com.github.gorbin.asne.core.AccessToken} of OK social network that you can get from onRequestAccessTokenCompleteListener
+     * @param onRequestAccessTokenCompleteListener listener for {@link com.github.gorbin.asne.core.AccessToken} request
+     */
     @Override
     public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
         super.requestAccessToken(onRequestAccessTokenCompleteListener);
@@ -182,12 +247,21 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
         return id;
     }
 
+    /**
+     * Request current user {@link com.github.gorbin.asne.core.persons.SocialPerson}
+     * @param onRequestSocialPersonCompleteListener listener for {@link com.github.gorbin.asne.core.persons.SocialPerson} request
+     */
     @Override
     public void requestCurrentPerson(OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
         super.requestCurrentPerson(onRequestSocialPersonCompleteListener);
         executeRequest(new RequestGetSocialPersonAsyncTask(), null, REQUEST_GET_CURRENT_PERSON);
     }
 
+    /**
+     * Request {@link com.github.gorbin.asne.core.persons.SocialPerson} by user id
+     * @param userID id of OK user
+     * @param onRequestSocialPersonCompleteListener listener for {@link com.github.gorbin.asne.core.persons.SocialPerson} request
+     */
     @Override
     public void requestSocialPerson(String userID, OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
         super.requestSocialPerson(userID, onRequestSocialPersonCompleteListener);
@@ -199,6 +273,11 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
         executeRequest(new RequestGetSocialPersonAsyncTask(), args, REQUEST_GET_PERSON);
     }
 
+    /**
+     * Request ArrayList of {@link com.github.gorbin.asne.core.persons.SocialPerson} by array of userIds
+     * @param userID array of user ids in social network
+     * @param onRequestSocialPersonsCompleteListener listener for request ArrayList of {@link com.github.gorbin.asne.core.persons.SocialPerson}
+     */
     @Override
     public void requestSocialPersons(String[] userID, OnRequestSocialPersonsCompleteListener onRequestSocialPersonsCompleteListener) {
         super.requestSocialPersons(userID, onRequestSocialPersonsCompleteListener);
@@ -207,6 +286,11 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
         executeRequest(new RequestSocialPersonsAsyncTask(), args, REQUEST_GET_PERSONS);
     }
 
+    /**
+     * Request user {@link com.github.gorbin.asne.odnoklassniki.OkPerson} by userId - detailed user data
+     * @param userId id of OK user
+     * @param onRequestDetailedSocialPersonCompleteListener listener for request detailed social person
+     */
     @Override
     public void requestDetailedSocialPerson(String userId, OnRequestDetailedSocialPersonCompleteListener onRequestDetailedSocialPersonCompleteListener) {
         super.requestDetailedSocialPerson(userId, onRequestDetailedSocialPersonCompleteListener);
@@ -271,16 +355,35 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
         return okPerson;
     }
 
+    /**
+     * Not supported via OK sdk.
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param message  message that should be shared
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostMessage(String message, OnPostingCompleteListener onPostingCompleteListener) {
         throw new SocialNetworkException("requestPostMessage isn't allowed for OkSocialNetwork");
     }
-    
+
+    /**
+     * Not supported via OK sdk.
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param photo photo that should be shared
+     * @param message message that should be shared with photo
+     * @param onPostingCompleteListener listener for posting request
+     */
 	@Override
     public void requestPostPhoto(File photo, final String message, OnPostingCompleteListener onPostingCompleteListener) {
         throw new SocialNetworkException("requestPostPhoto isn't allowed for OkSocialNetwork");
     }
 
+    /**
+     * Post link with comment to social network
+     * @param bundle bundle containing information that should be shared(Bundle constants in {@link com.github.gorbin.asne.core.SocialNetwork})
+     * @param message message that should be shared with bundle
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostLink(Bundle bundle, String message, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostLink(bundle, message, onPostingCompleteListener);
@@ -288,11 +391,22 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
         executeRequest(new RequestPostLinkAsyncTask(), bundle, REQUEST_POST_LINK);
     }
 
+    /**
+     * Not supported via OK sdk.
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param bundle bundle containing information that should be shared(Bundle constants in {@link com.github.gorbin.asne.core.SocialNetwork})
+     * @param onPostingCompleteListener listener for posting request
+     */
     @Override
     public void requestPostDialog(Bundle bundle, OnPostingCompleteListener onPostingCompleteListener) {
         throw new SocialNetworkException("requestPostDialog isn't allowed for OkSocialNetwork");
     }
 
+    /**
+     * Check if user by id is friend of current user
+     * @param userID user id that should be checked as friend of current user
+     * @param onCheckIsFriendCompleteListener listener for checking friend request
+     */
     @Override
     public void requestCheckIsFriend(final String userID, OnCheckIsFriendCompleteListener onCheckIsFriendCompleteListener) {
         super.requestCheckIsFriend(userID, onCheckIsFriendCompleteListener);
@@ -303,18 +417,34 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
         args.putString(RequestCheckIsFriendAsyncTask.PARAM_USER_ID, userID);         args.putString(USERID, userId);
         executeRequest(new RequestCheckIsFriendAsyncTask(), args, REQUEST_CHECK_IS_FRIEND);
     }
-    
+
+    /**
+     * Get current user friends list
+     * @param onRequestGetFriendsCompleteListener listener for getting list of current user friends
+     */
 	@Override
     public void requestGetFriends(OnRequestGetFriendsCompleteListener onRequestGetFriendsCompleteListener) {
         super.requestGetFriends(onRequestGetFriendsCompleteListener);
         executeRequest(new RequestGetFriendsAsyncTask(), null, REQUEST_GET_FRIENDS);
     }
 
+    /**
+     * Not supported via OK sdk.
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param userID id of user that should be invited
+     * @param onRequestAddFriendCompleteListener listener for invite result
+     */
     @Override
     public void requestAddFriend(final String userID, OnRequestAddFriendCompleteListener onRequestAddFriendCompleteListener) {
         throw new SocialNetworkException("requestAddFriend isn't allowed for OkSocialNetwork");
     }
 
+    /**
+     * Not supported via OK sdk.
+     * @throws com.github.gorbin.asne.core.SocialNetworkException
+     * @param userID user id that should be removed from friends
+     * @param onRequestRemoveFriendCompleteListener listener to remove friend request response
+     */
     @Override
     public void requestRemoveFriend(String userID, OnRequestRemoveFriendCompleteListener onRequestRemoveFriendCompleteListener) {
         throw new SocialNetworkException("requestRemoveFriend isn't allowed for OkSocialNetwork");

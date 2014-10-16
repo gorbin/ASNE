@@ -1,3 +1,24 @@
+/*******************************************************************************
+ * Copyright (c) 2014 Evgeny Gorbin
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *******************************************************************************/
 package com.gorbin.androidsocialnetworksextended.asne.utils;
 
 import android.app.AlertDialog;
@@ -23,6 +44,11 @@ public class ADialogs {
     private ADialogsListener aListener = null;
     private ADialogsEditListener aEditListener = null;
     private ADialogsProgressListener progressListener = null;
+    private ADialogsListListener listListener = null;
+    // ProgressDialog
+    private ProgressDialog pd;
+    // CustomListDialog
+    private ADialogsImageAlertListener imageAlertListener = null;
 
     public ADialogs(Context context) {
         this.context = context;
@@ -44,15 +70,6 @@ public class ADialogs {
             ad.setCancelable(true);
         }
         return ad;
-    }
-
-    //AlertDialog
-    public interface ADialogsListener {
-        public void onADialogsPositiveClick(DialogInterface dialog);
-
-        public void onADialogsNegativeClick(DialogInterface dialog);
-
-        public void onADialogsCancel(DialogInterface dialog);
     }
 
     public void setADialogsListener(ADialogsListener aListener) {
@@ -96,11 +113,7 @@ public class ADialogs {
         }
         ad.create().show();
     }
-    // ListDialog
-    public interface ADialogsListListener {
-        public void onADialogsListDialog(DialogInterface dialog, int id, Constants.SharePost type);
-    }
-    private ADialogsListListener listListener = null;
+
     public void setADialogsListListener(ADialogsListListener listListener) {
         this.listListener = listListener;
     }
@@ -138,14 +151,6 @@ public class ADialogs {
             });
         }
         ad.create().show();
-    }
-    //EditDialog
-    public interface ADialogsEditListener {
-        public void onADialogsPositiveClick(DialogInterface dialog, String text);
-
-        public void onADialogsNegativeClick(DialogInterface dialog);
-
-        public void onADialogsCancel(DialogInterface dialog);
     }
 
     public void setADialogsEditListener(ADialogsEditListener aEditListener) {
@@ -193,14 +198,11 @@ public class ADialogs {
         }
         ad.create().show();
     }
-    // ProgressDialog
-    private ProgressDialog pd;
-    public interface ADialogsProgressListener {
-        public void onADialogsProgressCancel(DialogInterface dialog);
-    }
+
     public void setADialogsProgressListener(ADialogsProgressListener progressListener) {
         this.progressListener = progressListener;
     }
+
     public void progress(boolean cancelable, String message) {
         pd = new ProgressDialog(context);
         pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -219,17 +221,13 @@ public class ADialogs {
             });
         }
     }
+
     public void showProgress(){
         pd.show();
     }
+
     public void cancelProgress(){
         pd.dismiss();
-    }
-
-    // CustomListDialog
-    private ADialogsImageAlertListener imageAlertListener = null;
-    public interface ADialogsImageAlertListener {
-        public void onADialogsImageAlertPositiveClick(DialogInterface dialog, int id);
     }
 
     public void setADialogsImageAlertListener(ADialogsImageAlertListener imageAlertListener) {
@@ -274,5 +272,34 @@ public class ADialogs {
             });
         }
         ad.create().show();
+    }
+    //AlertDialog
+    public interface ADialogsListener {
+        public void onADialogsPositiveClick(DialogInterface dialog);
+
+        public void onADialogsNegativeClick(DialogInterface dialog);
+
+        public void onADialogsCancel(DialogInterface dialog);
+    }
+
+    // ListDialog
+    public interface ADialogsListListener {
+        public void onADialogsListDialog(DialogInterface dialog, int id, Constants.SharePost type);
+    }
+    //EditDialog
+    public interface ADialogsEditListener {
+        public void onADialogsPositiveClick(DialogInterface dialog, String text);
+
+        public void onADialogsNegativeClick(DialogInterface dialog);
+
+        public void onADialogsCancel(DialogInterface dialog);
+    }
+
+    public interface ADialogsProgressListener {
+        public void onADialogsProgressCancel(DialogInterface dialog);
+    }
+
+    public interface ADialogsImageAlertListener {
+        public void onADialogsImageAlertPositiveClick(DialogInterface dialog, int id);
     }
 }

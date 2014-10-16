@@ -1,3 +1,24 @@
+/*******************************************************************************
+ * Copyright (c) 2014 Evgeny Gorbin
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *******************************************************************************/
 package com.github.gorbin.asne.instagram;
 
 import android.os.Parcel;
@@ -5,6 +26,11 @@ import android.os.Parcelable;
 
 import com.github.gorbin.asne.core.persons.SocialPerson;
 
+/**
+ * Class for detailed Instagram social person
+ *
+ * @author Evgeny Gorbin (gorbin.e.o@gmail.com)
+ */
 public class InstagramPerson extends SocialPerson implements Parcelable {
 
     public static final Parcelable.Creator<InstagramPerson> CREATOR
@@ -17,12 +43,17 @@ public class InstagramPerson extends SocialPerson implements Parcelable {
             return new InstagramPerson[size];
         }
     };
-
+    /*** Bio of social person*/
     public String bio;
+    /*** Website of social person from user contacts*/
     public String website;
+    /*** Full name of social person*/
     public String fullName;
+    /*** Count of social person's media*/
     public int media;
+    /*** Count of social person's followers*/
     public int followedBy;
+    /*** Count of social person's follows*/
     public int follows;
 
     public InstagramPerson() {
