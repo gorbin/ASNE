@@ -54,20 +54,18 @@ public class LinkedInPerson extends SocialPerson implements Parcelable {
 	public String lastName;
     /*** Headline of social person*/
 	public String headLine;
-    /*** Postal code of social person from contacts*/
-	public String postalCode;
-    /*** Location description of social person from contacts*/
+    /*** Country code of social person*/
+	public String countryCode;
+    /*** Location description of social person*/
 	public String locationDescription;
-    /*** Location address of social person from contacts*/
-	public String locationAddress;
     /*** The person's job industry within the organization.*/
 	public String industry;
     /*** Summary of social person*/
 	public String summary;
-    /*** Birthday of social person in the format MM/DD/YYYY*/
+    /*** Birthday of social person in the format DD/MM/YYYY or DD/MM*/
 	public String birthday;
     /*** Main address of social person from contacts*/
-	public String mainAdress;
+	public String mainAddress;
     /*** Current status of social person*/
 	public String currentStatus;
     /*** Interests of social person*/
@@ -86,13 +84,12 @@ public class LinkedInPerson extends SocialPerson implements Parcelable {
         firstName = in.readString();
         lastName = in.readString();
         headLine = in.readString();
-        postalCode = in.readString();
+        countryCode = in.readString();
         locationDescription = in.readString();
-        locationAddress = in.readString();
         industry = in.readString();
         summary = in.readString();
         birthday = in.readString();
-        mainAdress = in.readString();
+        mainAddress = in.readString();
         currentStatus = in.readString();
         interests = in.readString();
         specialties = in.readString();
@@ -111,13 +108,12 @@ public class LinkedInPerson extends SocialPerson implements Parcelable {
         dest.writeString(firstName);
         dest.writeString(lastName);
         dest.writeString(headLine);
-        dest.writeString(postalCode);
+        dest.writeString(countryCode);
         dest.writeString(locationDescription);
-        dest.writeString(locationAddress);
         dest.writeString(industry);
         dest.writeString(summary);
         dest.writeString(birthday);
-        dest.writeString(mainAdress);
+        dest.writeString(mainAddress);
         dest.writeString(currentStatus);
         dest.writeString(interests);
         dest.writeString(specialties);
@@ -146,15 +142,13 @@ public class LinkedInPerson extends SocialPerson implements Parcelable {
             return false;
         if (lastName != null ? !lastName.equals(that.lastName) : that.lastName != null)
             return false;
-        if (locationAddress != null ? !locationAddress.equals(that.locationAddress) : that.locationAddress != null)
-            return false;
         if (locationDescription != null ? !locationDescription.equals(that.locationDescription) : that.locationDescription != null)
             return false;
-        if (mainAdress != null ? !mainAdress.equals(that.mainAdress) : that.mainAdress != null)
+        if (mainAddress != null ? !mainAddress.equals(that.mainAddress) : that.mainAddress != null)
             return false;
         if (position != null ? !position.equals(that.position) : that.position != null)
             return false;
-        if (postalCode != null ? !postalCode.equals(that.postalCode) : that.postalCode != null)
+        if (countryCode != null ? !countryCode.equals(that.countryCode) : that.countryCode != null)
             return false;
         if (specialties != null ? !specialties.equals(that.specialties) : that.specialties != null)
             return false;
@@ -172,13 +166,12 @@ public class LinkedInPerson extends SocialPerson implements Parcelable {
         result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
         result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
         result = 31 * result + (headLine != null ? headLine.hashCode() : 0);
-        result = 31 * result + (postalCode != null ? postalCode.hashCode() : 0);
+        result = 31 * result + (countryCode != null ? countryCode.hashCode() : 0);
         result = 31 * result + (locationDescription != null ? locationDescription.hashCode() : 0);
-        result = 31 * result + (locationAddress != null ? locationAddress.hashCode() : 0);
         result = 31 * result + (industry != null ? industry.hashCode() : 0);
         result = 31 * result + (summary != null ? summary.hashCode() : 0);
         result = 31 * result + (birthday != null ? birthday.hashCode() : 0);
-        result = 31 * result + (mainAdress != null ? mainAdress.hashCode() : 0);
+        result = 31 * result + (mainAddress != null ? mainAddress.hashCode() : 0);
         result = 31 * result + (currentStatus != null ? currentStatus.hashCode() : 0);
         result = 31 * result + (interests != null ? interests.hashCode() : 0);
         result = 31 * result + (specialties != null ? specialties.hashCode() : 0);
@@ -199,13 +192,12 @@ public class LinkedInPerson extends SocialPerson implements Parcelable {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", headLine='" + headLine + '\'' +
-                ", postalCode='" + postalCode + '\'' +
+                ", postalCode='" + countryCode + '\'' +
                 ", locationDescription='" + locationDescription + '\'' +
-                ", locationAddress='" + locationAddress + '\'' +
                 ", industry='" + industry + '\'' +
                 ", summary='" + summary + '\'' +
                 ", birthday='" + birthday + '\'' +
-                ", mainAdress='" + mainAdress + '\'' +
+                ", mainAddress='" + mainAddress + '\'' +
                 ", currentStatus='" + currentStatus + '\'' +
                 ", interests='" + interests + '\'' +
                 ", specialties='" + specialties + '\'' +

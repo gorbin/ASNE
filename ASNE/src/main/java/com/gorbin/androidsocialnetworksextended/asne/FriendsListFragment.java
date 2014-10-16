@@ -99,7 +99,7 @@ public class FriendsListFragment extends Fragment implements OnRequestGetFriends
             menu.findItem(R.id.action_add).setIcon(android.R.drawable.ic_menu_add);
             menu.findItem(R.id.action_search).setIcon(android.R.drawable.ic_menu_search);
         }
-        if (socialNetworkId == 6){
+        if (socialNetworkId == 6 || socialNetworkId == 2){
             menu.findItem(R.id.action_add).setVisible(false);
             menu.findItem(R.id.action_add).setEnabled(false);
         }
@@ -182,6 +182,9 @@ public class FriendsListFragment extends Fragment implements OnRequestGetFriends
 
     @Override
     public void onError(int socialNetworkID, String requestID, String errorMessage, Object data) {
+        if(loadingDialog != null) {
+            loadingDialog.cancelProgress();
+        }
         Toast.makeText(getActivity(), Constants.handleError(socialNetworkID, requestID, errorMessage),
                 Toast.LENGTH_LONG).show();
     }

@@ -28,7 +28,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 
 import com.github.gorbin.asne.core.AccessToken;
 import com.github.gorbin.asne.core.SocialNetwork;
@@ -94,7 +93,7 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
 
     /**
      * Check is social network connected
-     * @return true if connected to VK social network and false if not
+     * @return true if connected to Google Plus social network and false if not
      */
     @Override
     public boolean isConnected() {
@@ -113,7 +112,6 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
         try {
             mConnectionResult.startResolutionForResult(mSocialNetworkManager.getActivity(), REQUEST_AUTH);
         } catch (Exception e) {
-            Log.e(TAG, "ERROR", e);
             if (!googleApiClient.isConnecting()) {
                 googleApiClient.connect();
             }
@@ -137,7 +135,7 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
 
     /**
      * Get id of Google plus social network
-     * @return Social network id for VK = 3
+     * @return Social network id for Google Plus = 3
      */
     @Override
     public int getID() {
@@ -240,7 +238,6 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
                         personBuffer.close();
                     }
                 } else {
-                    Log.e(TAG, "Error requesting people data: " + loadPeopleResult.getStatus());
                     if (mLocalListeners.get(REQUEST_GET_PERSONS) != null) {
                             mLocalListeners.get(REQUEST_GET_PERSONS)
                                         .onError(getID(), REQUEST_GET_PERSONS, "Can't get persons"
@@ -281,7 +278,6 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
                         personBuffer.close();
                     }
                 } else {
-                    Log.e(TAG, "Error requesting people data: " + loadPeopleResult.getStatus());
                     if (mLocalListeners.get(REQUEST_GET_DETAIL_PERSON) != null) {
                         mHandler.post(new Runnable() {
                             @Override
@@ -504,7 +500,6 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
                         personBuffer.close();
                     }
                 } else {
-                    Log.e(TAG, "Error requesting people data: " + loadPeopleResult.getStatus());
                     if (mLocalListeners.get(REQUEST_GET_FRIENDS) != null) {
                         mLocalListeners.get(REQUEST_GET_FRIENDS)
                                         .onError(getID(), REQUEST_GET_DETAIL_PERSON, "Can't get person"

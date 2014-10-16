@@ -128,6 +128,9 @@ public class DetailedSocialInfoFragment extends Fragment implements OnRequestDet
 
     @Override
     public void onError(int socialNetworkID, String requestID, String errorMessage, Object data) {
+        if(loadingDialog != null) {
+            loadingDialog.cancelProgress();
+        }
         Toast.makeText(getActivity(), Constants.handleError(socialNetworkID, requestID, errorMessage), Toast.LENGTH_LONG).show();
     }
 

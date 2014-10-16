@@ -21,7 +21,6 @@
  *******************************************************************************/
 package com.github.gorbin.asne.linkedin;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -44,87 +43,62 @@ import com.github.gorbin.asne.core.listener.OnRequestRemoveFriendCompleteListene
 import com.github.gorbin.asne.core.listener.OnRequestSocialPersonCompleteListener;
 import com.github.gorbin.asne.core.listener.OnRequestSocialPersonsCompleteListener;
 import com.github.gorbin.asne.core.persons.SocialPerson;
-import com.google.code.linkedinapi.client.CommunicationsApiClient;
-import com.google.code.linkedinapi.client.LinkedInApiClient;
-import com.google.code.linkedinapi.client.LinkedInApiClientFactory;
-import com.google.code.linkedinapi.client.constant.ApplicationConstants;
-import com.google.code.linkedinapi.client.enumeration.ProfileField;
-import com.google.code.linkedinapi.client.oauth.LinkedInAccessToken;
-import com.google.code.linkedinapi.client.oauth.LinkedInOAuthService;
-import com.google.code.linkedinapi.client.oauth.LinkedInOAuthServiceFactory;
-import com.google.code.linkedinapi.client.oauth.LinkedInRequestToken;
-import com.google.code.linkedinapi.schema.Connections;
-import com.google.code.linkedinapi.schema.Headers;
-import com.google.code.linkedinapi.schema.HttpHeader;
-import com.google.code.linkedinapi.schema.Person;
-import com.google.code.linkedinapi.schema.Position;
-import com.google.code.linkedinapi.schema.VisibilityType;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Calendar;
 import java.util.UUID;
 
+import javax.net.ssl.HttpsURLConnection;
+
 /**
- * Class for LinkedIn social network integration
+ * Class for LinkedIn social network integration using OAuth2
  *
- * @author Anton Krasov
  * @author Evgeny Gorbin (gorbin.e.o@gmail.com)
  */
 public class LinkedInSocialNetwork extends OAuthSocialNetwork {
     /*** Social network ID in asne modules, should be unique*/
     public static final int ID = 2;
-
-    private static final String OAUTH_CALLBACK_SCHEME = "x-oauthflow-linkedin";
-    private static final String OAUTH_CALLBACK_HOST = "linkedinApiTestCallback";
-    private static final String OAUTH_CALLBACK_URL = String.format("%s://%s", OAUTH_CALLBACK_SCHEME, OAUTH_CALLBACK_HOST);
-    private static final String OAUTH_QUERY_TOKEN = "oauth_token";
-    private static final String OAUTH_QUERY_VERIFIER = "oauth_verifier";
-    private static final String OAUTH_QUERY_PROBLEM = "oauth_problem";
-    private static final String SAVE_STATE_KEY_OAUTH_TOKEN = "LinkedInSocialNetwork.SAVE_STATE_KEY_OAUTH_TOKEN";
-    private static final String SAVE_STATE_KEY_OAUTH_SECRET = "LinkedInSocialNetwork.SAVE_STATE_KEY_OAUTH_SECRET";
-    private static final EnumSet<ProfileField> PROFILE_PARAMETERS = EnumSet.of(
-            ProfileField.ID,
-            ProfileField.FIRST_NAME,
-            ProfileField.LAST_NAME,
-            ProfileField.POSITIONS,
-            ProfileField.CONNECTIONS,
-            ProfileField.LOCATION,
-            ProfileField.SUMMARY,
-            ProfileField.DATE_OF_BIRTH,
-            ProfileField.SPECIALTIES,
-            ProfileField.CURRENT_STATUS,
-            ProfileField.INTERESTS,
-            ProfileField.INDUSTRY,
-            ProfileField.MAIN_ADDRESS,
-            ProfileField.PHONE_NUMBERS,
-            ProfileField.CURRENT_SHARE,
-            ProfileField.API_STANDARD_PROFILE_REQUEST_HEADERS,
-            ProfileField.PICTURE_URL,
-            ProfileField.PUBLIC_PROFILE_URL
-    );
-    // max 16 bit to use in startActivityForResult
     private static final int REQUEST_AUTH = UUID.randomUUID().hashCode() & 0xFFFF;
-    private final LinkedInOAuthService mOAuthService;
-    private final LinkedInApiClientFactory mLinkedInApiClientFactory;
-
-    private String mOAuthTokenSecret;
+    private static final String SAVE_STATE_KEY_OAUTH_TOKEN = "LinkedInSocialNetwork.SAVE_STATE_KEY_OAUTH_TOKEN";
+    private static final String SAVE_STATE_KEY_OAUTH_REQUEST_TOKEN = "LinkedInSocialNetwork.SAVE_STATE_KEY_OAUTH_SECRET";
+    private static final String SAVE_STATE_KEY_EXPIRES_DATE = "LinkedInSocialNetwork.SAVE_STATE_KEY_EXPIRES_DATE";
+    private final String LINKEDIN_OAUTH2_CALLBACK_URL = "https://asne";
+    private final String authURLString;
+    private String LINKEDIN_API = "https://www.linkedin.com/uas/oauth2/authorization?response_type=code";
+    private String LINKEDIN_TOKEN = "https://www.linkedin.com/uas/oauth2/accessToken?grant_type=authorization_code";
+    private String LINKEDIN_V1_API = "https://api.linkedin.com/v1";
+    private String FORMAT_JSON = "&format=json";
+    private String SHARE = "<share>{0}<visibility><code>anyone</code></visibility></share>";
+    private String COMMENT = "<comment>{0}</comment>";
+    private String CONTENT = "<content><title>{0}</title><description>{1}</description>" +
+            "<submitted-url>{2}</submitted-url><submitted-image-url>{3}</submitted-image-url></content>";
+    private String consumerKey;
+    private String consumerSecret;
 
     public LinkedInSocialNetwork(Fragment fragment, String consumerKey, String consumerSecret, String permissions) {
         super(fragment);
-
         if (TextUtils.isEmpty(consumerKey) || TextUtils.isEmpty(consumerSecret) || TextUtils.isEmpty(permissions)) {
-            throw new IllegalArgumentException("TextUtils.isEmpty(fConsumerKey) || TextUtils.isEmpty(fConsumerSecret) || TextUtils.isEmpty(fPermissions)");
+            throw new IllegalArgumentException("TextUtils.isEmpty(ConsumerKey) || TextUtils.isEmpty(ConsumerSecret) || TextUtils.isEmpty(Permissions)");
         }
-
-        mOAuthService = LinkedInOAuthServiceFactory.getInstance()
-                .createLinkedInOAuthService(consumerKey, consumerSecret, permissions);
-        mLinkedInApiClientFactory = LinkedInApiClientFactory.newInstance(consumerKey, consumerSecret);
+        this.consumerKey = consumerKey;
+        this.consumerSecret = consumerSecret;
+        authURLString = LINKEDIN_API + "&client_id=" + consumerKey + "&scope=" + permissions +
+                         "&state=" + REQUEST_AUTH + "&redirect_uri=" + LINKEDIN_OAUTH2_CALLBACK_URL;
     }
-
     /**
      * Check is social network connected
      * @return true if connected to LinkedIn social network and false if not
@@ -132,8 +106,10 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
     @Override
     public boolean isConnected() {
         String accessToken = mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null);
-        String accessTokenSecret = mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_SECRET, null);
-        return accessToken != null && accessTokenSecret != null;
+        String requestToken = mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_REQUEST_TOKEN, null);
+        Long expiresDate = mSharedPreferences.getLong(SAVE_STATE_KEY_EXPIRES_DATE, 0);
+        Boolean notExpired = expiresDate > 0 && Calendar.getInstance().getTimeInMillis() - 86400000 < expiresDate;
+        return accessToken != null && requestToken != null && notExpired;
     }
 
     /**
@@ -143,7 +119,10 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
     @Override
     public void requestLogin(OnLoginCompleteListener onLoginCompleteListener) {
         super.requestLogin(onLoginCompleteListener);
-        executeRequest(new RequestLoginAsyncTask(), null, REQUEST_LOGIN);
+        Intent intent = new Intent(mSocialNetworkManager.getActivity(), OAuthActivity.class)
+                .putExtra(OAuthActivity.PARAM_CALLBACK, LINKEDIN_OAUTH2_CALLBACK_URL)
+                .putExtra(OAuthActivity.PARAM_URL_TO_LOAD, authURLString);
+        mSocialNetworkManager.getActivity().startActivityForResult(intent, REQUEST_AUTH);
     }
 
     /**
@@ -151,7 +130,11 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
      */
     @Override
     public void logout() {
-        fatalError();
+        mSharedPreferences.edit()
+                .remove(SAVE_STATE_KEY_OAUTH_TOKEN)
+                .remove(SAVE_STATE_KEY_OAUTH_REQUEST_TOKEN)
+                .remove(SAVE_STATE_KEY_EXPIRES_DATE)
+                .apply();
     }
 
     /**
@@ -169,9 +152,9 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
      */
     @Override
     public AccessToken getAccessToken() {
-        return new AccessToken(
+        return new com.github.gorbin.asne.core.AccessToken(
                 mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null),
-                mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_SECRET, null)
+                null
         );
     }
 
@@ -183,9 +166,9 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
     public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
         super.requestAccessToken(onRequestAccessTokenCompleteListener);
         ((OnRequestAccessTokenCompleteListener) mLocalListeners.get(REQUEST_ACCESS_TOKEN))
-                .onRequestAccessTokenComplete(getID(), new AccessToken(
+                .onRequestAccessTokenComplete(getID(), new com.github.gorbin.asne.core.AccessToken(
                         mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null),
-                        mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_SECRET, null)
+                        null
                 ));
     }
 
@@ -196,13 +179,13 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
     @Override
     public void requestCurrentPerson(OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
         super.requestCurrentPerson(onRequestSocialPersonCompleteListener);
-        executeRequest(new RequestSocialPersonAsyncTask(), null, REQUEST_GET_CURRENT_PERSON);
+        executeRequest(new RequestGetSocialPersonAsyncTask(), null, REQUEST_GET_CURRENT_PERSON);
     }
 
     /**
      * Request {@link com.github.gorbin.asne.core.persons.SocialPerson} by user id
-     * @param userID user id in social network
-     * @param onRequestSocialPersonCompleteListener listener for request {@link com.github.gorbin.asne.core.persons.SocialPerson}
+     * @param userID id of LinkedIn user
+     * @param onRequestSocialPersonCompleteListener listener for {@link com.github.gorbin.asne.core.persons.SocialPerson} request
      */
     @Override
     public void requestSocialPerson(String userID, OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
@@ -211,8 +194,8 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
             throw new SocialNetworkException("userID can't be null or empty");
         }
         Bundle args = new Bundle();
-        args.putString(RequestSocialPersonAsyncTask.PARAM_USER_ID, userID);
-        executeRequest(new RequestSocialPersonAsyncTask(), args, REQUEST_GET_PERSON);
+        args.putString(RequestGetSocialPersonAsyncTask.PARAM_USER_ID, userID);
+        executeRequest(new RequestGetSocialPersonAsyncTask(), args, REQUEST_GET_PERSON);
     }
 
     /**
@@ -229,62 +212,117 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
     /**
      * Request user {@link com.github.gorbin.asne.linkedin.LinkedInPerson} by userId - detailed user data
      * @param userId id of LinkedIn user
-     * @param onRequestDetailedSocialPersonCompleteListener listener for request detailed social person
+     * @param onRequestDetailedSocialPersonCompleteListener listener for {@link com.github.gorbin.asne.linkedin.LinkedInPerson} request
      */
     @Override
     public void requestDetailedSocialPerson(String userId, OnRequestDetailedSocialPersonCompleteListener onRequestDetailedSocialPersonCompleteListener) {
         super.requestDetailedSocialPerson(userId, onRequestDetailedSocialPersonCompleteListener);
         Bundle args = new Bundle();
         if(userId != null) {
-           args.putString(RequestGetDetailedPersonAsyncTask.PARAM_USER_ID, userId);
+            args.putString(RequestGetDetailedPersonAsyncTask.PARAM_USER_ID, userId);
+        } else {
+            args.putString(RequestGetDetailedPersonAsyncTask.PARAM_USER_ID, "~");
         }
         executeRequest(new RequestGetDetailedPersonAsyncTask(), args, REQUEST_GET_DETAIL_PERSON);
     }
 
-    private SocialPerson getSocialPerson(SocialPerson socialPerson, Person person) {
-        socialPerson.id = person.getId();
-        socialPerson.name = person.getFirstName() + " " + person.getLastName();
-        socialPerson.avatarURL = person.getPictureUrl();
-        socialPerson.profileURL = person.getPublicProfileUrl();
+    private SocialPerson getSocialPerson(SocialPerson socialPerson, JSONObject jsonResponse) throws JSONException {
+        String firstName = null;
+        String lastName = null;
+        if(jsonResponse.has("id")) {
+            socialPerson.id = jsonResponse.getString("id");
+        }
+        if(jsonResponse.has("firstName")) {
+            firstName = jsonResponse.getString("firstName");
+        }
+        if(jsonResponse.has("lastName")) {
+            lastName = jsonResponse.getString("lastName");
+        }
+        socialPerson.name =  firstName + " " + lastName;
+        if(jsonResponse.has("pictureUrl")) {
+            socialPerson.avatarURL = jsonResponse.getString("pictureUrl");
+        }
+        if(jsonResponse.has("publicProfileUrl")) {
+            socialPerson.profileURL = jsonResponse.getString("publicProfileUrl");
+        }
+        if(jsonResponse.has("emailAddress")) {
+            socialPerson.email = jsonResponse.getString("emailAddress");
+        }
         return socialPerson;
     }
 
-    private LinkedInPerson getDetailedSocialPerson(LinkedInPerson linkedinPerson, Person person) {
-        getSocialPerson(linkedinPerson, person);
-        List<Position> positions = person.getPositions().getPositionList();
-        if (positions.size() > 0) {
-            Position position = positions.get(positions.size() - 1);
-            linkedinPerson.company = position.getCompany().getName();
-            linkedinPerson.position =  position.getTitle();
+    private LinkedInPerson getDetailedSocialPerson(LinkedInPerson linkedinPerson, JSONObject jsonResponse) throws JSONException {
+        getSocialPerson(linkedinPerson, jsonResponse);
+        if(jsonResponse.has("firstName")) {
+            linkedinPerson.firstName = jsonResponse.getString("firstName");
         }
-        linkedinPerson.firstName = person.getFirstName();
-        linkedinPerson.lastName = person.getLastName();
-        linkedinPerson.headLine = person.getHeadline();
-        if(person.getLocation() != null) {
-            if(person.getLocation().getPostalCode() != null) {
-                linkedinPerson.postalCode = person.getLocation().getPostalCode();
-            }
-            if(person.getLocation().getDescription() != null) {
-                linkedinPerson.locationDescription = person.getLocation().getDescription();
-            }
-            if(person.getLocation().getAddress() != null) {
-                linkedinPerson.locationAddress = person.getLocation().getAddress().toString();
+        if(jsonResponse.has("lastName")) {
+            linkedinPerson.lastName = jsonResponse.getString("lastName");
+        }
+        if(jsonResponse.has("positions")) {
+            if(jsonResponse.getJSONObject("positions").has("values")){
+                if(jsonResponse.getJSONObject("positions").getJSONArray("values").getJSONObject(0).has("title")) {
+                    linkedinPerson.position = jsonResponse.getJSONObject("positions").getJSONArray("values").getJSONObject(0).getString("title");
+                }
+                if(jsonResponse.getJSONObject("positions").getJSONArray("values").getJSONObject(0).has("company")) {
+                    linkedinPerson.company = jsonResponse.getJSONObject("positions").getJSONArray("values").getJSONObject(0).getJSONObject("company").getString("name");
+                }
             }
         }
-        linkedinPerson.industry =  person.getIndustry();
-        linkedinPerson.summary =  person.getSummary();
-        if(person.getDateOfBirth() != null) {
-            linkedinPerson.birthday = person.getDateOfBirth().getDay() + "/"
-                    + person.getDateOfBirth().getMonth() + "/" + person.getDateOfBirth().getYear();
+        if(jsonResponse.has("headline")) {
+            linkedinPerson.headLine = jsonResponse.getString("headline");
         }
-        linkedinPerson.mainAdress = person.getMainAddress();
-        linkedinPerson.currentStatus = person.getCurrentStatus();
-        linkedinPerson.interests = person.getInterests();
-        linkedinPerson.specialties = person.getSpecialties();
-        if(person.getPhoneNumbers() != null) {
-            linkedinPerson.phone = person.getPhoneNumbers().getPhoneNumberList().get(0).getPhoneNumber();
+        if(jsonResponse.has("location")) {
+            if(jsonResponse.getJSONObject("location").has("name")){
+                linkedinPerson.locationDescription = jsonResponse.getJSONObject("location").getString("name");
+            }
+            if(jsonResponse.getJSONObject("location").has("country")){
+                linkedinPerson.countryCode = jsonResponse.getJSONObject("location").getJSONObject("country").getString("code");
+            }
         }
-        return  linkedinPerson;
+        if(jsonResponse.has("industry")) {
+            linkedinPerson.industry = jsonResponse.getString("industry");
+        }
+        if(jsonResponse.has("summary")) {
+            linkedinPerson.summary = jsonResponse.getString("summary");
+        }
+        String birthday = null;
+        if(jsonResponse.has("dateOfBirth")) {
+            if(jsonResponse.getJSONObject("dateOfBirth").has("day")){
+                birthday = jsonResponse.getJSONObject("dateOfBirth").getString("day");
+            }
+            if(jsonResponse.getJSONObject("dateOfBirth").has("month")){
+                birthday = birthday + "/" + jsonResponse.getJSONObject("dateOfBirth").getString("month");
+            }
+            if(jsonResponse.getJSONObject("dateOfBirth").has("year")){
+                birthday = birthday + "/" + jsonResponse.getJSONObject("dateOfBirth").getString("year");
+            }
+            linkedinPerson.birthday = birthday;
+        }
+        if(jsonResponse.has("mainAddress")) {
+            linkedinPerson.mainAddress = jsonResponse.getString("mainAddress");
+        }
+        if(jsonResponse.has("currentShare")) {
+            if(jsonResponse.getJSONObject("currentShare").has("content")){
+                if(jsonResponse.getJSONObject("currentShare").getJSONObject("content").has("description")){
+                    linkedinPerson.currentStatus = jsonResponse.getJSONObject("currentShare").getJSONObject("content").getString("description");
+                }
+            }
+        }
+        if(jsonResponse.has("interests")) {
+            linkedinPerson.interests = jsonResponse.getString("interests");
+        }
+        if(jsonResponse.has("specialties")) {
+            linkedinPerson.specialties = jsonResponse.getString("specialties");
+        }
+        if(jsonResponse.has("phoneNumbers")) {
+            if(jsonResponse.getJSONObject("phoneNumbers").has("values")){
+                if(jsonResponse.getJSONObject("phoneNumbers").getJSONArray("values").getJSONObject(0).has("phoneNumber")){
+                    linkedinPerson.phone = jsonResponse.getJSONObject("phoneNumbers").getJSONArray("values").getJSONObject(0).getString("phoneNumber");
+                }
+            }
+        }
+        return linkedinPerson;
     }
 
     /**
@@ -321,6 +359,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
     @Override
     public void requestPostLink(Bundle bundle, String message, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostLink(bundle, message, onPostingCompleteListener);
+        bundle.putString(RequestPostLinkAsyncTask.PARAM_MESSAGE, message);
         executeRequest(new RequestPostLinkAsyncTask(), bundle, REQUEST_POST_LINK);
     }
 
@@ -343,7 +382,6 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
     @Override
     public void requestCheckIsFriend(String userID, OnCheckIsFriendCompleteListener onCheckIsFriendCompleteListener) {
         super.requestCheckIsFriend(userID, onCheckIsFriendCompleteListener);
-
         Bundle args = new Bundle();
         args.putString(RequestCheckIsFriendAsyncTask.PARAM_USER_ID, userID);
         executeRequest(new RequestCheckIsFriendAsyncTask(), args, REQUEST_CHECK_IS_FRIEND);
@@ -359,22 +397,56 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
         executeRequest(new RequestGetFriendsAsyncTask(), null, REQUEST_GET_FRIENDS);
     }
 
+    private void getAllFriends(String urlString, final ArrayList<SocialPerson> socialPersons, final ArrayList<String> ids, String token) throws Exception {
+        URL url = new URL(urlString);
+        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+        checkConnectionErrors(connection);
+        InputStream inputStream = connection.getInputStream();
+        String response = streamToString(inputStream);
+        JSONObject jsonObject = (JSONObject) new JSONTokener(response).nextValue();
+
+        int jsonStart = 0, jsonCount = 0, jsonTotal = 0;
+        String nextToken = null;
+        if(jsonObject.has("_start")) {
+            jsonStart = jsonObject.getInt("_start");
+        }
+        if(jsonObject.has("_count")) {
+            jsonCount = jsonObject.getInt("_count");
+        }
+        if(jsonObject.has("_total")) {
+            jsonTotal = jsonObject.getInt("_total");
+        }
+        int start = jsonStart + jsonCount;
+        if(jsonTotal > 0 && start > 0 && jsonCount > 0 && jsonTotal > start) {
+            nextToken = LINKEDIN_V1_API + "/people/~/connections"+ RequestGetFriendsAsyncTask.fields
+                    + "?oauth2_access_token=" + token + FORMAT_JSON + "&start=" + start
+                    + "&count=" + RequestGetFriendsAsyncTask.count;
+        }
+        JSONArray jsonResponse = jsonObject.getJSONArray("values");
+        for(int i = 0; i < jsonResponse.length(); i++){
+            SocialPerson socialPerson = new SocialPerson();
+            getSocialPerson(socialPerson, jsonResponse.getJSONObject(i));
+            socialPersons.add(socialPerson);
+            ids.add(jsonResponse.getJSONObject(i).getString("id"));
+        }
+
+        if((nextToken != null) && (!TextUtils.isEmpty(nextToken))){
+            getAllFriends(nextToken, socialPersons, ids, token);
+        }
+    }
+
     /**
-     * Invite friend by id to current user
+     * Not supported via LinkedIn api
      * @param userID id of user that should be invited
      * @param onRequestAddFriendCompleteListener listener for invite result
      */
     @Override
     public void requestAddFriend(String userID, OnRequestAddFriendCompleteListener onRequestAddFriendCompleteListener) {
-        super.requestAddFriend(userID, onRequestAddFriendCompleteListener);
-        Bundle args = new Bundle();
-        args.putString(RequestSendInviteAsyncTask.PARAM_USER_ID, userID);
-        executeRequest(new RequestSendInviteAsyncTask(), args, REQUEST_ADD_FRIEND);
+        throw new SocialNetworkException("requestAddFriend isn't allowed for LinkedInSocialNetwork");
     }
 
     /**
      * Not supported via LinkedIn api
-     * @throws com.github.gorbin.asne.core.SocialNetworkException
      * @param userID user id that should be removed from friends
      * @param onRequestRemoveFriendCompleteListener listener to remove friend request response
      */
@@ -393,97 +465,137 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         int sanitizedRequestCode = requestCode % 0x10000;
         if (sanitizedRequestCode != REQUEST_AUTH) return;
+        super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode != Activity.RESULT_OK || data == null || data.getData() == null) {
+        Uri uri = data != null ? data.getData() : null;
+
+        if (uri != null && uri.toString().startsWith(LINKEDIN_OAUTH2_CALLBACK_URL)) {
+            String parts[] = uri.toString().split("=");
+            String verifier = parts[1];
+            verifier = verifier.substring(0, verifier.indexOf("&"));
+            RequestLogin2AsyncTask requestLogin2AsyncTask = new RequestLogin2AsyncTask();
+            mRequests.put(REQUEST_LOGIN2, requestLogin2AsyncTask);
+            Bundle args = new Bundle();
+            args.putString(RequestLogin2AsyncTask.PARAM_VERIFIER, verifier);
+            requestLogin2AsyncTask.execute(args);
+        } else {
             if (mLocalListeners.get(REQUEST_LOGIN) != null) {
-                mLocalListeners.get(REQUEST_LOGIN).onError(getID(), REQUEST_LOGIN, "Login canceled", null);
+                mLocalListeners.get(REQUEST_LOGIN).onError(getID(), REQUEST_LOGIN, "incorrect URI returned: " + uri, null);
+                mLocalListeners.remove(REQUEST_LOGIN);
             }
-            return;
         }
-
-        Uri uri = data.getData();
-
-        final String problem = uri.getQueryParameter(OAUTH_QUERY_PROBLEM);
-        if (problem != null) {
-            if (mLocalListeners.get(REQUEST_LOGIN) != null) {
-                mLocalListeners.get(REQUEST_LOGIN).onError(getID(), REQUEST_LOGIN, problem, null);
-            }
-
-            return;
-        }
-
-        Bundle args = new Bundle();
-        args.putString(RequestLogin2AsyncTask.PARAM_VERIFIER, uri.toString());
-        args.putString(RequestLogin2AsyncTask.PARAM_AUTH_REQUEST_TOKEN, mOAuthTokenSecret);
-        executeRequest(new RequestLogin2AsyncTask(), args, REQUEST_LOGIN2);
     }
 
-    private void fatalError() {
-        mSharedPreferences.edit()
-                .remove(SAVE_STATE_KEY_OAUTH_TOKEN)
-                .remove(SAVE_STATE_KEY_OAUTH_SECRET)
-                .apply();
+    /**
+     * Cancel login request
+     */
+    @Override
+    public void cancelLoginRequest() {
+        super.cancelLoginRequest();
     }
 
-    private class RequestLoginAsyncTask extends SocialNetworkAsyncTask {
-        private static final String RESULT_URL = "RequestLoginAsyncTask.RESULT_URL";
-
-        @Override
-        protected Bundle doInBackground(Bundle... params) {
-            Bundle result = new Bundle();
-
-            try {
-                final LinkedInRequestToken liToken = mOAuthService.getOAuthRequestToken(OAUTH_CALLBACK_URL);
-                mOAuthTokenSecret = liToken.getTokenSecret();
-                result.putString(RESULT_URL, liToken.getAuthorizationUrl());
-            } catch (Exception e) {
-                result.putString(RESULT_ERROR, e.getMessage());
+    private String streamToString(InputStream p_is) {
+        try {
+            BufferedReader m_br;
+            StringBuilder m_outString = new StringBuilder();
+            m_br = new BufferedReader(new InputStreamReader(p_is));
+            String m_read = m_br.readLine();
+            while(m_read != null) {
+                m_outString.append(m_read);
+                m_read =m_br.readLine();
             }
-
-            return result;
+            return m_outString.toString();
         }
-
-        @Override
-        protected void onPostExecute(Bundle result) {
-            if (!handleRequestResult(result, REQUEST_LOGIN)) return;
-
-            Intent intent = new Intent(mSocialNetworkManager.getActivity(), OAuthActivity.class)
-                    .putExtra(OAuthActivity.PARAM_CALLBACK, OAUTH_CALLBACK_URL)
-                    .putExtra(OAuthActivity.PARAM_URL_TO_LOAD, result.getString(RESULT_URL));
-
-            mSocialNetworkManager.getActivity().startActivityForResult(intent, REQUEST_AUTH);
+        catch (Exception p_ex) {
+            p_ex.printStackTrace();
+            return null;
         }
+    }
+
+    private String checkInputStream(HttpURLConnection connection){
+        String code = null, errorMessage = null;
+        InputStream inputStream = connection.getErrorStream();
+        String response = streamToString(inputStream);
+        try {
+            JSONObject jsonResponse = (JSONObject) new JSONTokener(response).nextValue();
+            if(jsonResponse.has("status")) {
+                code = jsonResponse.getString("status");
+            }
+            if(jsonResponse.has("message")) {
+                errorMessage = jsonResponse.getString("message");
+            }
+            return "ERROR CODE: " + code + " ERROR MESSAGE: " + errorMessage;
+        } catch (JSONException e) {
+            return e.getMessage();
+        }
+    }
+
+    private void checkConnectionErrors(HttpsURLConnection connection) throws Exception {
+        int responseCode;
+        try {
+            responseCode = connection.getResponseCode();
+        } catch (IOException e) {
+            responseCode = connection.getResponseCode();
+        }
+        if(responseCode >= 400){
+            if(responseCode == 401) {
+                mSharedPreferences.edit()
+                        .remove(SAVE_STATE_KEY_OAUTH_TOKEN)
+                        .remove(SAVE_STATE_KEY_OAUTH_REQUEST_TOKEN)
+                        .remove(SAVE_STATE_KEY_EXPIRES_DATE)
+                        .apply();
+            }
+            throw new Exception(checkInputStream(connection));
+        }
+    }
+
+    private void checkExeption(Exception e, Bundle result){
+        result.putString(SocialNetworkAsyncTask.RESULT_ERROR, e.getMessage());
     }
 
     private class RequestLogin2AsyncTask extends SocialNetworkAsyncTask {
-        public static final String PARAM_AUTH_REQUEST_TOKEN = "PARAM_AUTH_REQUEST_TOKEN";
-        public static final String PARAM_VERIFIER = "PARAM_VERIFIER";
-        private static final String RESULT_TOKEN = "RESULT_TOKEN";
-        private static final String RESULT_SECRET = "RESULT_SECRET";
+        public static final String PARAM_VERIFIER = "Login2AsyncTask.PARAM_VERIFIER";
+
+        private static final String RESULT_ACCESS_TOKEN = "Login2AsyncTask.RESULT_TOKEN";
+        private static final String RESULT_REQUEST_TOKEN = "Login2AsyncTask.RESULT_SECRET";
+        private static final String RESULT_EXPIRES_DATE = "Login2AsyncTask.RESULT_EXPIRES_DATE";
 
         @Override
         protected Bundle doInBackground(Bundle... params) {
-            Bundle args = params[0];
-            final String paramAuthRequestToken = args.getString(PARAM_AUTH_REQUEST_TOKEN);
-            final String paramVerifier = args.getString(PARAM_VERIFIER);
-
-            Uri uri = Uri.parse(paramVerifier);
+            String verifier = params[0].getString(PARAM_VERIFIER);
 
             Bundle result = new Bundle();
+            HttpsURLConnection httpsURLConnection = null;
+            try
+            {
+                String tokenURLString = LINKEDIN_TOKEN + "&code=" + verifier + "&redirect_uri=" + LINKEDIN_OAUTH2_CALLBACK_URL +
+                        "&client_id=" + consumerKey + "&client_secret=" + consumerSecret;
 
-            try {
-                final LinkedInAccessToken accessToken = mOAuthService.getOAuthAccessToken(
-                        new LinkedInRequestToken(
-                                uri.getQueryParameter(OAUTH_QUERY_TOKEN),
-                                paramAuthRequestToken
-                        ),
-                        uri.getQueryParameter(OAUTH_QUERY_VERIFIER)
-                );
+                URL url = new URL(tokenURLString);
+                httpsURLConnection = (HttpsURLConnection) url.openConnection();
+                httpsURLConnection.setRequestMethod("POST");
 
-                result.putString(RESULT_TOKEN, accessToken.getToken());
-                result.putString(RESULT_SECRET, accessToken.getTokenSecret());
+                String response = streamToString(httpsURLConnection.getInputStream());
+                JSONObject jsonObject = (JSONObject) new JSONTokener(response).nextValue();
+
+                String accessToken = jsonObject.getString("access_token");
+                int expiresIn = jsonObject.getInt("expires_in");
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.SECOND, expiresIn);
+                long expireDate = calendar.getTimeInMillis();
+                result.putString(RESULT_ACCESS_TOKEN, accessToken);
+                result.putString(RESULT_REQUEST_TOKEN, verifier);
+                result.putLong(RESULT_EXPIRES_DATE, expireDate);
+
             } catch (Exception e) {
-                result.putString(RESULT_ERROR, e.getMessage());
+                String error;
+                if(e == null){
+                    InputStream inputStream = httpsURLConnection.getErrorStream();
+                    error = streamToString(inputStream);
+                } else {
+                    error = e.getMessage();
+                }
+                result.putString(RESULT_ERROR, error);
             }
 
             return result;
@@ -491,56 +603,59 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
 
         @Override
         protected void onPostExecute(Bundle result) {
-            mRequests.remove(REQUEST_LOGIN2);
-            if (!handleRequestResult(result, REQUEST_LOGIN)) return;
+            if (!handleRequestResult(result, REQUEST_LOGIN)){//&&!checkRequests()) {
+                return;
+            }
 
-            // Shared Preferences
             mSharedPreferences.edit()
-                    .putString(SAVE_STATE_KEY_OAUTH_TOKEN, result.getString(RESULT_TOKEN))
-                    .putString(SAVE_STATE_KEY_OAUTH_SECRET, result.getString(RESULT_SECRET))
+                    .putString(SAVE_STATE_KEY_OAUTH_TOKEN, result.getString(RESULT_ACCESS_TOKEN))
+                    .putString(SAVE_STATE_KEY_OAUTH_REQUEST_TOKEN, result.getString(RESULT_REQUEST_TOKEN))
+                    .putLong(SAVE_STATE_KEY_EXPIRES_DATE, result.getLong(RESULT_EXPIRES_DATE))
                     .apply();
-
-            ((OnLoginCompleteListener) mLocalListeners.get(REQUEST_LOGIN)).onLoginSuccess(getID());
-            mLocalListeners.remove(REQUEST_LOGIN);
+            mRequests.remove(REQUEST_LOGIN2);
+            if (mLocalListeners.get(REQUEST_LOGIN) != null){// && !restart) {
+                ((OnLoginCompleteListener) mLocalListeners.get(REQUEST_LOGIN)).onLoginSuccess(getID());
+            }
         }
     }
 
-    private class RequestSocialPersonAsyncTask extends SocialNetworkAsyncTask {
+    private class RequestGetSocialPersonAsyncTask extends SocialNetworkAsyncTask {
         public static final String PARAM_USER_ID = "RequestGetPersonAsyncTask.PARAM_USER_ID";
         public static final String CURRENT = "RequestGetPersonAsyncTask.CURRENT";
 
         @Override
         protected Bundle doInBackground(Bundle... params) {
-            Bundle result = new Bundle();
             Bundle args = params[0];
+            Bundle result = new Bundle(args);
             String userID;
-
-            try {
-                LinkedInApiClient client = mLinkedInApiClientFactory.createLinkedInApiClient(
-                        new LinkedInAccessToken(
-                                mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null),
-                                mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_SECRET, null)
-                        )
-                );
-                Person person;
-                if (args.containsKey(PARAM_USER_ID)) {
-                    userID = args.getString(PARAM_USER_ID);
-                    result.putBoolean(CURRENT, false);
-                    Set<ProfileField> scope = EnumSet.of(ProfileField.PICTURE_URL, ProfileField.ID,
-                        ProfileField.FIRST_NAME, ProfileField.LAST_NAME, ProfileField.PUBLIC_PROFILE_URL);
-                    person = client.getProfileById(userID, scope);
-                } else {
-                    result.putBoolean(CURRENT, true);
-                    person = client.getProfileForCurrentUser(PROFILE_PARAMETERS);
-                }
-                SocialPerson socialPerson = new SocialPerson();
-                getSocialPerson(socialPerson, person);
-                result.putParcelable(REQUEST_GET_PERSON, socialPerson);
-				
-            } catch (Exception e) {
-                result.putString(RESULT_ERROR, e.getMessage());
+            String fields = ":(id,first-name,last-name,picture-url,email-address,public-profile-url)";
+            String token = mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null);
+            if (args.containsKey(PARAM_USER_ID)) {
+                userID = args.getString(PARAM_USER_ID);
+                result.putBoolean(CURRENT, false);
+            } else {
+                userID = "~";
+                result.putBoolean(CURRENT, true);
             }
+            String urlString = LINKEDIN_V1_API + "/people/"+ userID + fields
+                    +"?oauth2_access_token=" + token + FORMAT_JSON;
+            try {
+                URL url = new URL(urlString);
+                HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+                connection.setInstanceFollowRedirects(true);
+                checkConnectionErrors(connection);
 
+                InputStream inputStream = connection.getInputStream();
+
+                String response = streamToString(inputStream);
+                JSONObject jsonObject = (JSONObject) new JSONTokener(response).nextValue();
+
+                SocialPerson socialPerson = new SocialPerson();
+                getSocialPerson(socialPerson, jsonObject);
+                result.putParcelable(REQUEST_GET_PERSON, socialPerson);
+            } catch (Exception e) {
+                checkExeption(e, result);
+            }
             return result;
         }
 
@@ -559,48 +674,48 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
         }
     }
 
-	private class RequestGetDetailedPersonAsyncTask extends SocialNetworkAsyncTask {
-		public static final String PARAM_USER_ID = "PARAM_USER_ID";
+    private class RequestGetDetailedPersonAsyncTask extends SocialNetworkAsyncTask {
+        public static final String PARAM_USER_ID = "RequestGetPersonAsyncTask.PARAM_USER_ID";
 
         @Override
         protected Bundle doInBackground(Bundle... params) {
-            Bundle result = new Bundle();
             Bundle args = params[0];
-            String userID;
-			
-            try {
-                LinkedInApiClient client = mLinkedInApiClientFactory.createLinkedInApiClient(
-                        new LinkedInAccessToken(
-                                mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null),
-                                mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_SECRET, null)
-                        )
-                );
-                Person person;
-                if (args.containsKey(PARAM_USER_ID)) {
-                    userID = args.getString(PARAM_USER_ID);
+            Bundle result = new Bundle(args);
+            String userID = args.getString(PARAM_USER_ID);
+            String token = mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null);
+            String fields = ":(id,first-name,last-name,headline,industry,date-of-birth,summary," +
+                    "picture-url,email-address,public-profile-url,positions,location,main-address," +
+                    "current-share,interests,specialties,phone-numbers,skills)";
 
-                    person = client.getProfileById(userID, EnumSet.allOf(ProfileField.class));
-                } else {
-                    person = client.getProfileForCurrentUser(PROFILE_PARAMETERS);
-                }
-                LinkedInPerson linkedInPerson = new LinkedInPerson();
-                getDetailedSocialPerson(linkedInPerson, person);
-                result.putParcelable(REQUEST_GET_DETAIL_PERSON, linkedInPerson);
+            String urlString = LINKEDIN_V1_API + "/people/"+ userID + fields
+                    +"?oauth2_access_token=" + token + FORMAT_JSON;
+            try {
+                URL url = new URL(urlString);
+                HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+                checkConnectionErrors(connection);
+
+                InputStream inputStream = connection.getInputStream();
+                String response = streamToString(inputStream);
+                JSONObject jsonObject = (JSONObject) new JSONTokener(response).nextValue();
+
+                LinkedInPerson linkedinPerson = new LinkedInPerson();
+                getDetailedSocialPerson(linkedinPerson, jsonObject);
+                result.putParcelable(REQUEST_GET_DETAIL_PERSON, linkedinPerson);
             } catch (Exception e) {
-                result.putString(RESULT_ERROR, e.getMessage());
+                checkExeption(e, result);
             }
             return result;
         }
 
         @Override
         protected void onPostExecute(Bundle result) {
-			if (!handleRequestResult(result, REQUEST_GET_DETAIL_PERSON)) return;
-			LinkedInPerson linkedInPerson = result.getParcelable(REQUEST_GET_DETAIL_PERSON);
-			((OnRequestDetailedSocialPersonCompleteListener) mLocalListeners.get(REQUEST_GET_DETAIL_PERSON))
-    			.onRequestDetailedSocialPersonSuccess(getID(), linkedInPerson);
-            mLocalListeners.remove(REQUEST_GET_DETAIL_PERSON);
+            if (!handleRequestResult(result, REQUEST_GET_DETAIL_PERSON)) return;
+            LinkedInPerson linkedinPerson = result.getParcelable(REQUEST_GET_DETAIL_PERSON);
+            ((OnRequestDetailedSocialPersonCompleteListener) mLocalListeners.get(REQUEST_GET_DETAIL_PERSON))
+                    .onRequestDetailedSocialPersonSuccess(getID(), linkedinPerson);
         }
     }
+
 
     private class RequestPostMessageAsyncTask extends SocialNetworkAsyncTask {
         private static final String PARAM_MESSAGE = "PARAM_MESSAGE";
@@ -608,18 +723,31 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
         @Override
         protected Bundle doInBackground(Bundle... params) {
             String message = params[0].getString(PARAM_MESSAGE);
-
             Bundle result = new Bundle();
+            String token = mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null);
+            String urlString = LINKEDIN_V1_API + "/people/~/shares?oauth2_access_token=" + token;
+            String xml;
+            if(message != null && message.length()>0) {
+                xml = MessageFormat.format(SHARE, MessageFormat.format(COMMENT, message));
+            } else {
+                result.putString(RESULT_ERROR, "Message can't be null");
+                return result;
+            }
 
             try {
-                LinkedInApiClient apiClient = mLinkedInApiClientFactory.createLinkedInApiClient(
-                        mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, ""),
-                        mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_SECRET, "")
-                );
-
-                apiClient.updateCurrentStatus(message);
+                URL url = new URL(urlString);
+                HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+                connection.setInstanceFollowRedirects(true);
+                connection.setRequestMethod("POST");
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type", "application/xml");
+                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
+                outputStreamWriter.write(xml);
+                outputStreamWriter.flush();
+                checkConnectionErrors(connection);
             } catch (Exception e) {
-                result.putString(RESULT_ERROR, e.getMessage());
+                checkExeption(e, result);
             }
 
             return result;
@@ -639,23 +767,42 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
 
         @Override
         protected Bundle doInBackground(Bundle... params) {
-            String commentText = params[0].getString(PARAM_MESSAGE);
-            String url = params[0].getString(BUNDLE_LINK);
+            String message = params[0].getString(PARAM_MESSAGE);
+            if(message == null) {message = "";}
+            String link = params[0].getString(BUNDLE_LINK);
             String title = params[0].getString(BUNDLE_NAME);
             String description = params[0].getString(BUNDLE_MESSAGE);
+            if(description == null) {description = "";}
             String imageUrl = params[0].getString(BUNDLE_PICTURE);
-            VisibilityType visibilityType = VisibilityType.ANYONE;
+            if(imageUrl == null) {imageUrl = "";}
             Bundle result = new Bundle();
 
-            try {
-                LinkedInApiClient apiClient = mLinkedInApiClientFactory.createLinkedInApiClient(
-                        mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, ""),
-                        mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_SECRET, "")
-                );
+            String token = mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null);
+            String urlString = LINKEDIN_V1_API + "/people/~/shares?oauth2_access_token=" + token;
+            String comment = MessageFormat.format(COMMENT, message);
+            String content;
+            if(link != null && link.length()>0 && title != null && title.length()>0) {
+                content = MessageFormat.format(CONTENT, title, description, link, imageUrl);
+            } else {
+                result.putString(RESULT_ERROR, "Message can't be null");
+                return result;
+            }
+            String xml =  MessageFormat.format(SHARE, comment + content);
 
-                apiClient.postShare(commentText, title, description, url, imageUrl, visibilityType);
+            try {
+                URL url = new URL(urlString);
+                HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+                connection.setInstanceFollowRedirects(true);
+                connection.setRequestMethod("POST");
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type", "application/xml");
+                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
+                outputStreamWriter.write(xml);
+                outputStreamWriter.flush();
+                checkConnectionErrors(connection);
             } catch (Exception e) {
-                result.putString(RESULT_ERROR, e.getMessage());
+                checkExeption(e, result);
             }
 
             return result;
@@ -682,18 +829,18 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
             Bundle result = new Bundle();
             result.putString(RESULT_REQUESTED_ID, userID);
 
+            String token = mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null);
+            String urlString = LINKEDIN_V1_API + "/people/~/connections"+ RequestGetFriendsAsyncTask.fields
+                    +"?oauth2_access_token=" + token + FORMAT_JSON+ "&start=0"
+                    + "&count=" + RequestGetFriendsAsyncTask.count;
+            ArrayList<SocialPerson> socialPersons = new ArrayList<SocialPerson>();
+            ArrayList<String> ids = new ArrayList<String>();
             try {
-                LinkedInApiClient apiClient = mLinkedInApiClientFactory.createLinkedInApiClient(
-                        mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, ""),
-                        mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_SECRET, "")
-                );
+                getAllFriends(urlString, socialPersons, ids, token);
 
-                Person person = apiClient.getProfileForCurrentUser(PROFILE_PARAMETERS);
-
-                List<Person> list = person.getConnections().getPersonList();
-                if (list != null) {
-                    for (Person p : list) {
-                        if (p.getId().equals(userID)) {
+                if (socialPersons != null && socialPersons.size() > 0) {
+                    for (SocialPerson socialPerson : socialPersons) {
+                        if (socialPerson.id.equals(userID)) {
                             result.putBoolean(RESULT_IS_FRIEND, true);
                             return result;
                         }
@@ -726,34 +873,25 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
     private class RequestGetFriendsAsyncTask extends SocialNetworkAsyncTask {
         public static final String RESULT_GET_FRIENDS = "RESULT_GET_FRIENDS";
         public static final String RESULT_GET_FRIENDS_ID = "RESULT_GET_FRIENDS_ID";
+        private static final String fields = ":(id,first-name,last-name,picture-url,email-address,public-profile-url)";
+        private static final int count = 500;
 
         @Override
         protected Bundle doInBackground(Bundle... params) {
             Bundle result = new Bundle();
+            String token = mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null);
+            String urlString = LINKEDIN_V1_API + "/people/~/connections"+ fields
+                    +"?oauth2_access_token=" + token + FORMAT_JSON+ "&start=0"
+                    + "&count=" + count;
+            ArrayList<SocialPerson> socialPersons = new ArrayList<SocialPerson>();
+            ArrayList<String> ids = new ArrayList<String>();
             try {
-                LinkedInApiClient apiClient = mLinkedInApiClientFactory.createLinkedInApiClient(
-                        mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, ""),
-                        mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_SECRET, "")
-                );
-                ArrayList<String> friendIds = new ArrayList<String>();
-                ArrayList<SocialPerson> socialPersons = new ArrayList<SocialPerson>();
-                SocialPerson socialPerson = new SocialPerson();
-                Connections connections = apiClient.getConnectionsForCurrentUser();
-                if(connections.getPersonList() != null)
-                    for (Person person : connections.getPersonList()) {
-                        if(person.getId() != null) {
-                            friendIds.add(person.getId());
-                        }
-                        getSocialPerson(socialPerson, person);
-                        socialPersons.add(socialPerson);
-                        socialPerson = new SocialPerson();
-                    }
-                result.putStringArray(RESULT_GET_FRIENDS_ID, friendIds.toArray(new String[friendIds.size()]));
+                getAllFriends(urlString, socialPersons, ids, token);
+                result.putStringArray(RESULT_GET_FRIENDS_ID, ids.toArray(new String[ids.size()]));
                 result.putParcelableArrayList(RESULT_GET_FRIENDS, socialPersons);
             } catch (Exception e) {
-                result.putString(RESULT_ERROR, e.getMessage());
+                checkExeption(e, result);
             }
-
             return result;
         }
 
@@ -767,67 +905,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
             ArrayList<SocialPerson> socialPersons = result.getParcelableArrayList(RESULT_GET_FRIENDS);
             ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
                     .OnGetFriendsComplete(getID(), socialPersons);
-            mLocalListeners.remove(RESULT_GET_FRIENDS);
         }
     }
 
-    private class RequestSendInviteAsyncTask extends SocialNetworkAsyncTask {
-        public static final String PARAM_USER_ID = "PARAM_USER_ID";
-        private static final String RESULT_REQUESTED_ID = "RESULT_REQUESTED_ID";
-
-        @Override
-        protected Bundle doInBackground(Bundle... params) {
-            String userID = params[0].getString(PARAM_USER_ID);
-
-            Bundle result = new Bundle();
-
-            try {
-                result.putString(RESULT_REQUESTED_ID, userID);
-
-                LinkedInApiClient apiClient = mLinkedInApiClientFactory.createLinkedInApiClient(
-                        mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, ""),
-                        mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_SECRET, "")
-                );
-
-                Set<ProfileField> fields = new HashSet<ProfileField>();
-                fields.add(ProfileField.API_STANDARD_PROFILE_REQUEST);
-
-                Person person = apiClient.getProfileById(userID, fields);
-
-                String authHeader = "";
-                Headers headers = person.getApiStandardProfileRequest().getHeaders();
-                List<HttpHeader> httpHeaders = headers.getHttpHeaderList();
-                for (HttpHeader httpHeader : httpHeaders) {
-                    if (httpHeader.getName().equals(ApplicationConstants.AUTH_HEADER_NAME)) {
-                        authHeader = httpHeader.getValue();
-                        break;
-                    }
-                }
-
-                CommunicationsApiClient communicationsApiClient = mLinkedInApiClientFactory.createCommunicationsApiClient(
-                        mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, ""),
-                        mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_SECRET, "")
-                );
-                communicationsApiClient.sendInviteById(userID, "Join my network on LinkedIn",
-                        "Since you are a person I trust, I wanted to invite you to join my network on LinkedIn.", authHeader);
-            } catch (Exception e) {
-                result.putString(RESULT_ERROR, e.getMessage());
-            }
-
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(Bundle result) {
-            if (!handleRequestResult(result, REQUEST_ADD_FRIEND,
-                    result.getString(RESULT_REQUESTED_ID))) return;
-
-            ((OnRequestAddFriendCompleteListener) mLocalListeners.get(REQUEST_ADD_FRIEND))
-                    .onRequestAddFriendComplete(
-                            getID(),
-                            result.getString(RESULT_REQUESTED_ID)
-                    );
-            mLocalListeners.remove(REQUEST_CHECK_IS_FRIEND);
-        }
-    }
 }

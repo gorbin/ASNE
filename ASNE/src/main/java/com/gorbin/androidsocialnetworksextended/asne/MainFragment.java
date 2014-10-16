@@ -43,6 +43,7 @@ import com.github.gorbin.asne.core.persons.SocialPerson;
 import com.github.gorbin.asne.facebook.FacebookSocialNetwork;
 import com.github.gorbin.asne.googleplus.GooglePlusSocialNetwork;
 import com.github.gorbin.asne.instagram.InstagramSocialNetwork;
+import com.github.gorbin.asne.linkedin.LinkedInJSocialNetwork;
 import com.github.gorbin.asne.linkedin.LinkedInSocialNetwork;
 import com.github.gorbin.asne.odnoklassniki.OkSocialNetwork;
 import com.github.gorbin.asne.twitter.TwitterSocialNetwork;
@@ -125,7 +126,7 @@ public class MainFragment  extends Fragment
 
         ArrayList<String> fbScope = new ArrayList<String>();
         fbScope.addAll(Arrays.asList("public_profile, email, user_friends, user_location, user_birthday"));
-        String linkedInScope = "r_basicprofile+rw_nus+r_network+w_messages";
+        String linkedInScope = "r_basicprofile+r_fullprofile+rw_nus+r_network+w_messages+r_emailaddress+r_contactinfo";
         String[] okScope = new String[] {
                 OkScope.VALUABLE_ACCESS
         };
@@ -213,8 +214,8 @@ public class MainFragment  extends Fragment
         if(loginProgressDialog != null) {
             loginProgressDialog.cancelProgress();
         }
-        Log.d("TAG Login failed: ", "onLoginFailed: " + requestID + " : " + errorMessage);
         Toast.makeText(getActivity(), Constants.handleError(socialNetworkID, requestID, errorMessage), Toast.LENGTH_LONG).show();
+        updateSocialCard(socialCards[socialNetworkID-1], socialNetworkID);
     }
 
     @Override
@@ -274,6 +275,8 @@ public class MainFragment  extends Fragment
 //        }
 //        return socialNetwork;
 //    }
+//==================================================================================================
+
     private void updateSocialCard(final SocialCard socialCard, final int networkId) {
         final SocialNetwork socialNetwork = mSocialNetworkManager.getSocialNetwork(networkId);//getSpecialSocialCard(networkId);
         if((socialNetwork != null) && (socialNetwork.isConnected())) {
@@ -332,6 +335,7 @@ public class MainFragment  extends Fragment
                                         public void onADialogsPositiveClick(DialogInterface dialog) {
                                             Bundle postParams = new Bundle();
                                             postParams.putString(SocialNetwork.BUNDLE_LINK, Constants.link);
+                                            postParams.putString(SocialNetwork.BUNDLE_NAME, Constants.title);
                                             socialNetwork.requestPostLink(postParams, Constants.message, postingComplete);
                                         }
 

@@ -47,7 +47,7 @@ public class Constants {
     public static final SharePost[] twShareNum ={SharePost.POST_MESSAGE,SharePost.POST_PHOTO,SharePost.POST_LINK};
     public static final String[] gpShare ={"Share Dialog"};
     public static final SharePost[] gpShareNum ={SharePost.POST_DIALOG};
-    public static final String[] inShare ={"Post status update", "Post share Link"};
+    public static final String[] inShare ={"Share message", "Post share Link"};
     public static final SharePost[] inShareNum ={SharePost.POST_MESSAGE,SharePost.POST_LINK};
     public static final String[] vkShare ={"Post message","Post photo to wall","Post Link"};
     public static final SharePost[] vkShareNum ={SharePost.POST_MESSAGE,SharePost.POST_PHOTO,
@@ -60,6 +60,7 @@ public class Constants {
     public static final SharePost[][] shareNum = {twShareNum, inShareNum, gpShareNum, fbShareNum,
             vkShareNum, okShareNum, instagramShareNum};
     public static final String message = "Hello from ASNE!";
+    public static final String title = "Android social networks library";
     public static final String link = "https://github.com/gorbin/ASNE";
     public static final String facebookShare = "Some Facebook permissions you can get only after " +
             "Facebook submission, so my demo app wasn't submitted due low functionality. So if you " +

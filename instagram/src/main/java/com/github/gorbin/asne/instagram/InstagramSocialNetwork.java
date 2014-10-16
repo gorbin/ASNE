@@ -345,7 +345,8 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
         super.requestCheckIsFriend(userID, onCheckIsFriendCompleteListener);
         Bundle args = new Bundle();
         args.putString(RequestCheckIsFriendAsyncTask.PARAM_USER_ID, userID);
-        executeRequest(new RequestCheckIsFriendAsyncTask(), args, REQUEST_CHECK_IS_FRIEND);    }
+        executeRequest(new RequestCheckIsFriendAsyncTask(), args, REQUEST_CHECK_IS_FRIEND);
+    }
 
     /**
      * Get current user friends list

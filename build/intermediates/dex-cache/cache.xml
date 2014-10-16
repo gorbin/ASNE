@@ -2,7 +2,7 @@
 <pre-dex-items>
 
     <item
-        dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\release\linkedin-j-android-1.0-0fa679b42f2a386313836fab11c53cd45a8b6b0b.jar"
+        dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\debug\linkedin-j-android-1.0-0fa679b42f2a386313836fab11c53cd45a8b6b0b.jar"
         jar="D:\develop\ASNE\ASNE\build\intermediates\exploded-aar\com.github.asne\linkedin\0.2.1\libs\linkedin-j-android-1.0.jar"
         jumboMode="false"
         revision="19.1.0"
@@ -12,9 +12,9 @@
         jar="D:\develop\ASNE\ASNE\build\intermediates\exploded-aar\com.github.asne\facebook\0.2.1\classes.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="e26b8902022d66c055bcac52e18ace3bff17f352"/>
+        sha1="c7a6efb52a568f5100711c2939486267f2435480"/>
     <item
-        dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\release\signpost-commonshttp4-1.2.1.1-3f7c7ec9efe94ea1816290f5f877fc4324e3f5e0.jar"
+        dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\debug\signpost-commonshttp4-1.2.1.1-3f7c7ec9efe94ea1816290f5f877fc4324e3f5e0.jar"
         jar="D:\develop\ASNE\ASNE\build\intermediates\exploded-aar\com.github.asne\ASNECore\0.2.1\libs\signpost-commonshttp4-1.2.1.1.jar"
         jumboMode="false"
         revision="19.1.0"
@@ -30,7 +30,7 @@
         jar="D:\develop\ASNE\ASNE\build\intermediates\exploded-aar\com.github.asne\ASNECore\0.2.1\classes.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="ef80ca16faaafcc6816e3ee8a41635bca9efbb55"/>
+        sha1="707ff74aff6ad9b40baad94e3a96233408d014ff"/>
     <item
         dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\debug\twitter4j-core-4.0.1-52a499d6130d2889ea23ba70cb576e7e24c8f589.jar"
         jar="C:\Users\idea\.gradle\caches\modules-2\files-2.1\org.twitter4j\twitter4j-core\4.0.1\37fd1d1eb3ed57916c9fdd1ea1f6c3afce778c7c\twitter4j-core-4.0.1.jar"
@@ -38,13 +38,19 @@
         revision="19.1.0"
         sha1="37fd1d1eb3ed57916c9fdd1ea1f6c3afce778c7c"/>
     <item
+        dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\debug\classes-460a1e5a38681d7c3d6a578f21b366aa9bdf58a2.jar"
+        jar="D:\develop\ASNE\ASNE\build\intermediates\exploded-aar\com.github.asne.facebook\facebook\3.17.2\classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="0027a7b1c1f861403303ac4b10ac53fb6067324b"/>
+    <item
         dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\debug\classes-ad25d049144713e6662572898c14a7f4ca5d5a63.jar"
         jar="D:\develop\ASNE\ASNE\build\intermediates\exploded-aar\com.android.support\support-v4\20.0.0\classes.jar"
         jumboMode="false"
         revision="19.1.0"
         sha1="8694693636ab36910c8100ce527c258ff3ebece0"/>
     <item
-        dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\release\odnoklassniki-android-sdk-9b369493a0130351ea635b648a5e34cc34f4a20d.jar"
+        dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\debug\odnoklassniki-android-sdk-9b369493a0130351ea635b648a5e34cc34f4a20d.jar"
         jar="D:\develop\ASNE\ASNE\build\intermediates\exploded-aar\com.github.asne\odnoklassniki\0.2.1\libs\odnoklassniki-android-sdk.jar"
         jumboMode="false"
         revision="19.1.0"
@@ -60,7 +66,7 @@
         jar="D:\develop\ASNE\ASNE\build\intermediates\exploded-aar\com.github.asne\googleplus\0.2.1\classes.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="8fe96ee32c822dcbfc7651301c6159e12074a41c"/>
+        sha1="00014524842d7677f571f6a0c1bdd91724ac1d29"/>
     <item
         dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\debug\bugsense-3.6.1-277251378dd44ed31d9732b65fb4d1169cf79042.jar"
         jar="D:\develop\ASNE\ASNE\libs\bugsense-3.6.1.jar"
@@ -78,7 +84,7 @@
         jar="D:\develop\ASNE\ASNE\build\intermediates\exploded-aar\com.github.asne\odnoklassniki\0.2.1\classes.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="52f9b55b9aec552a5266060c2ae05029fb5bf5dd"/>
+        sha1="fa19d8223a021df7360048f259e13b0ba85d14e2"/>
     <item
         dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\debug\picasso-2.2.0-0b7481ee0f5a8d3c73a6c688881dea1c303d815e.jar"
         jar="D:\develop\ASNE\ASNE\libs\picasso-2.2.0.jar"
@@ -102,21 +108,21 @@
         jar="D:\develop\ASNE\ASNE\build\intermediates\exploded-aar\com.github.asne\linkedin\0.2.1\classes.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="07f274a91ac9065e1ee855d14c4971acfcfe7ca6"/>
+        sha1="4e36c04e0a5ff5f3c8df1367f54f8082709ca659"/>
     <item
         dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\debug\classes-346627f2332d6da0a5f3a29aa927d7bd5f6e6525.jar"
         jar="D:\develop\ASNE\ASNE\build\intermediates\exploded-aar\com.github.asne\twitter\0.2.1\classes.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="67255e79a76d41feee427b356b6a75a02dd10f3a"/>
+        sha1="560d6d64faffb7ede721f05f9ca1597452b879d7"/>
     <item
         dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\debug\classes-bc8eae43abe45b2caccc33f4da0c5549dddd357d.jar"
         jar="D:\develop\ASNE\ASNE\build\intermediates\exploded-aar\com.github.asne\instagram\0.2.1\classes.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="845d3e8c6512a9d13545dbdaca75f99b2bc17241"/>
+        sha1="4835988695a9ffdd7ea861d6d5eb2c1b92476710"/>
     <item
-        dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\release\signpost-core-1.2.1.1-27572592eb881ca549224732242bc78da6007a7e.jar"
+        dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\debug\signpost-core-1.2.1.1-27572592eb881ca549224732242bc78da6007a7e.jar"
         jar="D:\develop\ASNE\ASNE\build\intermediates\exploded-aar\com.github.asne\ASNECore\0.2.1\libs\signpost-core-1.2.1.1.jar"
         jumboMode="false"
         revision="19.1.0"
@@ -126,7 +132,7 @@
         jar="D:\develop\ASNE\ASNE\build\intermediates\exploded-aar\com.github.asne\vk\0.2.1\classes.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="04abe410fcfe7c7a8bab3b9743728122cc4a4a65"/>
+        sha1="65558144d93029f76b18ed88f931ae25eaffdc41"/>
     <item
         dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\debug\bolts-android-1.1.2-609a90ce7d1250e593feceb8f789450306f1b1b9.jar"
         jar="C:\Users\idea\.gradle\caches\modules-2\files-2.1\com.parse.bolts\bolts-android\1.1.2\91c20388c9a45f62b5ed8fe0502bb76ff6251fc7\bolts-android-1.1.2.jar"

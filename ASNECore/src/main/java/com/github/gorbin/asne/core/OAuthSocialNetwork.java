@@ -23,7 +23,6 @@ package com.github.gorbin.asne.core;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 
 import com.github.gorbin.asne.core.listener.base.SocialNetworkListener;
 
@@ -53,8 +52,6 @@ public abstract class OAuthSocialNetwork extends SocialNetwork {
     }
 
     private void cancelRequest(String requestID) {
-        Log.d(TAG, "SocialNetwork.cancelRequest: " + requestID);
-
         SocialNetworkAsyncTask request = mRequests.get(requestID);
 
         if (request != null) {
@@ -209,8 +206,6 @@ public abstract class OAuthSocialNetwork extends SocialNetwork {
     }
 
     protected boolean handleRequestResult(Bundle result, String requestID, Object data) {
-        Log.d(TAG, this + "handleRequestResult: " + result + " : " + requestID);
-
         mRequests.remove(requestID);
 
         SocialNetworkListener socialNetworkListener = mLocalListeners.get(requestID);
@@ -218,7 +213,6 @@ public abstract class OAuthSocialNetwork extends SocialNetwork {
         // 1: user didn't set listener, or pass null, this doesn't have any sence
         // 2: request was canceled...
         if (socialNetworkListener == null) {
-            Log.e(TAG, "handleRequestResult socialNetworkListener == null");
             return false;
         }
 
