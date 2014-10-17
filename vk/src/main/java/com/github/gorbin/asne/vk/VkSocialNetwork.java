@@ -258,7 +258,7 @@ public class VkSocialNetwork extends SocialNetwork {
             current = false;
         }
         request.secure = false;
-        request.useSystemLanguage = false;
+        request.useSystemLanguage = true;
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
@@ -302,7 +302,7 @@ public class VkSocialNetwork extends SocialNetwork {
                 "id,first_name,last_name,photo_200"
         ));
         request.secure = false;
-        request.useSystemLanguage = false;
+        request.useSystemLanguage = true;
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
@@ -360,7 +360,7 @@ public class VkSocialNetwork extends SocialNetwork {
         ));
         }
         request.secure = false;
-        request.useSystemLanguage = false;
+        request.useSystemLanguage = true;
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {

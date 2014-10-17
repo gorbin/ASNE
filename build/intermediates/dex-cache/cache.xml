@@ -108,7 +108,7 @@
         jar="D:\develop\ASNE\ASNE\build\intermediates\exploded-aar\com.github.asne\linkedin\0.2.1\classes.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="4e36c04e0a5ff5f3c8df1367f54f8082709ca659"/>
+        sha1="05227d753c1b9182b31f11ecca7bbf8296a409c8"/>
     <item
         dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\debug\classes-346627f2332d6da0a5f3a29aa927d7bd5f6e6525.jar"
         jar="D:\develop\ASNE\ASNE\build\intermediates\exploded-aar\com.github.asne\twitter\0.2.1\classes.jar"
@@ -132,7 +132,7 @@
         jar="D:\develop\ASNE\ASNE\build\intermediates\exploded-aar\com.github.asne\vk\0.2.1\classes.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="65558144d93029f76b18ed88f931ae25eaffdc41"/>
+        sha1="077575ff6fd7017653a27cd7372029d2ac686573"/>
     <item
         dex="D:\develop\ASNE\ASNE\build\intermediates\pre-dexed\debug\bolts-android-1.1.2-609a90ce7d1250e593feceb8f789450306f1b1b9.jar"
         jar="C:\Users\idea\.gradle\caches\modules-2\files-2.1\com.parse.bolts\bolts-android\1.1.2\91c20388c9a45f62b5ed8fe0502bb76ff6251fc7\bolts-android-1.1.2.jar"
