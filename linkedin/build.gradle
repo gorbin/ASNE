@@ -8,7 +8,7 @@ android {
     defaultConfig {
         applicationId "com.github.gorbin.asne.linkedin"
         minSdkVersion 9
-        targetSdkVersion 17
+        targetSdkVersion 19
         versionCode 1
         versionName "1.0"
     }
