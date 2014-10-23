@@ -107,9 +107,8 @@ public class VkSocialNetwork extends SocialNetwork {
 
         @Override
         public void onAccessDenied(VKError authorizationError) {
-            new AlertDialog.Builder(VKUIHelper.getTopActivity())
-                    .setMessage(authorizationError.toString())
-                    .show();
+            mLocalListeners.get(REQUEST_LOGIN).onError(getID(), REQUEST_LOGIN,
+                    authorizationError.toString(), null);
         }
 
         @Override
@@ -264,12 +263,12 @@ public class VkSocialNetwork extends SocialNetwork {
         final boolean current;
         if(userID == null){
             request = VKApi.users().get(VKParameters.from(VKApiConst.FIELDS,
-                    "id,first_name,last_name,photo_200"
+                    "id,first_name,last_name,photo_max_orig"
             ));
             current = true;
         } else {
             request = VKApi.users().get(VKParameters.from(VKApiConst.USER_IDS, userID, VKApiConst.FIELDS,
-                    "id,first_name,last_name,photo_200"
+                    "id,first_name,last_name,photo_max_orig"
             ));
             current = false;
         }
@@ -315,7 +314,7 @@ public class VkSocialNetwork extends SocialNetwork {
         super.requestSocialPersons(userID, onRequestSocialPersonsCompleteListener);
         String userIds = TextUtils.join(",", userID);
         VKRequest request = VKApi.users().get(VKParameters.from(VKApiConst.USER_IDS, userIds, VKApiConst.FIELDS,
-                "id,first_name,last_name,photo_200"
+                "id,first_name,last_name,photo_max_orig"
         ));
         request.secure = false;
         request.useSystemLanguage = true;
@@ -364,13 +363,13 @@ public class VkSocialNetwork extends SocialNetwork {
         VKRequest request;
         if(userId == null){
             request = VKApi.users().get(VKParameters.from(VKApiConst.FIELDS,
-                    "id,first_name,last_name,photo_200,contacts,sex,bdate,city,country," +
+                    "id,first_name,last_name,photo_max_orig,contacts,sex,bdate,city,country," +
                             "photo_max_orig,online,screen_name,has_mobile,education,can_post," +
                             "can_see_all_posts,can_write_private_message,status"
             ));
         } else {
             request = VKApi.users().get(VKParameters.from(VKApiConst.USER_IDS, userId, VKApiConst.FIELDS,
-                "id,first_name,last_name,photo_200,contacts,sex,bdate,city,country," +
+                "id,first_name,last_name,photo_max_orig,contacts,sex,bdate,city,country," +
                 "photo_max_orig,online,screen_name,has_mobile,education,can_post," +
                 "can_see_all_posts,can_write_private_message,status"
         ));
@@ -430,11 +429,8 @@ public class VkSocialNetwork extends SocialNetwork {
             lastName = jsonResponse.getString("last_name");
         }
         socialPerson.name = firstName + " " + lastName;
-        if(jsonResponse.has("photo_200_orig")) {
-            socialPerson.avatarURL = jsonResponse.getString("photo_200_orig");
-        }
-        if(jsonResponse.has("photo_200")) {
-            socialPerson.avatarURL = jsonResponse.getString("photo_200");
+        if (jsonResponse.has("photo_max_orig")) {
+            socialPerson.avatarURL = jsonResponse.getString("photo_max_orig");
         }
         return socialPerson;
     }
@@ -660,7 +656,7 @@ public class VkSocialNetwork extends SocialNetwork {
     public void requestGetFriends(OnRequestGetFriendsCompleteListener onRequestGetFriendsCompleteListener) {
         super.requestGetFriends(onRequestGetFriendsCompleteListener);
         VKRequest request = VKApi.friends().get(VKParameters.from(VKApiConst.FIELDS,
-                "id,first_name,last_name,photo_200_orig"));
+                "id,first_name,last_name,photo_max_orig"));
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
