@@ -80,6 +80,9 @@ import java.util.ArrayList;
 public class VkSocialNetwork extends SocialNetwork {
     /*** Social network ID in asne modules, should be unique*/
     public static final int ID = 5;
+    private static final String SAVE_STATE_KEY_OAUTH_TOKEN = "VkSocialNetwork.SAVE_STATE_KEY_OAUTH_TOKEN";
+    private static final String SAVE_STATE_KEY_OAUTH_SECRET = "VkSocialNetwork.SAVE_STATE_KEY_OAUTH_SECRET";
+    private static final String SAVE_STATE_KEY_USER_ID = "VkSocialNetwork.SAVE_STATE_KEY_USER_ID";
     /*** Developer activity*/
     private Activity activity;
     /*** VK app id*/
@@ -112,6 +115,11 @@ public class VkSocialNetwork extends SocialNetwork {
         @Override
         public void onReceiveNewToken(VKAccessToken newToken) {
             accessToken = newToken;
+            mSharedPreferences.edit()
+                    .putString(SAVE_STATE_KEY_OAUTH_TOKEN, accessToken.accessToken)
+                    .putString(SAVE_STATE_KEY_OAUTH_SECRET, accessToken.secret)
+                    .putString(SAVE_STATE_KEY_USER_ID, accessToken.userId)
+                    .apply();
             if (mLocalListeners.get(REQUEST_LOGIN) != null) {
                 ((OnLoginCompleteListener) mLocalListeners.get(REQUEST_LOGIN)).onLoginSuccess(getID());
                 mLocalListeners.remove(REQUEST_LOGIN);
@@ -122,6 +130,11 @@ public class VkSocialNetwork extends SocialNetwork {
         @Override
         public void onAcceptUserToken(VKAccessToken token) {
             accessToken = token;
+            mSharedPreferences.edit()
+                    .putString(SAVE_STATE_KEY_OAUTH_TOKEN, accessToken.accessToken)
+                    .putString(SAVE_STATE_KEY_OAUTH_SECRET, accessToken.secret)
+                    .putString(SAVE_STATE_KEY_USER_ID, accessToken.userId)
+                    .apply();
             requestIdPerson();
         }
     };
@@ -212,7 +225,8 @@ public class VkSocialNetwork extends SocialNetwork {
      */
     @Override
     public AccessToken getAccessToken() {
-        return new AccessToken(accessToken.toString(), null);
+        return new AccessToken(mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null),
+                mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_SECRET, null));
     }
 
     /**
@@ -223,7 +237,9 @@ public class VkSocialNetwork extends SocialNetwork {
     public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
         super.requestAccessToken(onRequestAccessTokenCompleteListener);
         ((OnRequestAccessTokenCompleteListener) mLocalListeners.get(REQUEST_ACCESS_TOKEN))
-                .onRequestAccessTokenComplete(getID(), new AccessToken(accessToken.toString(), null));
+                .onRequestAccessTokenComplete(getID(),
+                        new AccessToken(mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null),
+                        mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_SECRET, null)));
     }
 
     /**
@@ -258,7 +274,7 @@ public class VkSocialNetwork extends SocialNetwork {
             current = false;
         }
         request.secure = false;
-        request.useSystemLanguage = false;
+        request.useSystemLanguage = true;
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
@@ -302,7 +318,7 @@ public class VkSocialNetwork extends SocialNetwork {
                 "id,first_name,last_name,photo_200"
         ));
         request.secure = false;
-        request.useSystemLanguage = false;
+        request.useSystemLanguage = true;
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
@@ -360,7 +376,7 @@ public class VkSocialNetwork extends SocialNetwork {
         ));
         }
         request.secure = false;
-        request.useSystemLanguage = false;
+        request.useSystemLanguage = true;
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
