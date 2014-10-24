@@ -104,7 +104,7 @@ public class MainFragment  extends Fragment
 
         ArrayList<String> fbScope = new ArrayList<String>();
         fbScope.addAll(Arrays.asList("public_profile, email, user_friends, user_location, user_birthday"));
-        String linkedInScope = "r_basicprofile+rw_nus+r_network+w_messages";
+        String linkedInScope = "r_basicprofile+r_fullprofile+rw_nus+r_network+w_messages+r_emailaddress+r_contactinfo";
         String[] okScope = new String[] {
                 OkScope.VALUABLE_ACCESS
         };
