@@ -43,6 +43,11 @@ public class VKPerson extends SocialPerson implements Parcelable {
             return new VKPerson[size];
         }
     };
+
+    /*** First name of social person*/
+    public String firstName;
+    /*** Last name of social person*/
+    public String lastName;
     /*** Sex of social person.  1 - female, 2 - male, 0 - not presented. */
     public int sex;
     /*** Birthday of social person like dd.MM.yyyy or dd.mm if year not permitted*/
@@ -83,6 +88,8 @@ public class VKPerson extends SocialPerson implements Parcelable {
     }
 
     private VKPerson(Parcel in) {
+        lastName = in.readString();
+        firstName = in.readString();
         sex = in.readInt();
         birthday = in.readString();
         city = in.readString();
@@ -109,6 +116,8 @@ public class VKPerson extends SocialPerson implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(firstName);
+        dest.writeString(lastName);
         dest.writeInt(sex);
         dest.writeString(birthday);
         dest.writeString(city);
@@ -142,6 +151,10 @@ public class VKPerson extends SocialPerson implements Parcelable {
         if (hasMobile != vkPerson.hasMobile) return false;
         if (online != vkPerson.online) return false;
         if (sex != vkPerson.sex) return false;
+        if (firstName != null ? !firstName.equals(vkPerson.firstName) : vkPerson.firstName != null)
+            return false;
+        if (lastName != null ? !lastName.equals(vkPerson.lastName) : vkPerson.lastName != null)
+            return false;
         if (birthday != null ? !birthday.equals(vkPerson.birthday) : vkPerson.birthday != null)
             return false;
         if (city != null ? !city.equals(vkPerson.city) : vkPerson.city != null) return false;
@@ -171,6 +184,8 @@ public class VKPerson extends SocialPerson implements Parcelable {
     public int hashCode() {
         int result = super.hashCode();
         result = 31 * result + sex;
+        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
+        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
         result = 31 * result + (birthday != null ? birthday.hashCode() : 0);
         result = 31 * result + (city != null ? city.hashCode() : 0);
         result = 31 * result + (country != null ? country.hashCode() : 0);
@@ -198,6 +213,8 @@ public class VKPerson extends SocialPerson implements Parcelable {
                 ", avatarURL='" + avatarURL + '\'' +
                 ", profileURL='" + profileURL + '\'' +
                 ", email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", sex='" + sex + '\'' +
                 ", birthday='" + birthday + '\'' +
                 ", city='" + city + '\'' +

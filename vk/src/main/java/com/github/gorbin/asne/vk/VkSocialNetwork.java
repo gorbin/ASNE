@@ -123,7 +123,7 @@ public class VkSocialNetwork extends SocialNetwork {
                 ((OnLoginCompleteListener) mLocalListeners.get(REQUEST_LOGIN)).onLoginSuccess(getID());
                 mLocalListeners.remove(REQUEST_LOGIN);
             }
-            requestIdPerson();
+            userId = accessToken.userId;
         }
 
         @Override
@@ -134,7 +134,7 @@ public class VkSocialNetwork extends SocialNetwork {
                     .putString(SAVE_STATE_KEY_OAUTH_SECRET, accessToken.secret)
                     .putString(SAVE_STATE_KEY_USER_ID, accessToken.userId)
                     .apply();
-            requestIdPerson();
+            userId = accessToken.userId;
         }
     };
 
@@ -169,6 +169,7 @@ public class VkSocialNetwork extends SocialNetwork {
             @Override
             public void onError(VKError error) {
                 throw new SocialNetworkException("Error in id request! " + error);
+
             }
             @Override
             public void onProgress(VKRequest.VKProgressType progressType,
@@ -294,7 +295,13 @@ public class VkSocialNetwork extends SocialNetwork {
             }
             @Override
             public void onError(VKError error) {
-                throw new SocialNetworkException("Error in person request! " + error);
+                if(current){
+                    mLocalListeners.get(REQUEST_GET_CURRENT_PERSON).onError(getID(), REQUEST_GET_CURRENT_PERSON,
+                            error.toString(), null);
+                } else {
+                    mLocalListeners.get(REQUEST_GET_PERSON).onError(getID(), REQUEST_GET_PERSON,
+                            error.toString(), null);
+                }
             }
 
             @Override
@@ -340,8 +347,9 @@ public class VkSocialNetwork extends SocialNetwork {
             }
             @Override
             public void onError(VKError error) {
+                mLocalListeners.get(REQUEST_GET_PERSONS).onError(getID(), REQUEST_GET_PERSONS,
+                        error.toString(), null);
                 mLocalListeners.remove(REQUEST_GET_PERSONS);
-                throw new SocialNetworkException("Error in person request! " + error);
             }
 
             @Override
@@ -392,7 +400,8 @@ public class VkSocialNetwork extends SocialNetwork {
 
             @Override
             public void onError(VKError error) {
-                throw new SocialNetworkException("Error in detailed person request! " + error);
+                mLocalListeners.get(REQUEST_GET_DETAIL_PERSON).onError(getID(), REQUEST_GET_DETAIL_PERSON,
+                        error.toString(), null);
             }
 
             @Override
@@ -444,6 +453,12 @@ public class VkSocialNetwork extends SocialNetwork {
      */
     private VKPerson getDetailedSocialPerson(VKPerson vkPerson, JSONObject jsonResponse) throws JSONException {
         getSocialPerson(vkPerson, jsonResponse);
+        if(jsonResponse.has("first_name")) {
+            vkPerson.firstName = jsonResponse.getString("first_name");
+        }
+        if(jsonResponse.has("last_name")) {
+            vkPerson.lastName = jsonResponse.getString("last_name");
+        }
         if(jsonResponse.has("sex")) {
             vkPerson.sex = Integer.parseInt(jsonResponse.getString("sex"));
         }
@@ -529,7 +544,8 @@ public class VkSocialNetwork extends SocialNetwork {
             }
             @Override
             public void onError(VKError error) {
-                throw new SocialNetworkException("Error in posting! " + error);
+                mLocalListeners.get(REQUEST_POST_PHOTO).onError(getID(), REQUEST_POST_PHOTO,
+                        error.toString(), null);
             }
         });
     }
@@ -591,8 +607,8 @@ public class VkSocialNetwork extends SocialNetwork {
 
             @Override
             public void onError(VKError error) {
-                mLocalListeners.get(requestID).onError(getID(), requestID, error.toString(), null);
-                throw new SocialNetworkException("Error in posting! " + error);
+                mLocalListeners.get(requestID).onError(getID(), requestID,
+                        error.toString(), null);
             }
         });
     }
@@ -685,7 +701,8 @@ public class VkSocialNetwork extends SocialNetwork {
             }
             @Override
             public void onError(VKError error) {
-                throw new SocialNetworkException("Error in getting friends! " + error);
+                mLocalListeners.get(REQUEST_GET_FRIENDS).onError(getID(), REQUEST_GET_FRIENDS,
+                        error.toString(), null);
             }
         });
     }
@@ -711,7 +728,8 @@ public class VkSocialNetwork extends SocialNetwork {
             }
             @Override
             public void onError(VKError error) {
-                throw new SocialNetworkException("Error in getting friends! " + error);
+                mLocalListeners.get(REQUEST_ADD_FRIEND).onError(getID(), REQUEST_ADD_FRIEND,
+                        error.toString(), null);
             }
         });
     }
@@ -737,7 +755,8 @@ public class VkSocialNetwork extends SocialNetwork {
             }
             @Override
             public void onError(VKError error) {
-                throw new SocialNetworkException("Error in getting friends! " + error);
+                mLocalListeners.get(REQUEST_REMOVE_FRIEND).onError(getID(), REQUEST_REMOVE_FRIEND,
+                        error.toString(), null);
             }
         });
     }
@@ -754,7 +773,10 @@ public class VkSocialNetwork extends SocialNetwork {
         VKSdk.initialize(vkSdkListener, key);
         VKSdk.wakeUpSession();
         if(isConnected()) {
-            requestIdPerson();
+            userId = mSharedPreferences.getString(SAVE_STATE_KEY_USER_ID, null);
+            if(userId == null){
+                requestIdPerson();
+            }
         }
     }
 
