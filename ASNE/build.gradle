@@ -1,4 +1,4 @@
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
@@ -25,8 +25,8 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:19.+'
-    compile 'com.android.support:support-v4:19.+'
+    compile 'com.android.support:appcompat-v7:20.0'
+    compile 'com.android.support:support-v4:20.0'
     compile 'com.github.asne:asne-facebook:0.2.8'
     compile 'com.github.asne:asne-vk:0.2.8'
     compile 'com.github.asne:asne-twitter:0.2.8'
