@@ -26,7 +26,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,7 +77,12 @@ public class MainFragment  extends Fragment
     public static final String OK_SECRET_KEY =  "OK_SECRET_KEY";
     public static final String INSTAGRAM_CLIENT_KEY = "INSTAGRAM_KEY";
     public static final String INSTAGRAM_CLIENT_SECRET = "INSTAGRAM_SECRET";
-    
+
+    //redirect urls
+    public static final String TWITTER_CALLBACK_URL = "oauth://ASNE";
+    public static final String LINKEDIN_CALLBACK_URL = "https://asne";
+    public static final String INSTAGRAM_CALLBACK_URL = "oauth://ASNE";
+
     public static final String SOCIAL_NETWORK_TAG = "SocialIntegrationMain.SOCIAL_NETWORK_TAG";
     public static SocialNetworkManager mSocialNetworkManager;
     ADialogs loginProgressDialog;
@@ -147,10 +151,10 @@ public class MainFragment  extends Fragment
             FacebookSocialNetwork fbNetwork = new FacebookSocialNetwork(this, fbScope);
             mSocialNetworkManager.addSocialNetwork(fbNetwork);
 
-            TwitterSocialNetwork twNetwork = new TwitterSocialNetwork(this, TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
+            TwitterSocialNetwork twNetwork = new TwitterSocialNetwork(this, TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, TWITTER_CALLBACK_URL);
             mSocialNetworkManager.addSocialNetwork(twNetwork);
 
-            LinkedInSocialNetwork liNetwork = new LinkedInSocialNetwork(this, LINKEDIN_CONSUMER_KEY, LINKEDIN_CONSUMER_SECRET, linkedInScope);
+            LinkedInSocialNetwork liNetwork = new LinkedInSocialNetwork(this, LINKEDIN_CONSUMER_KEY, LINKEDIN_CONSUMER_SECRET, LINKEDIN_CALLBACK_URL, linkedInScope);
             mSocialNetworkManager.addSocialNetwork(liNetwork);
 
             GooglePlusSocialNetwork gpNetwork = new GooglePlusSocialNetwork(this);
@@ -162,7 +166,7 @@ public class MainFragment  extends Fragment
             OkSocialNetwork okNetwork = new OkSocialNetwork(this, OK_APP_ID, OK_PUBLIC_KEY, OK_SECRET_KEY, okScope);
             mSocialNetworkManager.addSocialNetwork(okNetwork);
 
-            InstagramSocialNetwork instagramNetwork = new InstagramSocialNetwork(this, INSTAGRAM_CLIENT_KEY, INSTAGRAM_CLIENT_SECRET, instagramScope);
+            InstagramSocialNetwork instagramNetwork = new InstagramSocialNetwork(this, INSTAGRAM_CLIENT_KEY, INSTAGRAM_CLIENT_SECRET, INSTAGRAM_CALLBACK_URL, instagramScope);
             mSocialNetworkManager.addSocialNetwork(instagramNetwork);
 
             getFragmentManager().beginTransaction().add(mSocialNetworkManager, SOCIAL_NETWORK_TAG).commit();
