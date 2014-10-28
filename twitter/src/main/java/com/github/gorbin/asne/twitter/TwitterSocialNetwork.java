@@ -75,17 +75,20 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
     private static final String URL_TWITTER_OAUTH_VERIFIER = "oauth_verifier";
     // max 16 bit to use in startActivityForResult
     private static final int REQUEST_AUTH = UUID.randomUUID().hashCode() & 0xFFFF;
-    private final String TWITTER_CALLBACK_URL = "oauth://ASNE";
+//    private final String TWITTER_CALLBACK_URL = "oauth://ASNE";
     private final String fConsumerKey;
     private final String fConsumerSecret;
+    private String fRedirectURL;
     private Twitter mTwitter;
     private RequestToken mRequestToken;
 
-    public TwitterSocialNetwork(Fragment fragment, String consumerKey, String consumerSecret) {
+    public TwitterSocialNetwork(Fragment fragment, String consumerKey, String consumerSecret, String redirectURL) {
         super(fragment);
 
         fConsumerKey = consumerKey;
         fConsumerSecret = consumerSecret;
+        fRedirectURL = redirectURL;
+
 
         if (TextUtils.isEmpty(fConsumerKey) || TextUtils.isEmpty(fConsumerSecret)) {
             throw new IllegalArgumentException("consumerKey and consumerSecret are invalid");
@@ -426,7 +429,7 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
 
         Uri uri = data != null ? data.getData() : null;
 
-        if (uri != null && uri.toString().startsWith(TWITTER_CALLBACK_URL)) {
+        if (uri != null && uri.toString().startsWith(fRedirectURL)) {
             String verifier = uri.getQueryParameter(URL_TWITTER_OAUTH_VERIFIER);
 
             RequestLogin2AsyncTask requestLogin2AsyncTask = new RequestLogin2AsyncTask();
@@ -468,7 +471,7 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
             Bundle result = new Bundle();
 
             try {
-                mRequestToken = mTwitter.getOAuthRequestToken(TWITTER_CALLBACK_URL);
+                mRequestToken = mTwitter.getOAuthRequestToken(fRedirectURL);
                 Uri oauthLoginURL = Uri.parse(mRequestToken.getAuthenticationURL() + "&force_login=true");
 
                 result.putString(RESULT_OAUTH_LOGIN, oauthLoginURL.toString());
@@ -485,7 +488,7 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
 
             if (result.containsKey(RESULT_OAUTH_LOGIN)) {
                 Intent intent = new Intent(mSocialNetworkManager.getActivity(), OAuthActivity.class)
-                        .putExtra(OAuthActivity.PARAM_CALLBACK, TWITTER_CALLBACK_URL)
+                        .putExtra(OAuthActivity.PARAM_CALLBACK, fRedirectURL)
                         .putExtra(OAuthActivity.PARAM_URL_TO_LOAD, result.getString(RESULT_OAUTH_LOGIN));
 
                 mSocialNetworkManager.getActivity().startActivityForResult(intent, REQUEST_AUTH);

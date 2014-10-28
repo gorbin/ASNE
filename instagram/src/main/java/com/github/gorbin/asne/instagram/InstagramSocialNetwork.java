@@ -78,19 +78,21 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
     private static final String INSTAGRAM_TOKENURL ="https://api.instagram.com/oauth/access_token";
     private static final String INSTAGRAM_APIURL = "https://api.instagram.com/v1";
     private static final String ERROR_CODE = "InstagramSocialNetwork.ERROR_CODE";
-    private final String INSTAGRAM_CALLBACK_URL = "oauth://ASNE";
+//    private final String INSTAGRAM_CALLBACK_URL = "oauth://ASNE";
     private final String authURLString;
     private final String tokenURLString;
     private final String clientId;
     private final String clientSecret;
+    private final String redirectURL;
     private boolean restart = false;
     private Bundle requestBundle;
 
-    public InstagramSocialNetwork(Fragment fragment, String clientId, String clientSecret, String scope) {
+    public InstagramSocialNetwork(Fragment fragment, String clientId, String clientSecret, String redirectURL, String scope) {
         super(fragment);
 
         this.clientId = clientId;
         this.clientSecret = clientSecret;
+        this.redirectURL = redirectURL;
 
         if (TextUtils.isEmpty(clientId) || TextUtils.isEmpty(clientSecret)) {
             throw new IllegalArgumentException("clientId and clientSecret are invalid");
@@ -100,10 +102,10 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
         }
         String INSTAGRAM_AUTHURL = "https://api.instagram.com/oauth/authorize/";
         authURLString = INSTAGRAM_AUTHURL + "?client_id=" + clientId + "&redirect_uri="
-                + INSTAGRAM_CALLBACK_URL + "&response_type=code&display=touch&scope=" + scope;
+                + redirectURL + "&response_type=code&display=touch&scope=" + scope;
 
         tokenURLString = INSTAGRAM_TOKENURL + "?client_id=" + clientId + "&client_secret="
-                + clientSecret + "&redirect_uri=" + INSTAGRAM_CALLBACK_URL + "&grant_type=authorization_code";
+                + clientSecret + "&redirect_uri=" + redirectURL + "&grant_type=authorization_code";
     }
 
     /**
@@ -129,7 +131,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
 
     private void initInstagramLogin(){
         Intent intent = new Intent(mSocialNetworkManager.getActivity(), OAuthActivity.class)
-                .putExtra(OAuthActivity.PARAM_CALLBACK, INSTAGRAM_CALLBACK_URL)
+                .putExtra(OAuthActivity.PARAM_CALLBACK, redirectURL)
                 .putExtra(OAuthActivity.PARAM_URL_TO_LOAD, authURLString);
         mSocialNetworkManager.getActivity().startActivityForResult(intent, REQUEST_AUTH);
     }
@@ -398,7 +400,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
 
         Uri uri = data != null ? data.getData() : null;
 
-        if (uri != null && uri.toString().startsWith(INSTAGRAM_CALLBACK_URL)) {
+        if (uri != null && uri.toString().startsWith(redirectURL)) {
             String parts[] = uri.toString().split("=");
             String verifier = parts[1];
             RequestLogin2AsyncTask requestLogin2AsyncTask = new RequestLogin2AsyncTask();
@@ -559,9 +561,9 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                 httpsURLConnection.setDoOutput(true);
                 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(httpsURLConnection.getOutputStream());
                 outputStreamWriter.write("client_id="+clientId+
-                        "&client_secret="+ clientSecret +
+                        "&client_secret=" + clientSecret +
                         "&grant_type=authorization_code" +
-                        "&redirect_uri="+INSTAGRAM_CALLBACK_URL+
+                        "&redirect_uri=" + redirectURL +
                         "&code=" + verifier);
                 outputStreamWriter.flush();
                 String response = streamToString(httpsURLConnection.getInputStream());
