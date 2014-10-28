@@ -112,7 +112,7 @@ public class OAuthActivity extends Activity {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.startsWith(paramCallback)) {
+                if (url.toLowerCase().startsWith(paramCallback.toLowerCase())) {
                     Intent intent = new Intent();
                     intent.setData(Uri.parse(url));
                     setResult(RESULT_OK, intent);

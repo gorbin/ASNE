@@ -471,7 +471,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
 
         Uri uri = data != null ? data.getData() : null;
 
-        if (uri != null && uri.toString().startsWith(redirectURL)) {
+        if (uri != null && uri.toString().startsWith(redirectURL.toLowerCase())) {
             String parts[] = uri.toString().split("=");
             String verifier = parts[1];
             verifier = verifier.substring(0, verifier.indexOf("&"));
