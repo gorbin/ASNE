@@ -30,7 +30,7 @@ public class Constants {
     public static final int[] logo = {R.drawable.ic_twitter, R.drawable.ic_linkedin,
             R.drawable.ic_googleplus, R.drawable.ic_facebook, R.drawable.ic_vk,
             R.drawable.ic_odnoklassniki, R.drawable.ic_instagram};
-    public static final String[] socialName = {"Twitter","LinkedIn","Google+","Facebook",
+    public static final String[] socialName = {"Twitter","LinkedIn","GooglePlus","Facebook",
             "Vkontakte","Odnoklassniki", "Instagram"};
     public static final int[] userPhoto = {R.drawable.twitter_user, R.drawable.linkedin_user,
             R.drawable.g_plus_user, R.drawable.com_facebook_profile_picture_blank_square,

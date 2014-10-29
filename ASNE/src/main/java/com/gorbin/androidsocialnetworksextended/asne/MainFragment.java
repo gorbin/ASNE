@@ -42,7 +42,6 @@ import com.github.gorbin.asne.core.persons.SocialPerson;
 import com.github.gorbin.asne.facebook.FacebookSocialNetwork;
 import com.github.gorbin.asne.googleplus.GooglePlusSocialNetwork;
 import com.github.gorbin.asne.instagram.InstagramSocialNetwork;
-import com.github.gorbin.asne.linkedin.LinkedInJSocialNetwork;
 import com.github.gorbin.asne.linkedin.LinkedInSocialNetwork;
 import com.github.gorbin.asne.odnoklassniki.OkSocialNetwork;
 import com.github.gorbin.asne.twitter.TwitterSocialNetwork;
