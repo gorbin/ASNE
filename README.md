@@ -1,6 +1,6 @@
 ![enter image description here][1]
 
-ASNE        [![ASNE Maven Central](http://img.shields.io/badge/ASNE%20Maven%20Central-0.2.1-brightgreen.svg?style=flat)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.asne%22) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-ASNE-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/868)
+ASNE        [![ASNE Maven Central](http://img.shields.io/badge/ASNE%20Maven%20Central-0.3.1-brightgreen.svg?style=flat)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.asne%22) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-ASNE-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/868)
 =====================
 ASNE library created for simple integration of social setworks to android applications. If you want to integrate your application with multiple social networks just choose ASNE modules and add them to your project. You just need to: add module, build SocialNetworkManager and configure your AndroidManiferst. 
 ASNE contains common interface for most popular social networks, but you can easily make module for another.
