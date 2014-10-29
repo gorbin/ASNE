@@ -24,5 +24,5 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:20.0.0'
     compile project(':ASNECore')
-    compile 'com.github.asne.facebook:facebook:3.17.2'
+    compile 'com.facebook.android:facebook-android-sdk:3.19.1'
 }
