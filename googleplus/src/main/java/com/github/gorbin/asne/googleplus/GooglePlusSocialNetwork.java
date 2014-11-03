@@ -80,11 +80,10 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
      * so let's handle state by ourselves
      */
     private static final String SAVE_STATE_KEY_IS_CONNECTED = "GooglePlusSocialNetwork.SAVE_STATE_KEY_OAUTH_TOKEN";
+    private static Activity mActivity;
     private GoogleApiClient googleApiClient;
     private ConnectionResult mConnectionResult;
-
     private boolean mConnectRequested;
-
     private Handler mHandler = new Handler();
 
     public GooglePlusSocialNetwork(Fragment fragment) {
@@ -110,7 +109,7 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
         super.requestLogin(onLoginCompleteListener);
         mConnectRequested = true;
         try {
-            mConnectionResult.startResolutionForResult(mSocialNetworkManager.getActivity(), REQUEST_AUTH);
+            mConnectionResult.startResolutionForResult(mActivity, REQUEST_AUTH);
         } catch (Exception e) {
             if (!googleApiClient.isConnecting()) {
                 googleApiClient.connect();
@@ -158,13 +157,13 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
     public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
         super.requestAccessToken(onRequestAccessTokenCompleteListener);
 
-        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+        AsyncTask<Activity, Void, String> task = new AsyncTask<Activity, Void, String>() {
             @Override
-            protected String doInBackground(Void... params) {
+            protected String doInBackground(Activity... params) {
                 String scope = "oauth2:" + Scopes.PLUS_LOGIN;
                 String token;
                 try {
-                    token = GoogleAuthUtil.getToken(mSocialNetworkManager.getActivity(),
+                    token = GoogleAuthUtil.getToken(params[0],
                             Plus.AccountApi.getAccountName(googleApiClient), scope);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -179,11 +178,11 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
                     ((OnRequestAccessTokenCompleteListener) mLocalListeners.get(REQUEST_ACCESS_TOKEN))
                             .onRequestAccessTokenComplete(getID(), new AccessToken(token, null));
                 } else {
-                    mLocalListeners.get(REQUEST_LOGIN).onError(getID(), REQUEST_ACCESS_TOKEN, token, null);
+                    mLocalListeners.get(REQUEST_ACCESS_TOKEN).onError(getID(), REQUEST_ACCESS_TOKEN, token, null);
                 }
             }
         };
-        task.execute();
+        task.execute(mActivity);
     }
 
     /**
@@ -231,7 +230,7 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
                         }
                         if (mLocalListeners.get(REQUEST_GET_PERSONS) != null) {
                             ((OnRequestSocialPersonsCompleteListener) mLocalListeners.get(REQUEST_GET_PERSONS))
-                                            .onRequestSocialPersonsSuccess(getID(), socialPersons);
+                                    .onRequestSocialPersonsSuccess(getID(), socialPersons);
                             mLocalListeners.remove(REQUEST_GET_PERSONS);
                         }
                     } finally {
@@ -239,8 +238,8 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
                     }
                 } else {
                     if (mLocalListeners.get(REQUEST_GET_PERSONS) != null) {
-                            mLocalListeners.get(REQUEST_GET_PERSONS)
-                                        .onError(getID(), REQUEST_GET_PERSONS, "Can't get persons"
+                        mLocalListeners.get(REQUEST_GET_PERSONS)
+                                .onError(getID(), REQUEST_GET_PERSONS, "Can't get persons"
                                         + loadPeopleResult.getStatus(), null);
                         mLocalListeners.remove(REQUEST_GET_PERSONS);
                     }
@@ -271,7 +270,7 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
                         }
                         if (mLocalListeners.get(REQUEST_GET_DETAIL_PERSON) != null) {
                             ((OnRequestDetailedSocialPersonCompleteListener) mLocalListeners.get(REQUEST_GET_DETAIL_PERSON))
-                                            .onRequestDetailedSocialPersonSuccess(getID(), googlePlusPerson);
+                                    .onRequestDetailedSocialPersonSuccess(getID(), googlePlusPerson);
                             mLocalListeners.remove(REQUEST_GET_DETAIL_PERSON);
                         }
                     } finally {
@@ -434,7 +433,7 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
     @Override
     public void requestPostDialog(Bundle bundle, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostDialog(bundle, onPostingCompleteListener);
-        PlusShare.Builder plusShare =  new PlusShare.Builder(mSocialNetworkManager.getActivity())
+        PlusShare.Builder plusShare =  new PlusShare.Builder(mActivity)
                 .setType("text/plain");
         if(bundle != null){
             if(bundle.containsKey(BUNDLE_MESSAGE)){
@@ -445,7 +444,7 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
             }
         }
         Intent shareIntent = plusShare.getIntent();
-        mSocialNetworkManager.getActivity().startActivityForResult(shareIntent, 0);
+        mActivity.startActivityForResult(shareIntent, 0);
     }
 
     /**
@@ -490,9 +489,9 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
                         } else {
                             if (mLocalListeners.get(REQUEST_GET_FRIENDS) != null) {
                                 ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                                                .OnGetFriendsIdComplete(getID(), ids.toArray(new String[ids.size()]));
+                                        .OnGetFriendsIdComplete(getID(), ids.toArray(new String[ids.size()]));
                                 ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                                                .OnGetFriendsComplete(getID(), socialPersons);
+                                        .OnGetFriendsComplete(getID(), socialPersons);
                                 mLocalListeners.remove(REQUEST_GET_FRIENDS);
                             }
                         }
@@ -502,8 +501,8 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
                 } else {
                     if (mLocalListeners.get(REQUEST_GET_FRIENDS) != null) {
                         mLocalListeners.get(REQUEST_GET_FRIENDS)
-                                        .onError(getID(), REQUEST_GET_DETAIL_PERSON, "Can't get person"
-                                                + loadPeopleResult.getStatus(), null);
+                                .onError(getID(), REQUEST_GET_DETAIL_PERSON, "Can't get person"
+                                        + loadPeopleResult.getStatus(), null);
                     }
                 }
             }
@@ -539,10 +538,11 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mActivity = mSocialNetworkManager.getActivity();
         Plus.PlusOptions plusOptions = new Plus.PlusOptions.Builder()
                 .addActivityTypes(MomentUtil.ACTIONS)
                 .build();
-        googleApiClient = new GoogleApiClient.Builder(mSocialNetworkManager.getActivity())
+        googleApiClient = new GoogleApiClient.Builder(mActivity)
                 .addApi(Plus.API,  plusOptions)
                 .addScope(Plus.SCOPE_PLUS_LOGIN)
                 .addScope(Plus.SCOPE_PLUS_PROFILE)
@@ -599,11 +599,11 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
     @Override
     public void onConnected(Bundle bundle) {
         if (mConnectRequested) {
-                if (mLocalListeners.get(REQUEST_LOGIN) != null) {
-                    mSharedPreferences.edit().putBoolean(SAVE_STATE_KEY_IS_CONNECTED, true).commit();
-                    ((OnLoginCompleteListener) mLocalListeners.get(REQUEST_LOGIN)).onLoginSuccess(getID());
-                    return;
-                }
+            if (mLocalListeners.get(REQUEST_LOGIN) != null) {
+                mSharedPreferences.edit().putBoolean(SAVE_STATE_KEY_IS_CONNECTED, true).commit();
+                ((OnLoginCompleteListener) mLocalListeners.get(REQUEST_LOGIN)).onLoginSuccess(getID());
+                return;
+            }
             if (mLocalListeners.get(REQUEST_LOGIN) != null) {
                 mLocalListeners.get(REQUEST_LOGIN).onError(getID(), REQUEST_LOGIN,
                         "get person == null", null);

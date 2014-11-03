@@ -351,6 +351,7 @@ public class FacebookSocialNetwork extends SocialNetwork {
     public void requestPostPhoto(File photo, String message, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostPhoto(photo, message, onPostingCompleteListener);
         mPhotoPath = photo.getAbsolutePath();
+        mStatus = message;
         performPublish(PendingAction.POST_PHOTO);
     }
 
@@ -691,7 +692,7 @@ public class FacebookSocialNetwork extends SocialNetwork {
 
         switch (previouslyPendingAction) {
             case POST_PHOTO:
-                postPhoto(mPhotoPath);
+                postPhoto(mPhotoPath, mStatus);
                 break;
             case POST_STATUS_UPDATE:
                 postStatusUpdate(mStatus);
@@ -718,7 +719,7 @@ public class FacebookSocialNetwork extends SocialNetwork {
         }
     }
 
-    private void postPhoto(final String path) {
+    private void postPhoto(final String path, final String message) {
         if (Session.getActiveSession().isPermissionGranted(PERMISSION)){
             Bitmap image = BitmapFactory.decodeFile(path);
             Request request = Request.newUploadPhotoRequest(Session.getActiveSession(), image, new Request.Callback() {
@@ -728,6 +729,11 @@ public class FacebookSocialNetwork extends SocialNetwork {
                             response.getError() == null ? null : response.getError().getErrorMessage());
                 }
             });
+            if(message != null && message.length()>0) {
+                Bundle parameters = request.getParameters();
+                parameters.putString("message", message);
+                request.setParameters(parameters);
+            }
             request.executeAsync();
         } else {
             mPendingAction = PendingAction.POST_PHOTO;
