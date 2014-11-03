@@ -729,11 +729,11 @@ public class FacebookSocialNetwork extends SocialNetwork {
                             response.getError() == null ? null : response.getError().getErrorMessage());
                 }
             });
-            
-            Bundle parameters = request.getParameters();
-            parameters.putString("message", message);
-            request.setParameters(parameters);
-            
+            if(message != null && message.length()>0) {
+                Bundle parameters = request.getParameters();
+                parameters.putString("message", message);
+                request.setParameters(parameters);
+            }
             request.executeAsync();
         } else {
             mPendingAction = PendingAction.POST_PHOTO;
