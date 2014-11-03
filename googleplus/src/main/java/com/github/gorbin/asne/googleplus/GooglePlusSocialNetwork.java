@@ -28,12 +28,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 
 import com.github.gorbin.asne.core.AccessToken;
 import com.github.gorbin.asne.core.SocialNetwork;
 import com.github.gorbin.asne.core.SocialNetworkException;
-import com.github.gorbin.asne.core.SocialNetworkManager;
 import com.github.gorbin.asne.core.listener.OnCheckIsFriendCompleteListener;
 import com.github.gorbin.asne.core.listener.OnLoginCompleteListener;
 import com.github.gorbin.asne.core.listener.OnPostingCompleteListener;
@@ -82,14 +80,11 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
      * so let's handle state by ourselves
      */
     private static final String SAVE_STATE_KEY_IS_CONNECTED = "GooglePlusSocialNetwork.SAVE_STATE_KEY_OAUTH_TOKEN";
+    private static Activity mActivity;
     private GoogleApiClient googleApiClient;
     private ConnectionResult mConnectionResult;
-
     private boolean mConnectRequested;
-
     private Handler mHandler = new Handler();
-
-    private static Activity mActivity;
 
     public GooglePlusSocialNetwork(Fragment fragment) {
         super(fragment);
