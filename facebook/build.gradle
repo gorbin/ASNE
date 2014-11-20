@@ -2,13 +2,13 @@ apply plugin: 'com.android.library'
 apply from: '../maven_push.gradle'
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion '19.1.0'
+    compileSdkVersion 21
+    buildToolsVersion '21.1.1'
 
     defaultConfig {
         applicationId "com.github.gorbin.asne.facebook"
         minSdkVersion 10
-        targetSdkVersion 19
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
     }
@@ -22,7 +22,7 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:20.0.0'
+    compile 'com.android.support:appcompat-v7:21.0.2'
     compile project(':ASNECore')
     compile 'com.facebook.android:facebook-android-sdk:3.19.1'
 }

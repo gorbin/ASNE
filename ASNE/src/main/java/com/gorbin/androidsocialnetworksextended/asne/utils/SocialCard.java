@@ -58,7 +58,7 @@ public class SocialCard extends RelativeLayout {
         if(!isInEditMode()){
             TypedArray typedAttrs = context.obtainStyledAttributes(st,
             R.styleable.social_card, 0, 0);
-            color = typedAttrs.getColor(R.styleable.social_card_color,
+            color = typedAttrs.getColor(R.styleable.social_card_social_card_color,
             getResources().getColor(R.color.green));
             textColor = typedAttrs.getColor(R.styleable.social_card_text_color,
             getResources().getColor(R.color.green));
