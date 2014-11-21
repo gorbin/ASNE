@@ -11,74 +11,74 @@
         android:layout_height="wrap_content">
 
         <com.gorbin.androidsocialnetworksextended.asne.utils.SocialCard
+            android:id="@+id/fb_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            custom:color="@color/facebook"
-            custom:text_color="@color/facebook"
             custom:dark_color="@color/facebook_light"
             custom:profile_image="@drawable/com_facebook_profile_picture_blank_square"
-            android:id="@+id/fb_card"/>
+            custom:social_card_color="@color/facebook"
+            custom:text_color="@color/facebook"/>
         <com.gorbin.androidsocialnetworksextended.asne.utils.SocialCard
+            android:id="@+id/tw_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            custom:color="@color/twitter"
-            custom:text_color="@color/twitter"
+            android:layout_below="@id/fb_card"
             custom:dark_color="@color/twitter_light"
             custom:profile_image="@drawable/twitter_user"
-            android:layout_below="@id/fb_card"
-            android:id="@+id/tw_card"/>
+            custom:social_card_color="@color/twitter"
+            custom:text_color="@color/twitter"/>
         <com.gorbin.androidsocialnetworksextended.asne.utils.SocialCard
+            android:id="@+id/gp_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            custom:color="@color/google_plus"
-            custom:text_color="@color/google_plus"
+            android:layout_below="@id/tw_card"
             custom:dark_color="@color/google_plus_light"
             custom:profile_image="@drawable/g_plus_user"
-            android:layout_below="@id/tw_card"
-            android:id="@+id/gp_card"/>
+            custom:social_card_color="@color/google_plus"
+            custom:text_color="@color/google_plus"/>
         <com.gorbin.androidsocialnetworksextended.asne.utils.SocialCard
+            android:id="@+id/in_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            custom:color="@color/linkedin"
-            custom:text_color="@color/linkedin"
+            android:layout_below="@id/gp_card"
             custom:dark_color="@color/linkedin_light"
             custom:profile_image="@drawable/linkedin_user"
-            android:layout_below="@id/gp_card"
-            android:id="@+id/in_card"/>
+            custom:social_card_color="@color/linkedin"
+            custom:text_color="@color/linkedin"/>
         <com.gorbin.androidsocialnetworksextended.asne.utils.SocialCard
+            android:id="@+id/insta_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            custom:color="@color/instagram"
-            custom:text_color="@color/instagram"
+            android:layout_below="@id/in_card"
             custom:dark_color="@color/instagram_light"
             custom:profile_image="@drawable/instagram_user"
-            android:layout_below="@id/in_card"
-            android:id="@+id/insta_card"/>
+            custom:social_card_color="@color/instagram"
+            custom:text_color="@color/instagram"/>
         <com.gorbin.androidsocialnetworksextended.asne.utils.SocialCard
+            android:id="@+id/vk_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            custom:color="@color/vk"
-            custom:text_color="@color/vk"
+            android:layout_below="@id/insta_card"
             custom:dark_color="@color/vk_light"
             custom:profile_image="@drawable/vk_user"
-            android:layout_below="@id/insta_card"
-            android:id="@+id/vk_card"/>
+            custom:social_card_color="@color/vk"
+            custom:text_color="@color/vk"/>
         <com.gorbin.androidsocialnetworksextended.asne.utils.SocialCard
+            android:id="@+id/ok_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            custom:color="@color/ok"
-            custom:text_color="@color/ok"
+            android:layout_below="@id/vk_card"
             custom:dark_color="@color/ok_light"
             custom:profile_image="@drawable/ok_user"
-            android:layout_below="@id/vk_card"
-            android:id="@+id/ok_card"/>
+            custom:social_card_color="@color/ok"
+            custom:text_color="@color/ok"/>
 
     </RelativeLayout>
 </ScrollView>

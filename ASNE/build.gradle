@@ -5,11 +5,11 @@ android {
         config {
         }
     }
-    compileSdkVersion 19
-    buildToolsVersion '19.1.0'
+    compileSdkVersion 21
+    buildToolsVersion '21.1.1'
     defaultConfig {
         minSdkVersion 10
-        targetSdkVersion 19
+        targetSdkVersion 21
         versionCode 4
         versionName '0.2.1.'
     }
@@ -25,14 +25,14 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:20.0'
-    compile 'com.android.support:support-v4:20.0'
-    compile 'com.github.asne:asne-facebook:0.2.8'
-    compile 'com.github.asne:asne-vk:0.2.8'
-    compile 'com.github.asne:asne-twitter:0.2.8'
-    compile 'com.github.asne:asne-odnoklassniki:0.2.8'
-    compile 'com.github.asne:asne-googleplus:0.2.8'
-    compile 'com.github.asne:asne-linkedin:0.2.8'
-    compile 'com.github.asne:asne-instagram:0.2.8'
+    compile 'com.android.support:appcompat-v7:21.0.2'
+    compile 'com.android.support:support-v4:21.0.2'
+    compile 'com.github.asne:asne-facebook:0.3.3'
+    compile 'com.github.asne:asne-vk:0.3.3'
+    compile 'com.github.asne:asne-twitter:0.3.3'
+    compile 'com.github.asne:asne-odnoklassniki:0.3.3'
+    compile 'com.github.asne:asne-googleplus:0.3.3'
+    compile 'com.github.asne:asne-linkedin:0.3.3'
+    compile 'com.github.asne:asne-instagram:0.3.3'
 }
 

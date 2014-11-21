@@ -7,13 +7,13 @@
     android:background="@color/grey_light_light">
 
     <com.gorbin.androidsocialnetworksextended.asne.utils.SocialCard
+        android:id="@+id/info_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        custom:color="@color/facebook"
-        custom:text_color="@color/facebook"
         custom:dark_color="@color/facebook_light"
         custom:profile_image="@drawable/user"
-        android:id="@+id/info_card"/>
+        custom:social_card_color="@color/facebook"
+        custom:text_color="@color/facebook"/>
 
 </ScrollView>

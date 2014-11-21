@@ -15,11 +15,12 @@ import com.gorbin.androidsocialnetworksextended.asne.R;
 import com.squareup.picasso.Picasso;
 
 public class SocialCard extends RelativeLayout {
-    private TextView name;
-	private TextView id;
 	public Button connect;
 	public Button share;
     public Button friends;
+    public Button detail;
+    private TextView name;
+	private TextView id;
     private ImageView image;
 	private ImageView divider;
 	private LinearLayout buttonLayout;
@@ -29,7 +30,6 @@ public class SocialCard extends RelativeLayout {
     private int buttonTextColor;
 	private int profileImage;
     private Context context;
-    public Button detail;
 
     public SocialCard(Context context, AttributeSet st) {
         super(context, st);
@@ -37,7 +37,7 @@ public class SocialCard extends RelativeLayout {
         if(!isInEditMode()){
             TypedArray typedAttrs = context.obtainStyledAttributes(st,
             R.styleable.social_card, 0, 0);
-            color = typedAttrs.getColor(R.styleable.social_card_color,
+            color = typedAttrs.getColor(R.styleable.social_card_social_card_color,
             getResources().getColor(R.color.green));
             textColor = typedAttrs.getColor(R.styleable.social_card_text_color,
             getResources().getColor(R.color.green));

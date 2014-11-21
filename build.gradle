@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.12.+'
+        classpath 'com.android.tools.build:gradle:0.13.+'
     }
 }
 
@@ -17,11 +17,11 @@ allprojects {
     group = GROUP
 
     repositories {
-        mavenCentral()
-//        maven {
+//        mavenCentral()
+        maven {
 ////            url 'https://oss.sonatype.org/content/groups/public'
-//          url 'https://oss.sonatype.org/content/groups/staging'
-//       }
+          url 'https://oss.sonatype.org/content/groups/staging'
+       }
     }
 }
 
