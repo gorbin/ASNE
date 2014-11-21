@@ -78,7 +78,7 @@ public class MainFragment  extends Fragment
     public static final String INSTAGRAM_CLIENT_SECRET = "INSTAGRAM_SECRET";
 
     //redirect urls
-    public static final String TWITTER_CALLBACK_URL = "oauth://ASNE";
+    public static final String TWITTER_CALLBACK_URL = "http://github.com/gorbin/ASNE";
     public static final String LINKEDIN_CALLBACK_URL = "https://asne";
     public static final String INSTAGRAM_CALLBACK_URL = "oauth://ASNE";
 
