@@ -76,13 +76,13 @@ Add dependency for chosen module, here example for all modules, you can choose o
 ```
 dependencies {
 ...
-    compile 'com.github.asne:asne-facebook:0.3.1'
-    compile 'com.github.asne:asne-twitter:0.3.1'
-    compile 'com.github.asne:asne-googleplus:0.3.1'
-    compile 'com.github.asne:asne-linkedin:0.3.1'
-    compile 'com.github.asne:asne-instagram:0.3.1'
-    compile 'com.github.asne:asne-vk:0.3.1'
-    compile 'com.github.asne:asne-odnoklassniki:0.3.1'
+    compile 'com.github.asne:asne-facebook:0.3.3'
+    compile 'com.github.asne:asne-twitter:0.3.3'
+    compile 'com.github.asne:asne-googleplus:0.3.3'
+    compile 'com.github.asne:asne-linkedin:0.3.3'
+    compile 'com.github.asne:asne-instagram:0.3.3'
+    compile 'com.github.asne:asne-vk:0.3.3'
+    compile 'com.github.asne:asne-odnoklassniki:0.3.3'
 ...
 }
 ```
