@@ -82,7 +82,7 @@ public class FacebookSocialNetwork extends SocialNetwork {
     private String mPhotoPath;
     private String mStatus;
     private Bundle mBundle;
-    private ArrayList<String> permissions;
+    private ArrayList<String> mPermissions;
     private PendingAction mPendingAction = PendingAction.NONE;
     private Session.StatusCallback mSessionStatusCallback = new Session.StatusCallback() {
         @Override
@@ -99,7 +99,7 @@ public class FacebookSocialNetwork extends SocialNetwork {
             throw new IllegalStateException("applicationID can't be null\n" +
                     "Please check https://developers.facebook.com/docs/android/getting-started/");
         }
-        this.permissions = permissions;
+        this.mPermissions = permissions;
     }
 
     /**
@@ -138,12 +138,11 @@ public class FacebookSocialNetwork extends SocialNetwork {
         }
 
         if (!currentSession.isOpened()) {
-            Session.OpenRequest openRequest;
-            openRequest = new Session.OpenRequest(mSocialNetworkManager.getActivity());
+            Session.OpenRequest openRequest = new Session.OpenRequest(mSocialNetworkManager.getActivity());
 
             openRequest.setDefaultAudience(SessionDefaultAudience.EVERYONE);
-            if(permissions != null) {
-                openRequest.setPermissions(permissions);
+            if (mPermissions != null) {
+                openRequest.setPermissions(mPermissions);
             }
             openRequest.setLoginBehavior(SessionLoginBehavior.SSO_WITH_FALLBACK);
             currentSession.openForRead(openRequest);

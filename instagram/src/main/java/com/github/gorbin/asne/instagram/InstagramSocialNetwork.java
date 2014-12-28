@@ -79,20 +79,20 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
     private static final String INSTAGRAM_APIURL = "https://api.instagram.com/v1";
     private static final String ERROR_CODE = "InstagramSocialNetwork.ERROR_CODE";
 //    private final String INSTAGRAM_CALLBACK_URL = "oauth://ASNE";
-    private final String authURLString;
-    private final String tokenURLString;
-    private final String clientId;
-    private final String clientSecret;
-    private final String redirectURL;
-    private boolean restart = false;
-    private Bundle requestBundle;
+    private final String mAuthURLString;
+    private final String mTokenURLString;
+    private final String mClientId;
+    private final String mClientSecret;
+    private final String mRedirectURL;
+    private boolean mRestart = false;
+    private Bundle mRequestBundle;
 
     public InstagramSocialNetwork(Fragment fragment, String clientId, String clientSecret, String redirectURL, String scope) {
         super(fragment);
 
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.redirectURL = redirectURL;
+        this.mClientId = clientId;
+        this.mClientSecret = clientSecret;
+        this.mRedirectURL = redirectURL;
 
         if (TextUtils.isEmpty(clientId) || TextUtils.isEmpty(clientSecret)) {
             throw new IllegalArgumentException("clientId and clientSecret are invalid");
@@ -101,10 +101,10 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
             scope = "basic";
         }
         String INSTAGRAM_AUTHURL = "https://api.instagram.com/oauth/authorize/";
-        authURLString = INSTAGRAM_AUTHURL + "?client_id=" + clientId + "&redirect_uri="
+        mAuthURLString = INSTAGRAM_AUTHURL + "?client_id=" + clientId + "&redirect_uri="
                 + redirectURL + "&response_type=code&display=touch&scope=" + scope;
 
-        tokenURLString = INSTAGRAM_TOKENURL + "?client_id=" + clientId + "&client_secret="
+        mTokenURLString = INSTAGRAM_TOKENURL + "?client_id=" + clientId + "&client_secret="
                 + clientSecret + "&redirect_uri=" + redirectURL + "&grant_type=authorization_code";
     }
 
@@ -131,8 +131,8 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
 
     private void initInstagramLogin(){
         Intent intent = new Intent(mSocialNetworkManager.getActivity(), OAuthActivity.class)
-                .putExtra(OAuthActivity.PARAM_CALLBACK, redirectURL)
-                .putExtra(OAuthActivity.PARAM_URL_TO_LOAD, authURLString);
+                .putExtra(OAuthActivity.PARAM_CALLBACK, mRedirectURL)
+                .putExtra(OAuthActivity.PARAM_URL_TO_LOAD, mAuthURLString);
         mSocialNetworkManager.getActivity().startActivityForResult(intent, REQUEST_AUTH);
     }
 
@@ -400,7 +400,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
 
         Uri uri = data != null ? data.getData() : null;
 
-        if (uri != null && uri.toString().startsWith(redirectURL)) {
+        if (uri != null && uri.toString().startsWith(mRedirectURL)) {
             String parts[] = uri.toString().split("=");
             String verifier = parts[1];
             RequestLogin2AsyncTask requestLogin2AsyncTask = new RequestLogin2AsyncTask();
@@ -472,10 +472,10 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
 
     private boolean checkTokenError(Bundle result) {
         if(result != null && result.containsKey(ERROR_CODE) && result.getString(ERROR_CODE).contains("400") && result.getString(ERROR_CODE).contains("OAuth")) {
-            restart = true;
-            requestBundle = result;
-            requestBundle.remove(ERROR_CODE);
-            requestBundle.remove(SocialNetworkAsyncTask.RESULT_ERROR);
+            mRestart = true;
+            mRequestBundle = result;
+            mRequestBundle.remove(ERROR_CODE);
+            mRequestBundle.remove(SocialNetworkAsyncTask.RESULT_ERROR);
             initInstagramLogin();
             return true;
         }
@@ -502,31 +502,31 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
     }
 
     private void restartRequests(){
-        restart = false;
+        mRestart = false;
         if(mLocalListeners.containsKey(REQUEST_GET_CURRENT_PERSON)){
             mRequests.remove(REQUEST_GET_CURRENT_PERSON);
-            executeRequest(new RequestGetSocialPersonAsyncTask(), requestBundle, REQUEST_GET_CURRENT_PERSON);
+            executeRequest(new RequestGetSocialPersonAsyncTask(), mRequestBundle, REQUEST_GET_CURRENT_PERSON);
         } else if (mLocalListeners.containsKey(REQUEST_GET_PERSON)) {
             mRequests.remove(REQUEST_GET_PERSON);
-            executeRequest(new RequestGetSocialPersonAsyncTask(), requestBundle, REQUEST_GET_PERSON);
+            executeRequest(new RequestGetSocialPersonAsyncTask(), mRequestBundle, REQUEST_GET_PERSON);
         } else if (mLocalListeners.containsKey(REQUEST_GET_DETAIL_PERSON)) {
             mRequests.remove(REQUEST_GET_DETAIL_PERSON);
-            executeRequest(new RequestGetDetailedPersonAsyncTask(), requestBundle, REQUEST_GET_DETAIL_PERSON);
+            executeRequest(new RequestGetDetailedPersonAsyncTask(), mRequestBundle, REQUEST_GET_DETAIL_PERSON);
         } else if(mLocalListeners.containsKey(REQUEST_GET_PERSONS)){
             mRequests.remove(REQUEST_GET_PERSONS);
-            executeRequest(new RequestSocialPersonsAsyncTask(), requestBundle, REQUEST_GET_PERSONS);
+            executeRequest(new RequestSocialPersonsAsyncTask(), mRequestBundle, REQUEST_GET_PERSONS);
         } else if(mRequests.containsKey(REQUEST_CHECK_IS_FRIEND)) {
             mRequests.remove(REQUEST_CHECK_IS_FRIEND);
-            executeRequest(new RequestCheckIsFriendAsyncTask(), requestBundle, REQUEST_CHECK_IS_FRIEND);
+            executeRequest(new RequestCheckIsFriendAsyncTask(), mRequestBundle, REQUEST_CHECK_IS_FRIEND);
         } else if(mRequests.containsKey(REQUEST_GET_FRIENDS)) {
             mRequests.remove(REQUEST_GET_FRIENDS);
-            executeRequest(new RequestGetFriendsAsyncTask(), requestBundle, REQUEST_GET_FRIENDS);
+            executeRequest(new RequestGetFriendsAsyncTask(), mRequestBundle, REQUEST_GET_FRIENDS);
         } else if(mRequests.containsKey(REQUEST_ADD_FRIEND)) {
             mRequests.remove(REQUEST_ADD_FRIEND);
-            executeRequest(new RequestAddFriendAsyncTask(), requestBundle, REQUEST_ADD_FRIEND);
+            executeRequest(new RequestAddFriendAsyncTask(), mRequestBundle, REQUEST_ADD_FRIEND);
         } else if(mRequests.containsKey(REQUEST_REMOVE_FRIEND)) {
             mRequests.remove(REQUEST_REMOVE_FRIEND);
-            executeRequest(new RequestGetFriendsAsyncTask(), requestBundle, REQUEST_REMOVE_FRIEND);
+            executeRequest(new RequestGetFriendsAsyncTask(), mRequestBundle, REQUEST_REMOVE_FRIEND);
         }
     }
 
@@ -554,16 +554,16 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
             Bundle result = new Bundle();
             try
             {
-                URL url = new URL(tokenURLString);
+                URL url = new URL(mTokenURLString);
                 HttpsURLConnection httpsURLConnection = (HttpsURLConnection) url.openConnection();
                 httpsURLConnection.setRequestMethod("POST");
                 httpsURLConnection.setDoInput(true);
                 httpsURLConnection.setDoOutput(true);
                 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(httpsURLConnection.getOutputStream());
-                outputStreamWriter.write("client_id="+clientId+
-                        "&client_secret=" + clientSecret +
+                outputStreamWriter.write("client_id=" + mClientId +
+                        "&client_secret=" + mClientSecret +
                         "&grant_type=authorization_code" +
-                        "&redirect_uri=" + redirectURL +
+                        "&redirect_uri=" + mRedirectURL +
                         "&code=" + verifier);
                 outputStreamWriter.flush();
                 String response = streamToString(httpsURLConnection.getInputStream());
@@ -592,7 +592,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                     .putString(SAVE_STATE_KEY_OAUTH_REQUEST_TOKEN, result.getString(RESULT_REQUEST_TOKEN))
                     .apply();
             mRequests.remove(REQUEST_LOGIN2);
-            if (mLocalListeners.get(REQUEST_LOGIN) != null && !restart) {
+            if (mLocalListeners.get(REQUEST_LOGIN) != null && !mRestart) {
                 ((OnLoginCompleteListener) mLocalListeners.get(REQUEST_LOGIN)).onLoginSuccess(getID());
             }
             restartRequests();

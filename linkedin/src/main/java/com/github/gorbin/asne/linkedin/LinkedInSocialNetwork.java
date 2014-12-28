@@ -77,7 +77,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
     private static final String SAVE_STATE_KEY_OAUTH_REQUEST_TOKEN = "LinkedInSocialNetwork.SAVE_STATE_KEY_OAUTH_SECRET";
     private static final String SAVE_STATE_KEY_EXPIRES_DATE = "LinkedInSocialNetwork.SAVE_STATE_KEY_EXPIRES_DATE";
 //    private final String LINKEDIN_OAUTH2_CALLBACK_URL = "https://asne";
-    private final String authURLString;
+    private final String mAuthURLString;
     private String LINKEDIN_API = "https://www.linkedin.com/uas/oauth2/authorization?response_type=code";
     private String LINKEDIN_TOKEN = "https://www.linkedin.com/uas/oauth2/accessToken?grant_type=authorization_code";
     private String LINKEDIN_V1_API = "https://api.linkedin.com/v1";
@@ -86,19 +86,19 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
     private String COMMENT = "<comment>{0}</comment>";
     private String CONTENT = "<content><title>{0}</title><description>{1}</description>" +
             "<submitted-url>{2}</submitted-url><submitted-image-url>{3}</submitted-image-url></content>";
-    private String consumerKey;
-    private String consumerSecret;
-    private String redirectURL;
+    private String mConsumerKey;
+    private String mConsumerSecret;
+    private String mRedirectURL;
 
     public LinkedInSocialNetwork(Fragment fragment, String consumerKey, String consumerSecret, String redirectURL, String permissions) {
         super(fragment);
         if (TextUtils.isEmpty(consumerKey) || TextUtils.isEmpty(consumerSecret) || TextUtils.isEmpty(permissions)) {
             throw new IllegalArgumentException("TextUtils.isEmpty(ConsumerKey) || TextUtils.isEmpty(ConsumerSecret) || TextUtils.isEmpty(Permissions)");
         }
-        this.consumerKey = consumerKey;
-        this.consumerSecret = consumerSecret;
-        this.redirectURL = redirectURL;
-        authURLString = LINKEDIN_API + "&client_id=" + consumerKey + "&scope=" + permissions +
+        this.mConsumerKey = consumerKey;
+        this.mConsumerSecret = consumerSecret;
+        this.mRedirectURL = redirectURL;
+        this.mAuthURLString = LINKEDIN_API + "&client_id=" + consumerKey + "&scope=" + permissions +
                          "&state=" + REQUEST_AUTH + "&redirect_uri=" + redirectURL;
     }
     /**
@@ -122,8 +122,8 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
     public void requestLogin(OnLoginCompleteListener onLoginCompleteListener) {
         super.requestLogin(onLoginCompleteListener);
         Intent intent = new Intent(mSocialNetworkManager.getActivity(), OAuthActivity.class)
-                .putExtra(OAuthActivity.PARAM_CALLBACK, redirectURL)
-                .putExtra(OAuthActivity.PARAM_URL_TO_LOAD, authURLString);
+                .putExtra(OAuthActivity.PARAM_CALLBACK, mRedirectURL)
+                .putExtra(OAuthActivity.PARAM_URL_TO_LOAD, mAuthURLString);
         mSocialNetworkManager.getActivity().startActivityForResult(intent, REQUEST_AUTH);
     }
 
@@ -471,7 +471,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
 
         Uri uri = data != null ? data.getData() : null;
 
-        if (uri != null && uri.toString().startsWith(redirectURL.toLowerCase())) {
+        if (uri != null && uri.toString().startsWith(mRedirectURL.toLowerCase())) {
             String parts[] = uri.toString().split("=");
             String verifier = parts[1];
             verifier = verifier.substring(0, verifier.indexOf("&"));
@@ -570,8 +570,8 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
             HttpsURLConnection httpsURLConnection = null;
             try
             {
-                String tokenURLString = LINKEDIN_TOKEN + "&code=" + verifier + "&redirect_uri=" + redirectURL +
-                        "&client_id=" + consumerKey + "&client_secret=" + consumerSecret;
+                String tokenURLString = LINKEDIN_TOKEN + "&code=" + verifier + "&redirect_uri=" + mRedirectURL +
+                        "&client_id=" + mConsumerKey + "&client_secret=" + mConsumerSecret;
 
                 URL url = new URL(tokenURLString);
                 httpsURLConnection = (HttpsURLConnection) url.openConnection();

@@ -69,26 +69,26 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
     private static final String USERID = "OkSocialNetwork.USERID";
     private static final String TOKEN = "OkSocialNetwork.TOKEN";
     private static final String ERROR_CODE = "OkSocialNetwork.ERROR_CODE";
-    private Activity activity;
-    private String userId;
-    private Bundle requestBundle;
+    private Activity mActivity;
+    private String mUserId;
+    private Bundle mRequestBundle;
 	private Odnoklassniki mOdnoklassniki;
-    private  String[] permissions;
-    private String appId;
-    private String appPublicKey;
-    private String appSecretKey;
+    private  String[] mPermissions;
+    private String mAppId;
+    private String mAppPublicKey;
+    private String mAppSecretKey;
 
     public OkSocialNetwork(Fragment fragment, String appId, String appPublicKey, String appSecretKey, String[] permissions) {
         super(fragment);
         if (TextUtils.isEmpty(appId) || TextUtils.isEmpty(appPublicKey) || TextUtils.isEmpty(appSecretKey)) {
             throw new IllegalArgumentException("TextUtils.isEmpty(appId) || TextUtils.isEmpty(appPublicKey) || TextUtils.isEmpty(appSecretKey)");
         }
-        this.appId = appId;
-        this.appPublicKey = appPublicKey;
-        this.appSecretKey = appSecretKey;
-        this.permissions = permissions;
-        activity = mSocialNetworkManager.getActivity();
-        mOdnoklassniki = Odnoklassniki.createInstance(activity, appId, appSecretKey, appPublicKey);
+        this.mAppId = appId;
+        this.mAppPublicKey = appPublicKey;
+        this.mAppSecretKey = appSecretKey;
+        this.mPermissions = permissions;
+        this.mActivity = mSocialNetworkManager.getActivity();
+        mOdnoklassniki = Odnoklassniki.createInstance(mActivity, appId, appSecretKey, appPublicKey);
         mOdnoklassniki.setTokenRequestListener(this);
     }
 
@@ -106,6 +106,8 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
             mLocalListeners.remove(REQUEST_LOGIN);
             return;
         }
+
+        Bundle requestBundle = mRequestBundle;
 
         if (mLocalListeners.containsKey(REQUEST_GET_DETAIL_PERSON)) {
             mRequests.remove(REQUEST_GET_DETAIL_PERSON);
@@ -180,7 +182,7 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
     @Override
     public void requestLogin(OnLoginCompleteListener onLoginCompleteListener) {
         super.requestLogin(onLoginCompleteListener);
-		mOdnoklassniki.requestAuthorization(activity, false, permissions);
+		mOdnoklassniki.requestAuthorization(mActivity, false, mPermissions);
     }
 
     /**
@@ -191,7 +193,7 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
         mSharedPreferences.edit()
                 .remove(TOKEN)
                 .apply();
-        mOdnoklassniki.clearTokens(activity);
+        mOdnoklassniki.clearTokens(mActivity);
 //        mOdnoklassniki.removeTokenRequestListener();
     }
 
@@ -228,10 +230,10 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
 
     private boolean checkTokenError(Bundle result){
         if(result != null && result.containsKey(ERROR_CODE) && result.getString(ERROR_CODE).equals("102")) {
-            requestBundle = result;
-            requestBundle.remove(ERROR_CODE);
-            requestBundle.remove(SocialNetworkAsyncTask.RESULT_ERROR);
-            mOdnoklassniki.refreshToken(activity);
+            mRequestBundle = result;
+            mRequestBundle.remove(ERROR_CODE);
+            mRequestBundle.remove(SocialNetworkAsyncTask.RESULT_ERROR);
+            mOdnoklassniki.refreshToken(mActivity);
             return true;
         }
         return false;
@@ -243,7 +245,7 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
         String idResponse = mOdnoklassniki.request("users.getCurrentUser", idRequestParams, "get");
         JSONObject jsonObject = new JSONObject(idResponse);
         String id = jsonObject.getString("uid");
-        result.putString(USERID, userId);
+        result.putString(USERID, mUserId);
         return id;
     }
 
@@ -414,7 +416,8 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
             throw new SocialNetworkException("userID can't be null or empty");
         }
         Bundle args = new Bundle();
-        args.putString(RequestCheckIsFriendAsyncTask.PARAM_USER_ID, userID);         args.putString(USERID, userId);
+        args.putString(RequestCheckIsFriendAsyncTask.PARAM_USER_ID, userID);
+        args.putString(USERID, mUserId);
         executeRequest(new RequestCheckIsFriendAsyncTask(), args, REQUEST_CHECK_IS_FRIEND);
     }
 
@@ -503,7 +506,7 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
 
         @Override
         protected void onPostExecute(Bundle result) {
-            userId = result.getString(USERID);
+			mUserId = result.getString(USERID);
             if(checkTokenError(result)) return;
             SocialPerson socialPerson = result.getParcelable(REQUEST_GET_PERSON);
             if(result.containsKey(CURRENT) && result.getBoolean(CURRENT)){
@@ -765,7 +768,7 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
 
         @Override
         protected void onPostExecute(Bundle result) {
-            userId = result.getString(USERID);
+            mUserId = result.getString(USERID);
             if(checkTokenError(result)) return;
             if (!handleRequestResult(result, REQUEST_CHECK_IS_FRIEND,
                     result.getString(RESULT_REQUESTED_ID))) return;
