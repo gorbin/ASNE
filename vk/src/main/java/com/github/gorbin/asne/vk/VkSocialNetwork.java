@@ -807,7 +807,7 @@ public class VkSocialNetwork extends SocialNetwork {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        int sanitizedRequestCode = requestCode % 0x10000;
+        int sanitizedRequestCode = requestCode & 0xFFFF;
         VKUIHelper.onActivityResult(sanitizedRequestCode, resultCode, data);
     }
 }

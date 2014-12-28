@@ -423,7 +423,7 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        int sanitizedRequestCode = requestCode % 0x10000;
+        int sanitizedRequestCode = requestCode & 0xFFFF;
         if (sanitizedRequestCode != REQUEST_AUTH) return;
         super.onActivityResult(requestCode, resultCode, data);
 

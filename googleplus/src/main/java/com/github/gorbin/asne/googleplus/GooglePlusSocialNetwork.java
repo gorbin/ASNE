@@ -578,7 +578,7 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        int sanitizedRequestCode = requestCode % 0x10000;
+        int sanitizedRequestCode = requestCode & 0xFFFF;
         if (sanitizedRequestCode == REQUEST_AUTH) {
             if (resultCode == Activity.RESULT_OK && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
                 // This time, connect should succeed.
