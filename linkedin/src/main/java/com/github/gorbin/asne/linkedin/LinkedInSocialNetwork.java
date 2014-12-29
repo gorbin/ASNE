@@ -425,7 +425,8 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
                     + "&count=" + RequestGetFriendsAsyncTask.count;
         }
         JSONArray jsonResponse = jsonObject.getJSONArray("values");
-        for(int i = 0; i < jsonResponse.length(); i++){
+        int length = jsonResponse.length();
+        for (int i = 0; i < length; i++) {
             SocialPerson socialPerson = new SocialPerson();
             getSocialPerson(socialPerson, jsonResponse.getJSONObject(i));
             socialPersons.add(socialPerson);

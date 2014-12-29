@@ -333,7 +333,8 @@ public class VkSocialNetwork extends SocialNetwork {
                 try {
 
                     JSONArray jsonArray = response.json.getJSONArray("response");
-                    for (int i = 0; i < jsonArray.length(); i++) {
+                    int length = jsonArray.length();
+                    for (int i = 0; i < length; i++) {
                         getSocialPerson(socialPerson, jsonArray.getJSONObject(i));
                         socialPersons.add(socialPerson);
                         socialPerson = new SocialPerson();
@@ -684,7 +685,8 @@ public class VkSocialNetwork extends SocialNetwork {
                     jsonResponse = response.json.getJSONObject("response");
                     JSONArray jsonArray = jsonResponse.getJSONArray("items");
                     ids = new String[jsonArray.length()];
-                    for (int i = 0; i < jsonArray.length(); i++) {
+                    int length = jsonArray.length();
+                    for (int i = 0; i < length; i++) {
                         ids[i] = jsonArray.getJSONObject(i).getString("id");
                         getSocialPerson(socialPerson, jsonArray.getJSONObject(i));
                         socialPersons.add(socialPerson);

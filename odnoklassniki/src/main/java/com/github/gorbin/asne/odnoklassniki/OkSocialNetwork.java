@@ -611,7 +611,8 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
                     }
                 } else if (json instanceof JSONArray){
                     JSONArray jsonArray = new JSONArray(response);
-                    for (int i = 0; i < jsonArray.length(); i++) {
+                    int length = jsonArray.length();
+                    for (int i = 0; i < length; i++) {
                         getSocialPerson(socialPerson, jsonArray.getJSONObject(i));
                         socialPersons.add(socialPerson);
                         socialPerson = new SocialPerson();
@@ -698,7 +699,8 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
                     }
                 } else if (json instanceof JSONArray){
                     JSONArray jsonArray = new JSONArray(response);
-                    for (int i = 0; i < jsonArray.length(); i++) {
+                    int length = jsonArray.length();
+                    for (int i = 0; i < length; i++) {
                         friendIds.add(jsonArray.getString(i));
                     }
                     result.putStringArray(RESULT_GET_FRIENDS_ID, friendIds.toArray(new String[friendIds.size()]));
