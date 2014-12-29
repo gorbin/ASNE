@@ -424,20 +424,19 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
         super.cancelLoginRequest();
     }
 
-    private String streamToString(InputStream p_is) {
+    private String streamToString(InputStream is) {
         try {
-            BufferedReader m_br;
-            StringBuilder m_outString = new StringBuilder();
-            m_br = new BufferedReader(new InputStreamReader(p_is));
-            String m_read = m_br.readLine();
-            while(m_read != null) {
-                m_outString.append(m_read);
-                m_read =m_br.readLine();
+            StringBuilder outString = new StringBuilder();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            String read = reader.readLine();
+            while (read != null) {
+                outString.append(read);
+                read = reader.readLine();
             }
-            return m_outString.toString();
+            return outString.toString();
         }
-        catch (Exception p_ex) {
-            p_ex.printStackTrace();
+        catch (Exception ex) {
+            ex.printStackTrace();
             return null;
         }
     }
