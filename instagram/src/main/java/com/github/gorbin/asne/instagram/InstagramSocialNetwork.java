@@ -493,7 +493,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
         return queryRequests;
     }
 
-    private void checkExeption(Exception e, Bundle result){
+    private void checkException(Exception e, Bundle result){
         if(e.getMessage().contains("ERROR CODE") && e.getMessage().contains("OAuth")){
             result.putString(ERROR_CODE, e.getMessage());
         } else {
@@ -633,7 +633,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                 getSocialPerson(socialPerson, jsonResponse);
                 result.putParcelable(REQUEST_GET_PERSON, socialPerson);
             } catch (Exception e) {
-                checkExeption(e, result);
+                checkException(e, result);
             }
             return result;
         }
@@ -679,7 +679,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                 getDetailedSocialPerson(instagramPerson, jsonResponse);
                 result.putParcelable(REQUEST_GET_DETAIL_PERSON, instagramPerson);
             } catch (Exception e) {
-                checkExeption(e, result);
+                checkException(e, result);
             }
             return result;
         }
@@ -720,7 +720,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                     getSocialPerson(socialPerson, jsonResponse);
                     socialPersons.add(socialPerson);
                 } catch (Exception e) {
-                    checkExeption(e, result);
+                    checkException(e, result);
                 }
             }
             result.putParcelableArrayList(RESULT_USERS_ARRAY, socialPersons);
@@ -753,7 +753,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                 result.putStringArray(RESULT_GET_FRIENDS_ID, ids.toArray(new String[ids.size()]));
                 result.putParcelableArrayList(RESULT_GET_FRIENDS, socialPersons);
             } catch (Exception e) {
-                checkExeption(e, result);
+                checkException(e, result);
             }
 
             return result;
@@ -832,7 +832,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                     result.putBoolean(RESULT_IS_FRIEND, false);
                 }
             } catch (Exception e) {
-                checkExeption(e, result);
+                checkException(e, result);
             }
             return result;
         }
@@ -888,7 +888,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                     result.putString(RESULT_ERROR, "REQUEST_ADD_FRIEND Error");
                 }
             } catch (Exception e) {
-                checkExeption(e, result);
+                checkException(e, result);
             }
             return result;
         }
@@ -943,7 +943,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                     result.putString(RESULT_ERROR, "REQUEST_ADD_FRIEND Error");
                 }
             } catch (Exception e) {
-                checkExeption(e, result);
+                checkException(e, result);
             }
             return result;
         }

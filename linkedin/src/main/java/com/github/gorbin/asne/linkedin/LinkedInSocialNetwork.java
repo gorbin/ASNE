@@ -551,7 +551,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
         }
     }
 
-    private void checkExeption(Exception e, Bundle result){
+    private void checkException(Exception e, Bundle result){
         result.putString(SocialNetworkAsyncTask.RESULT_ERROR, e.getMessage());
     }
 
@@ -656,7 +656,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
                 getSocialPerson(socialPerson, jsonObject);
                 result.putParcelable(REQUEST_GET_PERSON, socialPerson);
             } catch (Exception e) {
-                checkExeption(e, result);
+                checkException(e, result);
             }
             return result;
         }
@@ -704,7 +704,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
                 getDetailedSocialPerson(linkedinPerson, jsonObject);
                 result.putParcelable(REQUEST_GET_DETAIL_PERSON, linkedinPerson);
             } catch (Exception e) {
-                checkExeption(e, result);
+                checkException(e, result);
             }
             return result;
         }
@@ -749,7 +749,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
                 outputStreamWriter.flush();
                 checkConnectionErrors(connection);
             } catch (Exception e) {
-                checkExeption(e, result);
+                checkException(e, result);
             }
 
             return result;
@@ -804,7 +804,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
                 outputStreamWriter.flush();
                 checkConnectionErrors(connection);
             } catch (Exception e) {
-                checkExeption(e, result);
+                checkException(e, result);
             }
 
             return result;
@@ -892,7 +892,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
                 result.putStringArray(RESULT_GET_FRIENDS_ID, ids.toArray(new String[ids.size()]));
                 result.putParcelableArrayList(RESULT_GET_FRIENDS, socialPersons);
             } catch (Exception e) {
-                checkExeption(e, result);
+                checkException(e, result);
             }
             return result;
         }
