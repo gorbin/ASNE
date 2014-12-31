@@ -162,7 +162,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
      */
     @Override
     public AccessToken getAccessToken() {
-        return new com.github.gorbin.asne.core.AccessToken(
+        return new AccessToken(
                 mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null),
                 null
         );
@@ -176,7 +176,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
     public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
         super.requestAccessToken(onRequestAccessTokenCompleteListener);
         ((OnRequestAccessTokenCompleteListener) mLocalListeners.get(REQUEST_ACCESS_TOKEN))
-                .onRequestAccessTokenComplete(getID(), new com.github.gorbin.asne.core.AccessToken(
+                .onRequestAccessTokenComplete(getID(), new AccessToken(
                         mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null),
                         null
                 ));
@@ -795,10 +795,10 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                     result.getStringArray(RESULT_GET_FRIENDS_ID))) return;
 
             ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                    .OnGetFriendsIdComplete(getID(), result.getStringArray(RESULT_GET_FRIENDS_ID));
+                    .onGetFriendsIdComplete(getID(), result.getStringArray(RESULT_GET_FRIENDS_ID));
             ArrayList<SocialPerson> socialPersons = result.getParcelableArrayList(RESULT_GET_FRIENDS);
             ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                    .OnGetFriendsComplete(getID(), socialPersons);
+                    .onGetFriendsComplete(getID(), socialPersons);
         }
     }
 

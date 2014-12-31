@@ -26,6 +26,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 
 import com.github.gorbin.asne.core.AccessToken;
 import com.github.gorbin.asne.core.OAuthActivity;
@@ -109,8 +110,8 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
     public boolean isConnected() {
         String accessToken = mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null);
         String requestToken = mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_REQUEST_TOKEN, null);
-        Long expiresDate = mSharedPreferences.getLong(SAVE_STATE_KEY_EXPIRES_DATE, 0);
-        Boolean notExpired = expiresDate > 0 && Calendar.getInstance().getTimeInMillis() - 86400000 < expiresDate;
+        long expiresDate = mSharedPreferences.getLong(SAVE_STATE_KEY_EXPIRES_DATE, 0);
+        boolean notExpired = expiresDate > 0 && Calendar.getInstance().getTimeInMillis() - DateUtils.DAY_IN_MILLIS < expiresDate;
         return accessToken != null && requestToken != null && notExpired;
     }
 
@@ -154,7 +155,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
      */
     @Override
     public AccessToken getAccessToken() {
-        return new com.github.gorbin.asne.core.AccessToken(
+        return new AccessToken(
                 mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null),
                 null
         );
@@ -168,7 +169,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
     public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
         super.requestAccessToken(onRequestAccessTokenCompleteListener);
         ((OnRequestAccessTokenCompleteListener) mLocalListeners.get(REQUEST_ACCESS_TOKEN))
-                .onRequestAccessTokenComplete(getID(), new com.github.gorbin.asne.core.AccessToken(
+                .onRequestAccessTokenComplete(getID(), new AccessToken(
                         mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null),
                         null
                 ));
@@ -903,10 +904,10 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
                     result.getStringArray(RESULT_GET_FRIENDS_ID))) return;
 
             ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                    .OnGetFriendsIdComplete(getID(), result.getStringArray(RESULT_GET_FRIENDS_ID));
+                    .onGetFriendsIdComplete(getID(), result.getStringArray(RESULT_GET_FRIENDS_ID));
             ArrayList<SocialPerson> socialPersons = result.getParcelableArrayList(RESULT_GET_FRIENDS);
             ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                    .OnGetFriendsComplete(getID(), socialPersons);
+                    .onGetFriendsComplete(getID(), socialPersons);
         }
     }
 

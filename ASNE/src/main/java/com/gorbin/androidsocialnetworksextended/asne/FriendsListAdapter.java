@@ -37,16 +37,16 @@ import com.gorbin.androidsocialnetworksextended.asne.utils.Constants;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class FriendsListAdapter extends BaseAdapter {
     private final Activity context;
     private ViewHolder holder;
-    private ArrayList<SocialPerson> friends;
+    private List<SocialPerson> friends;
     private int socialNetworkID;
     private boolean net_err;
 
-    public FriendsListAdapter(Activity context, ArrayList<SocialPerson> friends, int socialNetworkID) {
+    public FriendsListAdapter(Activity context, List<SocialPerson> friends, int socialNetworkID) {
         this.context = context;
         this.friends = friends;
         this.socialNetworkID = socialNetworkID;

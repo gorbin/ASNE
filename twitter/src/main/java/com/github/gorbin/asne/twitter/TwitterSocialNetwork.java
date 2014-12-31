@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 
+import com.github.gorbin.asne.core.AccessToken;
 import com.github.gorbin.asne.core.OAuthActivity;
 import com.github.gorbin.asne.core.OAuthSocialNetwork;
 import com.github.gorbin.asne.core.SocialNetworkAsyncTask;
@@ -56,7 +57,6 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.User;
-import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 import twitter4j.conf.ConfigurationBuilder;
 
@@ -117,7 +117,7 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
         if (TextUtils.isEmpty(accessToken) && TextUtils.isEmpty(accessTokenSecret)) {
             mTwitter = factory.getInstance();
         } else {
-            mTwitter = factory.getInstance(new AccessToken(accessToken, accessTokenSecret));
+            mTwitter = factory.getInstance(new twitter4j.auth.AccessToken(accessToken, accessTokenSecret));
         }
     }
 
@@ -171,8 +171,8 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
      * @return {@link com.github.gorbin.asne.core.AccessToken}
      */
     @Override
-    public com.github.gorbin.asne.core.AccessToken getAccessToken() {
-        return new com.github.gorbin.asne.core.AccessToken(
+    public AccessToken getAccessToken() {
+        return new AccessToken(
                 mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null),
                 mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_SECRET, null)
         );
@@ -186,7 +186,7 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
     public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
         super.requestAccessToken(onRequestAccessTokenCompleteListener);
         ((OnRequestAccessTokenCompleteListener) mLocalListeners.get(REQUEST_ACCESS_TOKEN))
-                .onRequestAccessTokenComplete(getID(), new com.github.gorbin.asne.core.AccessToken(
+                .onRequestAccessTokenComplete(getID(), new AccessToken(
                         mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null),
                         mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_SECRET, null)
                 ));
@@ -510,7 +510,7 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
             Bundle result = new Bundle();
 
             try {
-                AccessToken accessToken = mTwitter.getOAuthAccessToken(mRequestToken, verifier);
+                twitter4j.auth.AccessToken accessToken = mTwitter.getOAuthAccessToken(mRequestToken, verifier);
 
                 result.putString(RESULT_TOKEN, accessToken.getToken());
                 result.putString(RESULT_SECRET, accessToken.getTokenSecret());
@@ -783,10 +783,10 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
                     result.getStringArray(RESULT_GET_FRIENDS_ID))) return;
 
             ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                    .OnGetFriendsIdComplete(getID(), result.getStringArray(RESULT_GET_FRIENDS_ID));
+                    .onGetFriendsIdComplete(getID(), result.getStringArray(RESULT_GET_FRIENDS_ID));
             ArrayList<SocialPerson> socialPersons = result.getParcelableArrayList(RESULT_GET_FRIENDS);
             ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                    .OnGetFriendsComplete(getID(), socialPersons);
+                    .onGetFriendsComplete(getID(), socialPersons);
         }
     }
 

@@ -22,7 +22,6 @@
 package com.github.gorbin.asne.vk;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -696,9 +695,9 @@ public class VkSocialNetwork extends SocialNetwork {
                     e.printStackTrace();
                 }
                 ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                    .OnGetFriendsIdComplete(getID(), ids);
+                    .onGetFriendsIdComplete(getID(), ids);
                 ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                        .OnGetFriendsComplete(getID(), socialPersons);
+                        .onGetFriendsComplete(getID(), socialPersons);
                 mLocalListeners.remove(REQUEST_GET_FRIENDS);
             }
             @Override

@@ -82,7 +82,7 @@ public class FacebookSocialNetwork extends SocialNetwork {
     private String mPhotoPath;
     private String mStatus;
     private Bundle mBundle;
-    private ArrayList<String> mPermissions;
+    private List<String> mPermissions;
     private PendingAction mPendingAction = PendingAction.NONE;
     private Session.StatusCallback mSessionStatusCallback = new Session.StatusCallback() {
         @Override
@@ -91,7 +91,7 @@ public class FacebookSocialNetwork extends SocialNetwork {
         }
     };
 
-    public FacebookSocialNetwork(Fragment fragment, ArrayList<String> permissions) {
+    public FacebookSocialNetwork(Fragment fragment, List<String> permissions) {
         super(fragment);
         String applicationID = Utility.getMetadataApplicationId(fragment.getActivity());
 
@@ -507,9 +507,9 @@ public class FacebookSocialNetwork extends SocialNetwork {
                     i++;
                 }
                 ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                        .OnGetFriendsIdComplete(getID(), ids);
+                        .onGetFriendsIdComplete(getID(), ids);
                 ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                        .OnGetFriendsComplete(getID(), socialPersons);
+                        .onGetFriendsComplete(getID(), socialPersons);
                 mLocalListeners.remove(REQUEST_GET_FRIENDS);
             }
         });

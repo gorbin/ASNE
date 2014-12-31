@@ -52,7 +52,7 @@ public class DetailedSocialInfoFragment extends Fragment implements OnRequestDet
     public DetailedSocialInfoFragment() {
     }
 
-    public static DetailedSocialInfoFragment newInstannce(int socialNetworkId, String userId) {
+    public static DetailedSocialInfoFragment newInstance(int socialNetworkId, String userId) {
         DetailedSocialInfoFragment fragment = new DetailedSocialInfoFragment();
         Bundle args = new Bundle();
         args.putInt(Constants.NETWORK_ID, socialNetworkId);

@@ -376,7 +376,7 @@ public class MainFragment  extends Fragment
             socialCard.friends.setVisibility(View.VISIBLE);
             socialCard.friends.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    FriendsListFragment friends = FriendsListFragment.newInstannce(networkId);
+                    FriendsListFragment friends = FriendsListFragment.newInstance(networkId);
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .addToBackStack("friends")
                             .replace(R.id.container, friends)

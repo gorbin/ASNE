@@ -633,7 +633,7 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
             if (result.containsKey(FRIENDS)) {
                 if (!handleRequestResult(result, REQUEST_GET_FRIENDS)) return;
                 ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                        .OnGetFriendsComplete(getID(), socialPersons);
+                        .onGetFriendsComplete(getID(), socialPersons);
             } else {
                 if (!handleRequestResult(result, REQUEST_GET_PERSONS)) return;
                 ((OnRequestSocialPersonsCompleteListener) mLocalListeners.get(REQUEST_GET_PERSONS))
@@ -720,7 +720,7 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
             String[] friendsIds = result.getStringArray(RESULT_GET_FRIENDS_ID);
 
             ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                        .OnGetFriendsIdComplete(getID(), friendsIds);
+                        .onGetFriendsIdComplete(getID(), friendsIds);
             Bundle args = new Bundle();
             args.putStringArray(RequestSocialPersonsAsyncTask.PARAM_USER_ID, friendsIds);
             args.putBoolean(FRIENDS, true);
