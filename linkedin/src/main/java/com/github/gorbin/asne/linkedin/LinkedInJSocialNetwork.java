@@ -21,6 +21,7 @@
  *******************************************************************************/
 package com.github.gorbin.asne.linkedin;
 
+import android.content.Context;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -68,6 +69,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.naming.Context;
+
 /**
  * Class for LinkedIn social network integration using LinkedIn-j library
  *
@@ -113,8 +116,21 @@ public class LinkedInJSocialNetwork extends OAuthSocialNetwork {
 
     private String mOAuthTokenSecret;
 
+    //TODO: refactor to use an init that is shared by constructors
     public LinkedInJSocialNetwork(Fragment fragment, String consumerKey, String consumerSecret, String permissions) {
         super(fragment);
+
+        if (TextUtils.isEmpty(consumerKey) || TextUtils.isEmpty(consumerSecret) || TextUtils.isEmpty(permissions)) {
+            throw new IllegalArgumentException("TextUtils.isEmpty(fConsumerKey) || TextUtils.isEmpty(fConsumerSecret) || TextUtils.isEmpty(fPermissions)");
+        }
+
+        mOAuthService = LinkedInOAuthServiceFactory.getInstance()
+                .createLinkedInOAuthService(consumerKey, consumerSecret, permissions);
+        mLinkedInApiClientFactory = LinkedInApiClientFactory.newInstance(consumerKey, consumerSecret);
+    }
+
+    public LinkedInJSocialNetwork(Fragment fragment, Context context, String consumerKey, String consumerSecret, String permissions) {
+        super(fragment, context);
 
         if (TextUtils.isEmpty(consumerKey) || TextUtils.isEmpty(consumerSecret) || TextUtils.isEmpty(permissions)) {
             throw new IllegalArgumentException("TextUtils.isEmpty(fConsumerKey) || TextUtils.isEmpty(fConsumerSecret) || TextUtils.isEmpty(fPermissions)");

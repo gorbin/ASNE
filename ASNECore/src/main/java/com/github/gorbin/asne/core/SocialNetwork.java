@@ -127,6 +127,17 @@ public abstract class SocialNetwork {
         mSharedPreferences = mSocialNetworkManager.getActivity().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
     }
 
+    /**
+     * @param socialMediaManager the SocialMediaManager fragment.
+     * @param context ant not activity or context, as we will need to call startActivityForResult,
+     *                 we will want to receice on onActivityResult in out SocialNetworkManager
+     *                 fragment
+     */
+    protected SocialNetwork(Fragment socialMediaManager, Context context) {
+        //we keep the fragment in case it is needed in future. it also minimises the changes required.
+        mSocialNetworkManager = socialMediaManager;
+        mSharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+    }
     //////////////////// LIFECYCLE ////////////////////
 
     /**
