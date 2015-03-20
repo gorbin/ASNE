@@ -129,9 +129,7 @@ public abstract class SocialNetwork {
 
     /**
      * @param socialMediaManager the SocialMediaManager fragment.
-     * @param context ant not activity or context, as we will need to call startActivityForResult,
-     *                 we will want to receice on onActivityResult in out SocialNetworkManager
-     *                 fragment
+     * @param context ant Activity or Application if not being called from a fragment
      */
     protected SocialNetwork(Fragment socialMediaManager, Context context) {
         //we keep the fragment in case it is needed in future. it also minimises the changes required.
