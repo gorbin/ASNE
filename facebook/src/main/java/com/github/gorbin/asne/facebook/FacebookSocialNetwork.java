@@ -91,8 +91,20 @@ public class FacebookSocialNetwork extends SocialNetwork {
         }
     };
 
+    //TODO: refactor to use an init that is shared by constructors
     public FacebookSocialNetwork(Fragment fragment, ArrayList<String> permissions) {
         super(fragment);
+        String applicationID = Utility.getMetadataApplicationId(fragment.getActivity());
+
+        if (applicationID == null) {
+            throw new IllegalStateException("applicationID can't be null\n" +
+                    "Please check https://developers.facebook.com/docs/android/getting-started/");
+        }
+        this.permissions = permissions;
+    }
+
+    public FacebookSocialNetwork(Fragment fragment, Context context, ArrayList<String> permissions) {
+        super(fragment, context);
         String applicationID = Utility.getMetadataApplicationId(fragment.getActivity());
 
         if (applicationID == null) {
