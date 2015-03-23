@@ -105,7 +105,7 @@ public class FacebookSocialNetwork extends SocialNetwork {
 
     public FacebookSocialNetwork(Fragment fragment, Context context, ArrayList<String> permissions) {
         super(fragment, context);
-        String applicationID = Utility.getMetadataApplicationId(fragment.getActivity());
+        String applicationID = Utility.getMetadataApplicationId(context);
 
         if (applicationID == null) {
             throw new IllegalStateException("applicationID can't be null\n" +
