@@ -1,3 +1,7 @@
+**Sorry, but I freeze work on project for some time(I hope not long, nearly month) - too busy. I saw all Issues and will resolve them as soon as I can.** 
+
+**I checked project - current maven libs mostly works fine. For now I need help with Issues and open for pull requests - will check them and merge on weekends.**
+
 ![enter image description here][1]
 
 ASNE        [![ASNE Maven Central](http://img.shields.io/badge/ASNE%20Maven%20Central-0.3.1-brightgreen.svg?style=flat)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.asne%22) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-ASNE-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/868)
