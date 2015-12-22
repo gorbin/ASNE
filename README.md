@@ -1,3 +1,5 @@
+Unfreeze project - merge all puls for master branch - current version was not tested - **NOT STABLE**
+
 **Sorry, but I freeze work on project for some time(I hope not long, nearly month) - too busy. I saw all Issues and will resolve them as soon as I can.** 
 
 **I checked project - current maven libs mostly works fine. For now I need help with Issues and open for pull requests - will check them and merge on weekends.**
