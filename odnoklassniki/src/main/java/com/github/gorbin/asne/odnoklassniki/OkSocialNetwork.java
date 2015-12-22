@@ -21,6 +21,7 @@
  *******************************************************************************/
 package com.github.gorbin.asne.odnoklassniki;
 
+import android.content.Context;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -78,6 +79,7 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
     private String mAppPublicKey;
     private String mAppSecretKey;
 
+    //TODO: refactor to use an init that is shared by constructors
     public OkSocialNetwork(Fragment fragment, String appId, String appPublicKey, String appSecretKey, String[] permissions) {
         super(fragment);
         if (TextUtils.isEmpty(appId) || TextUtils.isEmpty(appPublicKey) || TextUtils.isEmpty(appSecretKey)) {
@@ -89,6 +91,20 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
         this.mPermissions = permissions;
         this.mActivity = mSocialNetworkManager.getActivity();
         mOdnoklassniki = Odnoklassniki.createInstance(mActivity, appId, appSecretKey, appPublicKey);
+        mOdnoklassniki.setTokenRequestListener(this);
+    }
+
+    public OkSocialNetwork(Fragment fragment, Context context, String appId, String appPublicKey, String appSecretKey, String[] permissions) {
+        super(fragment, context);
+        if (TextUtils.isEmpty(appId) || TextUtils.isEmpty(appPublicKey) || TextUtils.isEmpty(appSecretKey)) {
+            throw new IllegalArgumentException("TextUtils.isEmpty(appId) || TextUtils.isEmpty(appPublicKey) || TextUtils.isEmpty(appSecretKey)");
+        }
+        this.appId = appId;
+        this.appPublicKey = appPublicKey;
+        this.appSecretKey = appSecretKey;
+        this.permissions = permissions;
+        activity = mSocialNetworkManager.getActivity();
+        mOdnoklassniki = Odnoklassniki.createInstance(activity, appId, appSecretKey, appPublicKey);
         mOdnoklassniki.setTokenRequestListener(this);
     }
 

@@ -21,6 +21,7 @@
  *******************************************************************************/
 package com.github.gorbin.asne.vk;
 
+import android.content.Context;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -141,6 +142,12 @@ public class VkSocialNetwork extends SocialNetwork {
         super(fragment);
         this.mKey = key;
         this.mPermissions = permissions;
+    }
+
+    public VkSocialNetwork(Fragment fragment, Context context, String key, String[] permissions) {
+        super(fragment, context);
+        this.key = key;
+        this.permissions = permissions;
     }
 
     private static boolean stringToBool(String s) {

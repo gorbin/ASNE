@@ -82,7 +82,7 @@ public class FacebookSocialNetwork extends SocialNetwork {
     private String mPhotoPath;
     private String mStatus;
     private Bundle mBundle;
-    private List<String> mPermissions;
+    private ArrayList<String> permissions;
     private PendingAction mPendingAction = PendingAction.NONE;
     private Session.StatusCallback mSessionStatusCallback = new Session.StatusCallback() {
         @Override
@@ -91,7 +91,8 @@ public class FacebookSocialNetwork extends SocialNetwork {
         }
     };
 
-    public FacebookSocialNetwork(Fragment fragment, List<String> permissions) {
+    //TODO: refactor to use an init that is shared by constructors
+    public FacebookSocialNetwork(Fragment fragment, ArrayList<String> permissions) {
         super(fragment);
         String applicationID = Utility.getMetadataApplicationId(fragment.getActivity());
 
@@ -99,7 +100,18 @@ public class FacebookSocialNetwork extends SocialNetwork {
             throw new IllegalStateException("applicationID can't be null\n" +
                     "Please check https://developers.facebook.com/docs/android/getting-started/");
         }
-        this.mPermissions = permissions;
+        this.permissions = permissions;
+    }
+
+    public FacebookSocialNetwork(Fragment fragment, Context context, ArrayList<String> permissions) {
+        super(fragment, context);
+        String applicationID = Utility.getMetadataApplicationId(context);
+
+        if (applicationID == null) {
+            throw new IllegalStateException("applicationID can't be null\n" +
+                    "Please check https://developers.facebook.com/docs/android/getting-started/");
+        }
+        this.permissions = permissions;
     }
 
     /**
@@ -138,11 +150,12 @@ public class FacebookSocialNetwork extends SocialNetwork {
         }
 
         if (!currentSession.isOpened()) {
-            Session.OpenRequest openRequest = new Session.OpenRequest(mSocialNetworkManager.getActivity());
+            Session.OpenRequest openRequest;
+            openRequest = new Session.OpenRequest(mSocialNetworkManager.getActivity());
 
             openRequest.setDefaultAudience(SessionDefaultAudience.EVERYONE);
-            if (mPermissions != null) {
-                openRequest.setPermissions(mPermissions);
+            if(permissions != null) {
+                openRequest.setPermissions(permissions);
             }
             openRequest.setLoginBehavior(SessionLoginBehavior.SSO_WITH_FALLBACK);
             currentSession.openForRead(openRequest);
@@ -507,9 +520,9 @@ public class FacebookSocialNetwork extends SocialNetwork {
                     i++;
                 }
                 ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                        .onGetFriendsIdComplete(getID(), ids);
+                        .OnGetFriendsIdComplete(getID(), ids);
                 ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                        .onGetFriendsComplete(getID(), socialPersons);
+                        .OnGetFriendsComplete(getID(), socialPersons);
                 mLocalListeners.remove(REQUEST_GET_FRIENDS);
             }
         });
@@ -666,7 +679,7 @@ public class FacebookSocialNetwork extends SocialNetwork {
         mUILifecycleHelper.onActivityResult(requestCode, resultCode, data, null);
 
         Session session = Session.getActiveSession();
-        int sanitizedRequestCode = requestCode & 0xFFFF;
+        int sanitizedRequestCode = requestCode % 0x10000;
         if (session != null) {
             session.onActivityResult(mSocialNetworkManager.getActivity(), sanitizedRequestCode, resultCode, data);
         }

@@ -87,6 +87,7 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
     private boolean mRestart = false;
     private Bundle mRequestBundle;
 
+    //TODO: refactor to use an init that is shared by constructors
     public InstagramSocialNetwork(Fragment fragment, String clientId, String clientSecret, String redirectURL, String scope) {
         super(fragment);
 
@@ -105,6 +106,27 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                 + redirectURL + "&response_type=code&display=touch&scope=" + scope;
 
         mTokenURLString = INSTAGRAM_TOKENURL + "?client_id=" + clientId + "&client_secret="
+                + clientSecret + "&redirect_uri=" + redirectURL + "&grant_type=authorization_code";
+    }
+
+    public InstagramSocialNetwork(Fragment fragment, Context context, String clientId, String clientSecret, String redirectURL, String scope) {
+        super(fragment, context);
+
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+        this.redirectURL = redirectURL;
+
+        if (TextUtils.isEmpty(clientId) || TextUtils.isEmpty(clientSecret)) {
+            throw new IllegalArgumentException("clientId and clientSecret are invalid");
+        }
+        if(scope == null) {
+            scope = "basic";
+        }
+        String INSTAGRAM_AUTHURL = "https://api.instagram.com/oauth/authorize/";
+        authURLString = INSTAGRAM_AUTHURL + "?client_id=" + clientId + "&redirect_uri="
+                + redirectURL + "&response_type=code&display=touch&scope=" + scope;
+
+        tokenURLString = INSTAGRAM_TOKENURL + "?client_id=" + clientId + "&client_secret="
                 + clientSecret + "&redirect_uri=" + redirectURL + "&grant_type=authorization_code";
     }
 

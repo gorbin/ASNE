@@ -21,6 +21,7 @@
  *******************************************************************************/
 package com.github.gorbin.asne.googleplus;
 
+import android.content.Context;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -88,6 +89,10 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
 
     public GooglePlusSocialNetwork(Fragment fragment) {
         super(fragment);
+    }
+
+    public GooglePlusSocialNetwork(Fragment fragment, Context context) {
+        super(fragment, context);
     }
 
     /**
