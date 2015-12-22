@@ -139,6 +139,8 @@ mSocialNetworkManager = (SocialNetworkManager) getFragmentManager().findFragment
 	if (mSocialNetworkManager == null) {
         mSocialNetworkManager = new SocialNetworkManager();
 		FacebookSocialNetwork fbNetwork = new FacebookSocialNetwork(this, fbScope);
+		//or from an activity
+		//FacebookSocialNetwork fbNetwork = new FacebookSocialNetwork(mSocialNetworkManager, this, fbScope);
         mSocialNetworkManager.addSocialNetwork(fbNetwork);
         getFragmentManager().beginTransaction().add(mSocialNetworkManager, SOCIAL_NETWORK_TAG).commit();
 	}

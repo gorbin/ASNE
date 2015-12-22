@@ -21,6 +21,7 @@
  *******************************************************************************/
 package com.github.gorbin.asne.vk;
 
+import android.content.Context;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -140,6 +141,12 @@ public class VkSocialNetwork extends SocialNetwork {
 
     public VkSocialNetwork(Fragment fragment, String key, String[] permissions) {
         super(fragment);
+        this.key = key;
+        this.permissions = permissions;
+    }
+
+    public VkSocialNetwork(Fragment fragment, Context context, String key, String[] permissions) {
+        super(fragment, context);
         this.key = key;
         this.permissions = permissions;
     }

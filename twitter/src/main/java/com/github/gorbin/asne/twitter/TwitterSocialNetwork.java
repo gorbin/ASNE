@@ -21,6 +21,7 @@
  *******************************************************************************/
 package com.github.gorbin.asne.twitter;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -84,6 +85,28 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
 
     public TwitterSocialNetwork(Fragment fragment, String consumerKey, String consumerSecret, String redirectURL) {
         super(fragment);
+
+        fConsumerKey = consumerKey;
+        fConsumerSecret = consumerSecret;
+        fRedirectURL = redirectURL;
+
+
+        if (TextUtils.isEmpty(fConsumerKey) || TextUtils.isEmpty(fConsumerSecret)) {
+            throw new IllegalArgumentException("consumerKey and consumerSecret are invalid");
+        }
+        /*
+        *
+        * No authentication challenges found
+        * Relevant discussions can be found on the Internet at:
+        * http://www.google.co.jp/search?q=8e063946 or
+        * http://www.google.co.jp/search?q=ef59cf9f
+        *
+        * */
+        initTwitterClient();
+    }
+
+    public TwitterSocialNetwork(Fragment fragment, Context context, String consumerKey, String consumerSecret, String redirectURL) {
+        super(fragment, context);
 
         fConsumerKey = consumerKey;
         fConsumerSecret = consumerSecret;
