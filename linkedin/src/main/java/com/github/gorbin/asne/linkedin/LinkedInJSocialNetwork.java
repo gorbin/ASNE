@@ -117,7 +117,7 @@ public class LinkedInJSocialNetwork extends OAuthSocialNetwork {
         super(fragment);
 
         if (TextUtils.isEmpty(consumerKey) || TextUtils.isEmpty(consumerSecret) || TextUtils.isEmpty(permissions)) {
-            throw new IllegalArgumentException("TextUtils.isEmpty(fConsumerKey) || TextUtils.isEmpty(fConsumerSecret) || TextUtils.isEmpty(fPermissions)");
+            throw new IllegalArgumentException("TextUtils.isEmpty(consumerKey) || TextUtils.isEmpty(consumerSecret) || TextUtils.isEmpty(permissions)");
         }
 
         mOAuthService = LinkedInOAuthServiceFactory.getInstance()
@@ -389,7 +389,7 @@ public class LinkedInJSocialNetwork extends OAuthSocialNetwork {
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        int sanitizedRequestCode = requestCode % 0x10000;
+        int sanitizedRequestCode = requestCode & 0xFFFF;
         if (sanitizedRequestCode != REQUEST_AUTH) return;
 
         if (resultCode != Activity.RESULT_OK || data == null || data.getData() == null) {
@@ -761,10 +761,10 @@ public class LinkedInJSocialNetwork extends OAuthSocialNetwork {
                     result.getStringArray(RESULT_GET_FRIENDS_ID))) return;
 
             ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                    .OnGetFriendsIdComplete(getID(), result.getStringArray(RESULT_GET_FRIENDS_ID));
+                    .onGetFriendsIdComplete(getID(), result.getStringArray(RESULT_GET_FRIENDS_ID));
             ArrayList<SocialPerson> socialPersons = result.getParcelableArrayList(RESULT_GET_FRIENDS);
             ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                    .OnGetFriendsComplete(getID(), socialPersons);
+                    .onGetFriendsComplete(getID(), socialPersons);
             mLocalListeners.remove(RESULT_GET_FRIENDS);
         }
     }

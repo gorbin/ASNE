@@ -22,7 +22,6 @@
 package com.github.gorbin.asne.vk;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -84,17 +83,17 @@ public class VkSocialNetwork extends SocialNetwork {
     private static final String SAVE_STATE_KEY_OAUTH_SECRET = "VkSocialNetwork.SAVE_STATE_KEY_OAUTH_SECRET";
     private static final String SAVE_STATE_KEY_USER_ID = "VkSocialNetwork.SAVE_STATE_KEY_USER_ID";
     /*** Developer activity*/
-    private Activity activity;
+    private Activity mActivity;
     /*** VK app id*/
-    private String key;
+    private String mKey;
     /*** VK access token*/
-    private VKAccessToken accessToken;
+    private VKAccessToken mAccessToken;
     /*** Id of current user*/
-    private String userId;
+    private String mUserId;
     /*** Permissions array*/
-    private String[] permissions;
+    private String[] mPermissions;
     /*** VK SDK listener to catch authorization @see <a href="http://vkcom.github.io/vk-android-sdk/com/vk/sdk/VKSdkListener.html">VKSdkListener</a>*/
-    private final VKSdkListener vkSdkListener = new VKSdkListener() {
+    private final VKSdkListener mVkSdkListener = new VKSdkListener() {
         @Override
         public void onCaptchaError(VKError captchaError) {
             new VKCaptchaDialog(captchaError).show();
@@ -102,7 +101,7 @@ public class VkSocialNetwork extends SocialNetwork {
 
         @Override
         public void onTokenExpired(VKAccessToken expiredToken) {
-            VKSdk.authorize(permissions, true, false);
+            VKSdk.authorize(mPermissions, true, false);
         }
 
         @Override
@@ -112,8 +111,8 @@ public class VkSocialNetwork extends SocialNetwork {
         }
 
         @Override
-        public void onReceiveNewToken(VKAccessToken newToken) {
-            accessToken = newToken;
+        public void onReceiveNewToken(VKAccessToken accessToken) {
+            mAccessToken = accessToken;
             mSharedPreferences.edit()
                     .putString(SAVE_STATE_KEY_OAUTH_TOKEN, accessToken.accessToken)
                     .putString(SAVE_STATE_KEY_OAUTH_SECRET, accessToken.secret)
@@ -123,25 +122,25 @@ public class VkSocialNetwork extends SocialNetwork {
                 ((OnLoginCompleteListener) mLocalListeners.get(REQUEST_LOGIN)).onLoginSuccess(getID());
                 mLocalListeners.remove(REQUEST_LOGIN);
             }
-            userId = accessToken.userId;
+            mUserId = accessToken.userId;
         }
 
         @Override
-        public void onAcceptUserToken(VKAccessToken token) {
-            accessToken = token;
+        public void onAcceptUserToken(VKAccessToken accessToken) {
+            mAccessToken = accessToken;
             mSharedPreferences.edit()
                     .putString(SAVE_STATE_KEY_OAUTH_TOKEN, accessToken.accessToken)
                     .putString(SAVE_STATE_KEY_OAUTH_SECRET, accessToken.secret)
                     .putString(SAVE_STATE_KEY_USER_ID, accessToken.userId)
                     .apply();
-            userId = accessToken.userId;
+            mUserId = accessToken.userId;
         }
     };
 
     public VkSocialNetwork(Fragment fragment, String key, String[] permissions) {
         super(fragment);
-        this.key = key;
-        this.permissions = permissions;
+        this.mKey = key;
+        this.mPermissions = permissions;
     }
 
     private static boolean stringToBool(String s) {
@@ -161,7 +160,7 @@ public class VkSocialNetwork extends SocialNetwork {
             public void onComplete(VKResponse response) {
                 try {
                     JSONObject jsonResponse = response.json.getJSONArray("response").getJSONObject(0);
-                    userId = jsonResponse.getString("id");
+                    mUserId = jsonResponse.getString("id");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -199,7 +198,7 @@ public class VkSocialNetwork extends SocialNetwork {
     @Override
     public void requestLogin(OnLoginCompleteListener onLoginCompleteListener) {
         super.requestLogin(onLoginCompleteListener);
-        VKSdk.authorize(permissions);
+        VKSdk.authorize(mPermissions);
     }
 
     /**
@@ -333,7 +332,8 @@ public class VkSocialNetwork extends SocialNetwork {
                 try {
 
                     JSONArray jsonArray = response.json.getJSONArray("response");
-                    for (int i = 0; i < jsonArray.length(); i++) {
+                    int length = jsonArray.length();
+                    for (int i = 0; i < length; i++) {
                         getSocialPerson(socialPerson, jsonArray.getJSONObject(i));
                         socialPersons.add(socialPerson);
                         socialPerson = new SocialPerson();
@@ -534,7 +534,7 @@ public class VkSocialNetwork extends SocialNetwork {
     public void requestPostPhoto(File photo, final String message, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostPhoto(photo, message, onPostingCompleteListener);
         final Bitmap vkPhoto = getPhoto(photo);
-        VKRequest request = VKApi.uploadWallPhotoRequest(new VKUploadImage(vkPhoto, VKImageParameters.pngImage()), 0, Integer.parseInt(userId));
+        VKRequest request = VKApi.uploadWallPhotoRequest(new VKUploadImage(vkPhoto, VKImageParameters.pngImage()), 0, Integer.parseInt(mUserId));
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
@@ -684,7 +684,8 @@ public class VkSocialNetwork extends SocialNetwork {
                     jsonResponse = response.json.getJSONObject("response");
                     JSONArray jsonArray = jsonResponse.getJSONArray("items");
                     ids = new String[jsonArray.length()];
-                    for (int i = 0; i < jsonArray.length(); i++) {
+                    int length = jsonArray.length();
+                    for (int i = 0; i < length; i++) {
                         ids[i] = jsonArray.getJSONObject(i).getString("id");
                         getSocialPerson(socialPerson, jsonArray.getJSONObject(i));
                         socialPersons.add(socialPerson);
@@ -694,9 +695,9 @@ public class VkSocialNetwork extends SocialNetwork {
                     e.printStackTrace();
                 }
                 ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                    .OnGetFriendsIdComplete(getID(), ids);
+                    .onGetFriendsIdComplete(getID(), ids);
                 ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                        .OnGetFriendsComplete(getID(), socialPersons);
+                        .onGetFriendsComplete(getID(), socialPersons);
                 mLocalListeners.remove(REQUEST_GET_FRIENDS);
             }
             @Override
@@ -768,13 +769,13 @@ public class VkSocialNetwork extends SocialNetwork {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        activity = mSocialNetworkManager.getActivity();
-        VKUIHelper.onCreate(activity);
-        VKSdk.initialize(vkSdkListener, key);
+        this.mActivity = mSocialNetworkManager.getActivity();
+        VKUIHelper.onCreate(mActivity);
+        VKSdk.initialize(mVkSdkListener, mKey);
         VKSdk.wakeUpSession();
         if(isConnected()) {
-            userId = mSharedPreferences.getString(SAVE_STATE_KEY_USER_ID, null);
-            if(userId == null){
+            mUserId = mSharedPreferences.getString(SAVE_STATE_KEY_USER_ID, null);
+            if (mUserId == null){
                 requestIdPerson();
             }
         }
@@ -786,7 +787,7 @@ public class VkSocialNetwork extends SocialNetwork {
     @Override
     public void onResume() {
         super.onResume();
-        VKUIHelper.onResume(activity);
+        VKUIHelper.onResume(mActivity);
     }
 
     /**
@@ -795,7 +796,7 @@ public class VkSocialNetwork extends SocialNetwork {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        VKUIHelper.onDestroy(activity);
+        VKUIHelper.onDestroy(mActivity);
     }
 
     /**
@@ -807,7 +808,7 @@ public class VkSocialNetwork extends SocialNetwork {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        int sanitizedRequestCode = requestCode % 0x10000;
+        int sanitizedRequestCode = requestCode & 0xFFFF;
         VKUIHelper.onActivityResult(sanitizedRequestCode, resultCode, data);
     }
 }

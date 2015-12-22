@@ -43,21 +43,21 @@ import com.github.gorbin.asne.core.persons.SocialPerson;
 import com.gorbin.androidsocialnetworksextended.asne.utils.ADialogs;
 import com.gorbin.androidsocialnetworksextended.asne.utils.Constants;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 public class FriendsListFragment extends Fragment implements OnRequestGetFriendsCompleteListener, AdapterView.OnItemClickListener {
     private SocialNetwork socialNetwork;
     private ListView listMenu;
     private int socialNetworkId;
-    private ArrayList<SocialPerson> socialPersons = new ArrayList<SocialPerson>();
+    private final List<SocialPerson> socialPersons = new ArrayList<SocialPerson>();
     private ADialogs editDialog;
     private ADialogs loadingDialog;
 
     public FriendsListFragment() {
     }
 
-    public static FriendsListFragment newInstannce(int id) {
+    public static FriendsListFragment newInstance(int id) {
         FriendsListFragment fragment = new FriendsListFragment();
         Bundle args = new Bundle();
         args.putInt(Constants.NETWORK_ID, id);
@@ -168,13 +168,14 @@ public class FriendsListFragment extends Fragment implements OnRequestGetFriends
         }
     }
     @Override
-    public void OnGetFriendsIdComplete(int socialNetworkID, String[] friendsID) {
+    public void onGetFriendsIdComplete(int socialNetworkID, String[] friendsID) {
         ((MainActivity)getActivity()).getSupportActionBar().setTitle(friendsID.length + " Friends");
     }
 
     @Override
-    public void OnGetFriendsComplete(int socialNetworkID, ArrayList<SocialPerson> socialFriends) {
-        this.socialPersons = socialFriends;
+    public void onGetFriendsComplete(int socialNetworkID, List<SocialPerson> socialFriends) {
+        this.socialPersons.clear();
+        this.socialPersons.addAll(socialFriends);
         FriendsListAdapter adapter = new FriendsListAdapter(getActivity(), socialFriends, socialNetworkID);
         listMenu.setAdapter(adapter);
         loadingDialog.cancelProgress();
@@ -192,7 +193,7 @@ public class FriendsListFragment extends Fragment implements OnRequestGetFriends
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         if(socialNetworkId != 4) {
-            DetailedSocialInfoFragment friends = DetailedSocialInfoFragment.newInstannce(socialNetworkId, socialPersons.get(i).id);
+            DetailedSocialInfoFragment friends = DetailedSocialInfoFragment.newInstance(socialNetworkId, socialPersons.get(i).id);
             getActivity().getSupportFragmentManager().beginTransaction()
                     .addToBackStack("info")
                     .replace(R.id.container, friends)
