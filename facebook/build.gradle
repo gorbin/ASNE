@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         //applicationId "com.github.gorbin.asne.facebook"
-        minSdkVersion 10
+        minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -24,5 +24,5 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile project(':ASNECore')
-    compile 'com.facebook.android:facebook-android-sdk:3.19.1'
+    compile 'com.facebook.android:facebook-android-sdk:4.6.0'
 }
