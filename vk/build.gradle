@@ -3,7 +3,7 @@ apply from: '../maven_push.gradle'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "21.1.1"
+    buildToolsVersion "23.0.2"
 
     defaultConfig {
         //applicationId "com.github.gorbin.asne.vk"
