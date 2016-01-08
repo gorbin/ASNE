@@ -135,7 +135,7 @@ public class FacebookPerson extends SocialPerson implements Parcelable {
                 ", gender='" + gender + '\'' +
                 ", birthday='" + birthday + '\'' +
                 ", city='" + city + '\'' +
-                ", city='" + verified + '\'' +
+                ", verified='" + verified + '\'' +
                 '}';
     }
 }

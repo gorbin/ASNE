@@ -1,14 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.github.gorbin.asne.vkontakte"
-    xmlns:tools="http://schemas.android.com/tools">
-    <!--<uses-sdk tools:node="merge" />-->
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    package="com.github.gorbin.asne.vk" >
 
-    <application android:allowBackup="true">
-        <activity
-            android:name="com.vk.sdk.VKOpenAuthActivity"
-            />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true" >
+        <activity android:name="com.vk.sdk.VKServiceActivity" android:label="ServiceActivity" android:theme="@style/VK.Transparent" />
     </application>
 
 </manifest>
