@@ -79,11 +79,11 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
     private static final String INSTAGRAM_APIURL = "https://api.instagram.com/v1";
     private static final String ERROR_CODE = "InstagramSocialNetwork.ERROR_CODE";
 //    private final String INSTAGRAM_CALLBACK_URL = "oauth://ASNE";
-    private final String mAuthURLString;
-    private final String mTokenURLString;
-    private final String mClientId;
-    private final String mClientSecret;
-    private final String mRedirectURL;
+    private String mAuthURLString;
+    private String mTokenURLString;
+    private String mClientId;
+    private String mClientSecret;
+    private String mRedirectURL;
     private boolean mRestart = false;
     private Bundle mRequestBundle;
 
@@ -109,26 +109,26 @@ public class InstagramSocialNetwork extends OAuthSocialNetwork {
                 + clientSecret + "&redirect_uri=" + redirectURL + "&grant_type=authorization_code";
     }
 
-    public InstagramSocialNetwork(Fragment fragment, Context context, String clientId, String clientSecret, String redirectURL, String scope) {
-        super(fragment, context);
-
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.redirectURL = redirectURL;
-
-        if (TextUtils.isEmpty(clientId) || TextUtils.isEmpty(clientSecret)) {
-            throw new IllegalArgumentException("clientId and clientSecret are invalid");
-        }
-        if(scope == null) {
-            scope = "basic";
-        }
-        String INSTAGRAM_AUTHURL = "https://api.instagram.com/oauth/authorize/";
-        authURLString = INSTAGRAM_AUTHURL + "?client_id=" + clientId + "&redirect_uri="
-                + redirectURL + "&response_type=code&display=touch&scope=" + scope;
-
-        tokenURLString = INSTAGRAM_TOKENURL + "?client_id=" + clientId + "&client_secret="
-                + clientSecret + "&redirect_uri=" + redirectURL + "&grant_type=authorization_code";
-    }
+//    public InstagramSocialNetwork(Fragment fragment, Context context, String clientId, String clientSecret, String redirectURL, String scope) {
+//        super(fragment, context);
+//
+//        this.mClientId = clientId;
+//        this.mClientSecret = clientSecret;
+//        this.mRedirectURL = redirectURL;
+//
+//        if (TextUtils.isEmpty(clientId) || TextUtils.isEmpty(clientSecret)) {
+//            throw new IllegalArgumentException("clientId and clientSecret are invalid");
+//        }
+//        if(scope == null) {
+//            scope = "basic";
+//        }
+//        String INSTAGRAM_AUTHURL = "https://api.instagram.com/oauth/authorize/";
+//        authURLString = INSTAGRAM_AUTHURL + "?client_id=" + clientId + "&redirect_uri="
+//                + redirectURL + "&response_type=code&display=touch&scope=" + scope;
+//
+//        tokenURLString = INSTAGRAM_TOKENURL + "?client_id=" + clientId + "&client_secret="
+//                + clientSecret + "&redirect_uri=" + redirectURL + "&grant_type=authorization_code";
+//    }
 
     /**
      * Check is social network connected

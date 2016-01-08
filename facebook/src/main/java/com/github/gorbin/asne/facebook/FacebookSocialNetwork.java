@@ -308,7 +308,7 @@ public class FacebookSocialNetwork extends SocialNetwork {
 
     //TODO set up right link
     /**
-     * Request user {@link com.example.mac13.facebook.FacebookPerson} by userId - detailed user data
+     * Request user {@link com.github.gorbin.asne.facebook.FacebookPerson} by userId - detailed user data
      * @param userId user id in social network
      * @param onRequestDetailedSocialPersonCompleteListener listener for request detailed social person
      */
@@ -548,9 +548,9 @@ public class FacebookSocialNetwork extends SocialNetwork {
                                         getID(), REQUEST_GET_FRIENDS, e.getLocalizedMessage(), null);
                             }
                             ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                                    .OnGetFriendsIdComplete(getID(), ids);
+                                    .onGetFriendsIdComplete(getID(), ids);
                             ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                                    .OnGetFriendsComplete(getID(), socialPersons);
+                                    .onGetFriendsComplete(getID(), socialPersons);
                             mLocalListeners.remove(REQUEST_GET_FRIENDS);
                         }
                     }

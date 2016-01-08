@@ -45,11 +45,11 @@ import com.github.gorbin.asne.instagram.InstagramSocialNetwork;
 import com.github.gorbin.asne.linkedin.LinkedInSocialNetwork;
 import com.github.gorbin.asne.odnoklassniki.OkSocialNetwork;
 import com.github.gorbin.asne.twitter.TwitterSocialNetwork;
-import com.github.gorbin.asne.vk.VkSocialNetwork;
+//import com.github.gorbin.asne.vk.VkSocialNetwork;
 import com.gorbin.androidsocialnetworksextended.asne.utils.ADialogs;
 import com.gorbin.androidsocialnetworksextended.asne.utils.Constants;
 import com.gorbin.androidsocialnetworksextended.asne.utils.SocialCard;
-import com.vk.sdk.VKScope;
+//import com.vk.sdk.VKScope;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -133,13 +133,13 @@ public class MainFragment  extends Fragment
         String[] okScope = new String[] {
                 OkScope.VALUABLE_ACCESS
         };
-        String[] vkScope = new String[] {
-                VKScope.FRIENDS,
-                VKScope.WALL,
-                VKScope.PHOTOS,
-                VKScope.NOHTTPS,
-                VKScope.STATUS,
-        };
+//        String[] vkScope = new String[] {
+//                VKScope.FRIENDS,
+//                VKScope.WALL,
+//                VKScope.PHOTOS,
+//                VKScope.NOHTTPS,
+//                VKScope.STATUS,
+//        };
         String instagramScope = "likes+comments+relationships";
 
         mSocialNetworkManager = (SocialNetworkManager) getFragmentManager().findFragmentByTag(SOCIAL_NETWORK_TAG);
@@ -159,8 +159,8 @@ public class MainFragment  extends Fragment
             GooglePlusSocialNetwork gpNetwork = new GooglePlusSocialNetwork(this);
             mSocialNetworkManager.addSocialNetwork(gpNetwork);
 
-            VkSocialNetwork vkNetwork = new VkSocialNetwork(this, VK_KEY, vkScope);
-            mSocialNetworkManager.addSocialNetwork(vkNetwork);
+//            VkSocialNetwork vkNetwork = new VkSocialNetwork(this, VK_KEY, vkScope);
+//            mSocialNetworkManager.addSocialNetwork(vkNetwork);
 
             OkSocialNetwork okNetwork = new OkSocialNetwork(this, OK_APP_ID, OK_PUBLIC_KEY, OK_SECRET_KEY, okScope);
             mSocialNetworkManager.addSocialNetwork(okNetwork);

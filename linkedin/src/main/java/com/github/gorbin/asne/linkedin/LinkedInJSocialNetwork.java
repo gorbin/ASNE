@@ -69,7 +69,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.naming.Context;
+//import javax.naming.Context;
 
 /**
  * Class for LinkedIn social network integration using LinkedIn-j library
@@ -129,17 +129,17 @@ public class LinkedInJSocialNetwork extends OAuthSocialNetwork {
         mLinkedInApiClientFactory = LinkedInApiClientFactory.newInstance(consumerKey, consumerSecret);
     }
 
-    public LinkedInJSocialNetwork(Fragment fragment, Context context, String consumerKey, String consumerSecret, String permissions) {
-        super(fragment, context);
-
-        if (TextUtils.isEmpty(consumerKey) || TextUtils.isEmpty(consumerSecret) || TextUtils.isEmpty(permissions)) {
-            throw new IllegalArgumentException("TextUtils.isEmpty(fConsumerKey) || TextUtils.isEmpty(fConsumerSecret) || TextUtils.isEmpty(fPermissions)");
-        }
-
-        mOAuthService = LinkedInOAuthServiceFactory.getInstance()
-                .createLinkedInOAuthService(consumerKey, consumerSecret, permissions);
-        mLinkedInApiClientFactory = LinkedInApiClientFactory.newInstance(consumerKey, consumerSecret);
-    }
+//    public LinkedInJSocialNetwork(Fragment fragment, Context context, String consumerKey, String consumerSecret, String permissions) {
+//        super(fragment, context);
+//
+//        if (TextUtils.isEmpty(consumerKey) || TextUtils.isEmpty(consumerSecret) || TextUtils.isEmpty(permissions)) {
+//            throw new IllegalArgumentException("TextUtils.isEmpty(fConsumerKey) || TextUtils.isEmpty(fConsumerSecret) || TextUtils.isEmpty(fPermissions)");
+//        }
+//
+//        mOAuthService = LinkedInOAuthServiceFactory.getInstance()
+//                .createLinkedInOAuthService(consumerKey, consumerSecret, permissions);
+//        mLinkedInApiClientFactory = LinkedInApiClientFactory.newInstance(consumerKey, consumerSecret);
+//    }
 
     /**
      * Check is social network connected

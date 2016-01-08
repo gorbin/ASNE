@@ -94,19 +94,19 @@ public class OkSocialNetwork extends OAuthSocialNetwork implements OkTokenReques
         mOdnoklassniki.setTokenRequestListener(this);
     }
 
-    public OkSocialNetwork(Fragment fragment, Context context, String appId, String appPublicKey, String appSecretKey, String[] permissions) {
-        super(fragment, context);
-        if (TextUtils.isEmpty(appId) || TextUtils.isEmpty(appPublicKey) || TextUtils.isEmpty(appSecretKey)) {
-            throw new IllegalArgumentException("TextUtils.isEmpty(appId) || TextUtils.isEmpty(appPublicKey) || TextUtils.isEmpty(appSecretKey)");
-        }
-        this.appId = appId;
-        this.appPublicKey = appPublicKey;
-        this.appSecretKey = appSecretKey;
-        this.permissions = permissions;
-        activity = mSocialNetworkManager.getActivity();
-        mOdnoklassniki = Odnoklassniki.createInstance(activity, appId, appSecretKey, appPublicKey);
-        mOdnoklassniki.setTokenRequestListener(this);
-    }
+//    public OkSocialNetwork(Fragment fragment, Context context, String appId, String appPublicKey, String appSecretKey, String[] permissions) {
+//        super(fragment, context);
+//        if (TextUtils.isEmpty(appId) || TextUtils.isEmpty(appPublicKey) || TextUtils.isEmpty(appSecretKey)) {
+//            throw new IllegalArgumentException("TextUtils.isEmpty(appId) || TextUtils.isEmpty(appPublicKey) || TextUtils.isEmpty(appSecretKey)");
+//        }
+//        this.appId = appId;
+//        this.appPublicKey = appPublicKey;
+//        this.appSecretKey = appSecretKey;
+//        this.permissions = permissions;
+//        activity = mSocialNetworkManager.getActivity();
+//        mOdnoklassniki = Odnoklassniki.createInstance(activity, appId, appSecretKey, appPublicKey);
+//        mOdnoklassniki.setTokenRequestListener(this);
+//    }
 
     /**
      * Called after successful authorization

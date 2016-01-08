@@ -105,27 +105,27 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
         initTwitterClient();
     }
 
-    public TwitterSocialNetwork(Fragment fragment, Context context, String consumerKey, String consumerSecret, String redirectURL) {
-        super(fragment, context);
-
-        fConsumerKey = consumerKey;
-        fConsumerSecret = consumerSecret;
-        fRedirectURL = redirectURL;
-
-
-        if (TextUtils.isEmpty(fConsumerKey) || TextUtils.isEmpty(fConsumerSecret)) {
-            throw new IllegalArgumentException("consumerKey and consumerSecret are invalid");
-        }
-        /*
-        *
-        * No authentication challenges found
-        * Relevant discussions can be found on the Internet at:
-        * http://www.google.co.jp/search?q=8e063946 or
-        * http://www.google.co.jp/search?q=ef59cf9f
-        *
-        * */
-        initTwitterClient();
-    }
+//    public TwitterSocialNetwork(Fragment fragment, Context context, String consumerKey, String consumerSecret, String redirectURL) {
+//        super(fragment, context);
+//
+//        fConsumerKey = consumerKey;
+//        fConsumerSecret = consumerSecret;
+//        fRedirectURL = redirectURL;
+//
+//
+//        if (TextUtils.isEmpty(fConsumerKey) || TextUtils.isEmpty(fConsumerSecret)) {
+//            throw new IllegalArgumentException("consumerKey and consumerSecret are invalid");
+//        }
+//        /*
+//        *
+//        * No authentication challenges found
+//        * Relevant discussions can be found on the Internet at:
+//        * http://www.google.co.jp/search?q=8e063946 or
+//        * http://www.google.co.jp/search?q=ef59cf9f
+//        *
+//        * */
+//        initTwitterClient();
+//    }
 
     private void initTwitterClient() {
         ConfigurationBuilder builder = new ConfigurationBuilder();

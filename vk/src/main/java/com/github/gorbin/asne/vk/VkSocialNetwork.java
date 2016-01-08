@@ -144,11 +144,11 @@ public class VkSocialNetwork extends SocialNetwork {
         this.mPermissions = permissions;
     }
 
-    public VkSocialNetwork(Fragment fragment, Context context, String key, String[] permissions) {
-        super(fragment, context);
-        this.key = key;
-        this.permissions = permissions;
-    }
+//    public VkSocialNetwork(Fragment fragment, Context context, String key, String[] permissions) {
+//        super(fragment, context);
+//        this.key = key;
+//        this.permissions = permissions;
+//    }
 
     private static boolean stringToBool(String s) {
         if (s.equals("1"))

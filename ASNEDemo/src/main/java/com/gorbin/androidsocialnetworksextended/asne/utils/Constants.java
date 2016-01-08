@@ -33,7 +33,7 @@ public class Constants {
     public static final String[] socialName = {"Twitter","LinkedIn","GooglePlus","Facebook",
             "Vkontakte","Odnoklassniki", "Instagram"};
     public static final int[] userPhoto = {R.drawable.twitter_user, R.drawable.linkedin_user,
-            R.drawable.g_plus_user, R.drawable.com_facebook_profile_picture_blank_square,
+            R.drawable.g_plus_user, R.drawable.user,
             R.drawable.vk_user, R.drawable.ok_user, R.drawable.instagram_user};
     public static final int[] color = {R.color.twitter, R.color.linkedin, R.color.google_plus,
             R.color.facebook, R.color.vk, R.color.ok, R.color.instagram};

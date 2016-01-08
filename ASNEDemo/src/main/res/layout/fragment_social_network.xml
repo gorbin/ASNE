@@ -17,7 +17,7 @@
             android:layout_alignParentLeft="true"
             custom:social_card_color="@color/facebook"
             custom:dark_color="@color/facebook_light"
-            custom:profile_image="@drawable/com_facebook_profile_picture_blank_square"
+            custom:profile_image="@drawable/user"
             custom:text_color="@color/facebook"/>
         <com.gorbin.androidsocialnetworksextended.asne.utils.SocialCard
             android:id="@+id/tw_card"
