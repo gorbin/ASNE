@@ -48,6 +48,7 @@ import com.github.gorbin.asne.core.listener.OnRequestSocialPersonCompleteListene
 import com.github.gorbin.asne.core.listener.OnRequestSocialPersonsCompleteListener;
 import com.github.gorbin.asne.core.persons.SocialPerson;
 import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKCallback;
 import com.vk.sdk.VKSdk;
 //import com.vk.sdk.VKSdkListener;
@@ -141,6 +142,24 @@ public class VkSocialNetwork extends SocialNetwork {
 //            mUserId = accessToken.userId;
 //        }
 //    };
+    VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
+        @Override
+        public void onVKAccessTokenChanged(VKAccessToken oldToken, VKAccessToken newToken) {
+            if (newToken != null) {
+                mAccessToken = newToken;
+                mSharedPreferences.edit()
+                    .putString(SAVE_STATE_KEY_OAUTH_TOKEN, newToken.accessToken)
+                    .putString(SAVE_STATE_KEY_OAUTH_SECRET, newToken.secret)
+                    .putString(SAVE_STATE_KEY_USER_ID, newToken.userId)
+                    .apply();
+                if (mLocalListeners.get(REQUEST_LOGIN) != null) {
+                    ((OnLoginCompleteListener) mLocalListeners.get(REQUEST_LOGIN)).onLoginSuccess(getID());
+                    mLocalListeners.remove(REQUEST_LOGIN);
+                }
+                mUserId = newToken.userId;
+            }
+        }
+    };
 
     public VkSocialNetwork(Fragment fragment, String key, String[] permissions) {
         super(fragment);
@@ -148,6 +167,7 @@ public class VkSocialNetwork extends SocialNetwork {
         this.mPermissions = permissions;
         this.mActivity = fragment.getActivity();
         int wat = Integer.parseInt(mKey);
+        vkAccessTokenTracker.startTracking();
         VKSdk.customInitialize(mActivity.getApplicationContext(),wat,null);// initialize(mActivity.getApplicationContext());
     }
 
@@ -833,8 +853,7 @@ public class VkSocialNetwork extends SocialNetwork {
             }
             @Override
             public void onError(VKError error) {
-                // Произошла ошибка авторизации (например, пользователь запретил авторизацию)
-                Log.e("VKSocial", "Login Error");
+                mLocalListeners.get(REQUEST_LOGIN).onError(getID(), REQUEST_LOGIN, error.toString(), null);
             }
         })) {
             super.onActivityResult(requestCode, resultCode, data);
