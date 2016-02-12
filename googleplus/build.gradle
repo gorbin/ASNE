@@ -23,6 +23,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.1.1'
-    compile('com.google.android.gms:play-services-plus:8.4.+@aar') { exclude module: 'support-v4' }
+    compile('com.google.android.gms:play-services:8.4.+@aar') { exclude module: 'support-v4' }
     compile project(':ASNECore')
 }
