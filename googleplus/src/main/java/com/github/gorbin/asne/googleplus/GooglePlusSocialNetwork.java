@@ -163,16 +163,22 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
         super.requestAccessToken(onRequestAccessTokenCompleteListener);
 
         AsyncTask<Activity, Void, String> task = new AsyncTask<Activity, Void, String>() {
+            Exception mException;
+
             @Override
             protected String doInBackground(Activity... params) {
-                String scope = "oauth2:" + Scopes.PLUS_LOGIN;
-                String token;
+                String scope = "oauth2:profile email";
+                String account = Plus.AccountApi.getAccountName(googleApiClient);
+                String token = null;
                 try {
                     token = GoogleAuthUtil.getToken(params[0],
-                            Plus.AccountApi.getAccountName(googleApiClient), scope);
+                            account, scope);
+                } catch (UserRecoverableAuthException e) {
+                    mConnectRequested = true;
+                    mActivity.startActivityForResult(e.getIntent(), REQUEST_AUTH);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    return e.getMessage();
+                    mException = e;
                 }
                 return token;
             }
@@ -182,8 +188,9 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
                 if(token != null) {
                     ((OnRequestAccessTokenCompleteListener) mLocalListeners.get(REQUEST_ACCESS_TOKEN))
                             .onRequestAccessTokenComplete(getID(), new AccessToken(token, null));
-                } else {
-                    mLocalListeners.get(REQUEST_ACCESS_TOKEN).onError(getID(), REQUEST_ACCESS_TOKEN, token, null);
+                }
+                else if(mException != null) {
+                    mLocalListeners.get(REQUEST_ACCESS_TOKEN).onError(getID(), REQUEST_ACCESS_TOKEN, mException.getMessage(), mException);
                 }
             }
         };
