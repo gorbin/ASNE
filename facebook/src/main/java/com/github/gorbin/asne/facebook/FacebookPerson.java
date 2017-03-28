@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Evgeny Gorbin
+ * Copyright (c) 2015 Evgeny Gorbin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,6 +20,9 @@
  * THE SOFTWARE.
  *******************************************************************************/
 package com.github.gorbin.asne.facebook;
+
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -45,17 +48,17 @@ public class FacebookPerson extends SocialPerson implements Parcelable {
     };
 
     /*** First name of social person*/
-	public String firstName;
+    public String firstName;
     /*** Middle name of social person*/
-	public String middleName;
+    public String middleName;
     /*** Last name of social person*/
-	public String lastName;
+    public String lastName;
     /*** Sex of social person*/
-	public String gender;
+    public String gender;
     /*** Birthday of social person in the format MM/DD/YYYY*/
-	public String birthday;
+    public String birthday;
     /*** City of social person from user*/
-	public String city;
+    public String city;
     /*** Check if user is verified*/
     public String verified;
 
@@ -64,12 +67,12 @@ public class FacebookPerson extends SocialPerson implements Parcelable {
     }
 
     private FacebookPerson(Parcel in) {
-		firstName = in.readString();
-		middleName = in.readString();
-		lastName = in.readString();
-		gender = in.readString();
-		birthday = in.readString();
-		city = in.readString();
+        firstName = in.readString();
+        middleName = in.readString();
+        lastName = in.readString();
+        gender = in.readString();
+        birthday = in.readString();
+        city = in.readString();
         verified = in.readString();
     }
 
@@ -81,11 +84,11 @@ public class FacebookPerson extends SocialPerson implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(firstName);
-		dest.writeString(middleName);
-		dest.writeString(lastName);
-		dest.writeString(gender);
-		dest.writeString(birthday);
-		dest.writeString(city);
+        dest.writeString(middleName);
+        dest.writeString(lastName);
+        dest.writeString(gender);
+        dest.writeString(birthday);
+        dest.writeString(city);
         dest.writeString(verified);
     }
 
@@ -96,12 +99,12 @@ public class FacebookPerson extends SocialPerson implements Parcelable {
 
         FacebookPerson that = (FacebookPerson) o;
 
-		if (firstName != null ? !firstName.equals(that.firstName) : that.firstName != null) return false;
-		if (middleName != null ? !middleName.equals(that.middleName) : that.middleName != null) return false;
-		if (lastName != null ? !lastName.equals(that.lastName) : that.lastName != null) return false;
-		if (gender != null ? !gender.equals(that.gender) : that.gender != null) return false;
-		if (birthday != null ? !birthday.equals(that.birthday) : that.birthday != null) return false;
-		if (city != null ? !city.equals(that.city) : that.city != null) return false;
+        if (firstName != null ? !firstName.equals(that.firstName) : that.firstName != null) return false;
+        if (middleName != null ? !middleName.equals(that.middleName) : that.middleName != null) return false;
+        if (lastName != null ? !lastName.equals(that.lastName) : that.lastName != null) return false;
+        if (gender != null ? !gender.equals(that.gender) : that.gender != null) return false;
+        if (birthday != null ? !birthday.equals(that.birthday) : that.birthday != null) return false;
+        if (city != null ? !city.equals(that.city) : that.city != null) return false;
         if (verified != null ? !verified.equals(that.verified) : that.verified != null) return false;
         return true;
     }
@@ -109,11 +112,11 @@ public class FacebookPerson extends SocialPerson implements Parcelable {
     @Override
     public int hashCode() {
         int result = firstName != null ? firstName.hashCode() : 0;
-		result = 31 * result + (middleName != null ? middleName.hashCode() : 0);
-		result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
-		result = 31 * result + (gender != null ? gender.hashCode() : 0);
-		result = 31 * result + (birthday != null ? birthday.hashCode() : 0);
-		result = 31 * result + (city != null ? city.hashCode() : 0);
+        result = 31 * result + (middleName != null ? middleName.hashCode() : 0);
+        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+        result = 31 * result + (gender != null ? gender.hashCode() : 0);
+        result = 31 * result + (birthday != null ? birthday.hashCode() : 0);
+        result = 31 * result + (city != null ? city.hashCode() : 0);
         result = 31 * result + (verified != null ? verified.hashCode() : 0);
         return result;
     }
@@ -126,13 +129,13 @@ public class FacebookPerson extends SocialPerson implements Parcelable {
                 ", avatarURL='" + avatarURL + '\'' +
                 ", profileURL='" + profileURL + '\'' +
                 ", email='" + email + '\'' +
-				", firstName='" + firstName + '\'' +
-				", middleName='" + middleName + '\'' +
-				", lastName='" + lastName + '\'' +
-				", gender='" + gender + '\'' +
-				", birthday='" + birthday + '\'' +
-				", city='" + city + '\'' +
-                ", city='" + verified + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", middleName='" + middleName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", gender='" + gender + '\'' +
+                ", birthday='" + birthday + '\'' +
+                ", city='" + city + '\'' +
+                ", verified='" + verified + '\'' +
                 '}';
     }
 }

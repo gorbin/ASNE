@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/grey_light_light">
+
+    <com.gorbin.androidsocialnetworksextended.asne.utils.SocialCard
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        custom:social_card_color="@color/facebook"
+        custom:text_color="@color/facebook"
+        custom:dark_color="@color/facebook_light"
+        custom:profile_image="@drawable/user"
+        android:id="@+id/info_card"/>
+
+</ScrollView>

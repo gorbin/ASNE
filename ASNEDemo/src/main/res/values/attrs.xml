@@ -1,0 +1,9 @@
+<resources>
+    <declare-styleable name="social_card">
+        <attr name="social_card_color" format="color"/>
+        <attr name="text_color" format="color"/>
+		<attr name="dark_color" format="color"/>
+		<attr name="button_text_color" format="color"/>
+		<attr name="profile_image" format="reference" />
+    </declare-styleable>
+</resources>

@@ -1,3 +1,9 @@
+Unfreeze project - merge all puls for master branch - current version was not tested - **NOT STABLE**
+
+**Sorry, but I freeze work on project for some time(I hope not long, nearly month) - too busy. I saw all Issues and will resolve them as soon as I can.** 
+
+**I checked project - current maven libs mostly works fine. For now I need help with Issues and open for pull requests - will check them and merge on weekends.**
+
 ![enter image description here][1]
 
 ASNE        [![ASNE Maven Central](http://img.shields.io/badge/ASNE%20Maven%20Central-0.3.1-brightgreen.svg?style=flat)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.asne%22) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-ASNE-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/868)
@@ -76,13 +82,13 @@ Add dependency for chosen module, here example for all modules, you can choose o
 ```
 dependencies {
 ...
-    compile 'com.github.asne:asne-facebook:0.3.1'
-    compile 'com.github.asne:asne-twitter:0.3.1'
-    compile 'com.github.asne:asne-googleplus:0.3.1'
-    compile 'com.github.asne:asne-linkedin:0.3.1'
-    compile 'com.github.asne:asne-instagram:0.3.1'
-    compile 'com.github.asne:asne-vk:0.3.1'
-    compile 'com.github.asne:asne-odnoklassniki:0.3.1'
+    compile 'com.github.asne:asne-facebook:0.3.3'
+    compile 'com.github.asne:asne-twitter:0.3.3'
+    compile 'com.github.asne:asne-googleplus:0.3.3'
+    compile 'com.github.asne:asne-linkedin:0.3.3'
+    compile 'com.github.asne:asne-instagram:0.3.3'
+    compile 'com.github.asne:asne-vk:0.3.3'
+    compile 'com.github.asne:asne-odnoklassniki:0.3.3'
 ...
 }
 ```
@@ -135,6 +141,8 @@ mSocialNetworkManager = (SocialNetworkManager) getFragmentManager().findFragment
 	if (mSocialNetworkManager == null) {
         mSocialNetworkManager = new SocialNetworkManager();
 		FacebookSocialNetwork fbNetwork = new FacebookSocialNetwork(this, fbScope);
+		//or from an activity
+		//FacebookSocialNetwork fbNetwork = new FacebookSocialNetwork(mSocialNetworkManager, this, fbScope);
         mSocialNetworkManager.addSocialNetwork(fbNetwork);
         getFragmentManager().beginTransaction().add(mSocialNetworkManager, SOCIAL_NETWORK_TAG).commit();
 	}

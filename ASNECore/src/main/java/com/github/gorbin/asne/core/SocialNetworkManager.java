@@ -24,6 +24,7 @@ package com.github.gorbin.asne.core;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -156,7 +157,8 @@ public class SocialNetworkManager extends Fragment {
      */
     public SocialNetwork getSocialNetwork(int id) throws SocialNetworkException {
         if (!mSocialNetworksMap.containsKey(id)) {
-            throw new SocialNetworkException("Social network with id = " + id + " not found");
+//            throw new SocialNetworkException("Social network with id = " + id + " not found");
+            Log.e("adfasdfasdf", "asfasdfasdf");
         }
 
         return mSocialNetworksMap.get(id);

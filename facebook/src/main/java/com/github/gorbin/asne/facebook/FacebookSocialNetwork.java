@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Evgeny Gorbin
+ * Copyright (c) 2016 Evgeny Gorbin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,17 +19,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *******************************************************************************/
+
 package com.github.gorbin.asne.facebook;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
-import com.github.gorbin.asne.core.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.internal.Utility;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.share.ShareApi;
+import com.facebook.share.Sharer;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.model.SharePhoto;
+import com.facebook.share.model.SharePhotoContent;
+import com.facebook.share.widget.ShareDialog;
 import com.github.gorbin.asne.core.SocialNetwork;
 import com.github.gorbin.asne.core.SocialNetworkException;
 import com.github.gorbin.asne.core.listener.OnCheckIsFriendCompleteListener;
@@ -43,56 +56,104 @@ import com.github.gorbin.asne.core.listener.OnRequestRemoveFriendCompleteListene
 import com.github.gorbin.asne.core.listener.OnRequestSocialPersonCompleteListener;
 import com.github.gorbin.asne.core.listener.OnRequestSocialPersonsCompleteListener;
 import com.github.gorbin.asne.core.persons.SocialPerson;
-import com.facebook.FacebookAuthorizationException;
+
+import com.facebook.FacebookSdk;
 import com.facebook.FacebookException;
-import com.facebook.FacebookOperationCanceledException;
-import com.facebook.HttpMethod;
-import com.facebook.Request;
-import com.facebook.Response;
-import com.facebook.Session;
-import com.facebook.SessionDefaultAudience;
-import com.facebook.SessionLoginBehavior;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
-import com.facebook.internal.SessionTracker;
-import com.facebook.internal.Utility;
-import com.facebook.model.GraphUser;
-import com.facebook.widget.FacebookDialog;
-import com.facebook.widget.WebDialog;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Class for Facebook social network integration
  *
- * @author Anton Krasov
  * @author Evgeny Gorbin (gorbin.e.o@gmail.com)
- */
+*/
 public class FacebookSocialNetwork extends SocialNetwork {
     /*** Social network ID in asne modules, should be unique*/
     public static final int ID = 4;
 
     private static final String PERMISSION = "publish_actions";
-    private SessionTracker mSessionTracker;
-    private UiLifecycleHelper mUILifecycleHelper;
-    private String mApplicationId;
-    private SessionState mSessionState;
+    private Fragment fragment;
+    private CallbackManager callbackManager;
+    private com.github.gorbin.asne.core.AccessToken accessToken;
+    private ShareDialog shareDialog;
     private String mPhotoPath;
     private String mStatus;
     private Bundle mBundle;
-    private ArrayList<String> permissions;
+    private List<String> permissions;
     private PendingAction mPendingAction = PendingAction.NONE;
-    private Session.StatusCallback mSessionStatusCallback = new Session.StatusCallback() {
+    private String requestID;
+    private FacebookCallback<LoginResult> LoginCallback = new FacebookCallback<LoginResult>() {
         @Override
-        public void call(Session session, SessionState state, Exception exception) {
-            onSessionStateChange(session, state, exception);
+        public void onSuccess(LoginResult loginResult) {
+            if (mLocalListeners.containsKey(REQUEST_LOGIN)) {
+                ((OnLoginCompleteListener) mLocalListeners.get(REQUEST_LOGIN)).onLoginSuccess(getID());
+                mLocalListeners.remove(REQUEST_LOGIN);
+            }
+            if(mPendingAction != PendingAction.NONE) {
+                handlePendingAction();
+            }
+            accessToken = new com.github.gorbin.asne.core.AccessToken(loginResult.getAccessToken().getToken(), null);
+
+        }
+
+        @Override
+        public void onCancel() {
+            if (mLocalListeners.containsKey(REQUEST_LOGIN)) {
+                mLocalListeners.get(REQUEST_LOGIN).onError(getID(), REQUEST_LOGIN, null, null);
+                mLocalListeners.remove(REQUEST_LOGIN);
+            }
+            if(mPendingAction != PendingAction.NONE) {
+                publishSuccess(requestID, "requestPermissions canceled");
+            }
+
+        }
+
+        @Override
+        public void onError(FacebookException exception) {
+
+            if (mLocalListeners.containsKey(REQUEST_LOGIN)) {
+                mLocalListeners.get(REQUEST_LOGIN).onError(getID(), REQUEST_LOGIN, exception.getMessage(), null);
+                mLocalListeners.remove(REQUEST_LOGIN);
+            }
+            if(mPendingAction != PendingAction.NONE) {
+                publishSuccess(requestID, exception.toString());
+            }
+        }
+    };
+    private FacebookCallback<Sharer.Result> ShareCallBack = new FacebookCallback<Sharer.Result>() {
+        @Override
+        public void onSuccess(Sharer.Result result) {
+            ((OnPostingCompleteListener) mLocalListeners.get(requestID)).onPostSuccessfully(getID());
+            mLocalListeners.remove(requestID);
+        }
+
+        @Override
+        public void onCancel() {
+            mLocalListeners.get(requestID).onError(getID(), requestID, "ShareDialog canceled", null);
+        }
+
+        @Override
+        public void onError(FacebookException error) {
+            mLocalListeners.get(requestID).onError(getID(), requestID, error.getLocalizedMessage(), null);
         }
     };
 
+
+    //TODO: refactor to use an init that is shared by constructors
     public FacebookSocialNetwork(Fragment fragment, ArrayList<String> permissions) {
         super(fragment);
+        this.fragment = fragment;
+        FacebookSdk.sdkInitialize(fragment.getActivity().getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
+        shareDialog = new ShareDialog(fragment.getActivity());
+        shareDialog.registerCallback(callbackManager, ShareCallBack);
         String applicationID = Utility.getMetadataApplicationId(fragment.getActivity());
 
         if (applicationID == null) {
@@ -101,6 +162,18 @@ public class FacebookSocialNetwork extends SocialNetwork {
         }
         this.permissions = permissions;
     }
+//TODO
+//    public FacebookSocialNetwork(Fragment fragment, Context context, ArrayList<String> permissions) {
+//        super(fragment, context);
+//        FacebookSdk.sdkInitialize(fragment.getActivity().getApplicationContext());
+//        String applicationID = Utility.getMetadataApplicationId(context);
+//
+//        if (applicationID == null) {
+//            throw new IllegalStateException("applicationID can't be null\n" +
+//                    "Please check https://developers.facebook.com/docs/android/getting-started/");
+//        }
+//        this.permissions = permissions;
+//    }
 
     /**
      * Check is social network connected
@@ -108,8 +181,7 @@ public class FacebookSocialNetwork extends SocialNetwork {
      */
     @Override
     public boolean isConnected() {
-        Session session = Session.getActiveSession();
-        return (session != null && session.isOpened());
+        return com.facebook.AccessToken.getCurrentAccessToken() != null;
     }
 
     /**
@@ -119,35 +191,8 @@ public class FacebookSocialNetwork extends SocialNetwork {
     @Override
     public void requestLogin(OnLoginCompleteListener onLoginCompleteListener) {
         super.requestLogin(onLoginCompleteListener);
-
-        final Session openSession = mSessionTracker.getOpenSession();
-
-        if (openSession != null) {
-            if (mLocalListeners.get(REQUEST_LOGIN) != null) {
-                mLocalListeners.get(REQUEST_LOGIN).onError(getID(), REQUEST_LOGIN, "Already loginned", null);
-            }
-        }
-
-        Session currentSession = mSessionTracker.getSession();
-        if (currentSession == null || currentSession.getState().isClosed()) {
-            mSessionTracker.setSession(null);
-            Session session = new Session.Builder(mSocialNetworkManager.getActivity())
-                    .setApplicationId(mApplicationId).build();
-            Session.setActiveSession(session);
-            currentSession = session;
-        }
-
-        if (!currentSession.isOpened()) {
-            Session.OpenRequest openRequest;
-            openRequest = new Session.OpenRequest(mSocialNetworkManager.getActivity());
-
-            openRequest.setDefaultAudience(SessionDefaultAudience.EVERYONE);
-            if(permissions != null) {
-                openRequest.setPermissions(permissions);
-            }
-            openRequest.setLoginBehavior(SessionLoginBehavior.SSO_WITH_FALLBACK);
-            currentSession.openForRead(openRequest);
-        }
+        LoginManager.getInstance().logInWithReadPermissions(fragment.getActivity(), permissions);
+        LoginManager.getInstance().registerCallback(callbackManager, LoginCallback);
     }
 
     /**
@@ -157,8 +202,10 @@ public class FacebookSocialNetwork extends SocialNetwork {
     @Override
     public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
         super.requestAccessToken(onRequestAccessTokenCompleteListener);
-        ((OnRequestAccessTokenCompleteListener) mLocalListeners.get(REQUEST_ACCESS_TOKEN))
-                .onRequestAccessTokenComplete(getID(), new AccessToken(Session.getActiveSession().getAccessToken(), null));
+        if(com.facebook.AccessToken.getCurrentAccessToken() != null) {
+            accessToken = new com.github.gorbin.asne.core.AccessToken(com.facebook.AccessToken.getCurrentAccessToken().getToken(), null);
+            ((OnRequestAccessTokenCompleteListener) mLocalListeners.get(REQUEST_ACCESS_TOKEN)).onRequestAccessTokenComplete(getID(), accessToken);
+        }
     }
 
     /**
@@ -166,13 +213,7 @@ public class FacebookSocialNetwork extends SocialNetwork {
      */
     @Override
     public void logout() {
-        if (mSessionTracker == null) return;
-
-        final Session openSession = mSessionTracker.getOpenSession();
-
-        if (openSession != null) {
-            openSession.closeAndClearTokenInformation();
-        }
+        LoginManager.getInstance().logOut();
     }
 
     /**
@@ -188,9 +229,12 @@ public class FacebookSocialNetwork extends SocialNetwork {
      * Method to get AccessToken of Facebook social network
      * @return {@link com.github.gorbin.asne.core.AccessToken}
      */
-	@Override
-    public AccessToken getAccessToken() {
-        return new AccessToken(Session.getActiveSession().getAccessToken(), null);
+    @Override
+    public com.github.gorbin.asne.core.AccessToken getAccessToken() {
+        if(com.facebook.AccessToken.getCurrentAccessToken() != null) {
+            accessToken = new com.github.gorbin.asne.core.AccessToken(com.facebook.AccessToken.getCurrentAccessToken().getToken(), null);
+        }
+        return accessToken;
     }
 
     /**
@@ -201,9 +245,7 @@ public class FacebookSocialNetwork extends SocialNetwork {
     public void requestCurrentPerson(OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
         super.requestCurrentPerson(onRequestSocialPersonCompleteListener);
 
-        final Session currentSession = mSessionTracker.getOpenSession();
-
-        if (currentSession == null) {
+        if (com.facebook.AccessToken.getCurrentAccessToken() == null) {
             if (mLocalListeners.get(REQUEST_GET_CURRENT_PERSON) != null) {
                 mLocalListeners.get(REQUEST_GET_CURRENT_PERSON).onError(getID(),
                         REQUEST_GET_PERSON, "Please login first", null);
@@ -211,25 +253,34 @@ public class FacebookSocialNetwork extends SocialNetwork {
             return;
         }
 
-        Request request = Request.newMeRequest(currentSession, new Request.GraphUserCallback() {
-            @Override
-            public void onCompleted(GraphUser me, Response response) {
-                if (response.getError() != null) {
-                    if (mLocalListeners.get(REQUEST_GET_CURRENT_PERSON) != null) {
-                        mLocalListeners.get(REQUEST_GET_CURRENT_PERSON).onError(
-                                getID(), REQUEST_GET_CURRENT_PERSON, response.getError().getErrorMessage()
-                                , null);
+        GraphRequest request = GraphRequest.newMeRequest(
+                com.facebook.AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject me, GraphResponse response) {
+                        if (response.getError() != null) {
+                            if (mLocalListeners.get(REQUEST_GET_CURRENT_PERSON) != null) {
+                                mLocalListeners.get(REQUEST_GET_CURRENT_PERSON).onError(
+                                        getID(), REQUEST_GET_CURRENT_PERSON, response.getError().getErrorMessage(), null);
+                            }
+                            return;
+                        }
+                        if (mLocalListeners.get(REQUEST_GET_CURRENT_PERSON) != null) {
+                            SocialPerson socialPerson = new SocialPerson();
+                                try {
+                                    getSocialPerson(socialPerson, me);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                    mLocalListeners.get(REQUEST_GET_CURRENT_PERSON).onError(
+                                            getID(), REQUEST_GET_CURRENT_PERSON, e.getLocalizedMessage(), null);
+                                }
+                            ((OnRequestSocialPersonCompleteListener) mLocalListeners.get(REQUEST_GET_CURRENT_PERSON))
+                                    .onRequestSocialPersonSuccess(getID(), socialPerson);
+                        }
                     }
-                    return;
-                }
-                if (mLocalListeners.get(REQUEST_GET_CURRENT_PERSON) != null) {
-                    SocialPerson socialPerson = new SocialPerson();
-                    getSocialPerson(socialPerson, me);
-                    ((OnRequestSocialPersonCompleteListener) mLocalListeners.get(REQUEST_GET_CURRENT_PERSON))
-                            .onRequestSocialPersonSuccess(getID(), socialPerson);
-                }
-            }
-        });
+                });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "id,name,email,link");
+        request.setParameters(parameters);
         request.executeAsync();
     }
 
@@ -250,11 +301,12 @@ public class FacebookSocialNetwork extends SocialNetwork {
      * @param userID array of user ids in social network
      * @param onRequestSocialPersonsCompleteListener listener for request ArrayList of {@link com.github.gorbin.asne.core.persons.SocialPerson}
      */
-	@Override
+    @Override
     public void requestSocialPersons(String[] userID, OnRequestSocialPersonsCompleteListener onRequestSocialPersonsCompleteListener) {
         throw new SocialNetworkException("requestSocialPersons isn't allowed for FacebookSocialNetwork");
     }
 
+    //TODO set up right link
     /**
      * Request user {@link com.github.gorbin.asne.facebook.FacebookPerson} by userId - detailed user data
      * @param userId user id in social network
@@ -263,69 +315,93 @@ public class FacebookSocialNetwork extends SocialNetwork {
     @Override
     public void requestDetailedSocialPerson(String userId, OnRequestDetailedSocialPersonCompleteListener onRequestDetailedSocialPersonCompleteListener) {
         super.requestDetailedSocialPerson(userId, onRequestDetailedSocialPersonCompleteListener);
-        final Session currentSession = mSessionTracker.getOpenSession();
 
-        if (currentSession == null) {
-            if (mLocalListeners.get(REQUEST_GET_DETAIL_PERSON) != null) {
-                mLocalListeners.get(REQUEST_GET_DETAIL_PERSON).onError(getID(),
-                        REQUEST_GET_DETAIL_PERSON, "Please login first", null);
-            }
-
-            return;
-        }
-
-        Request request = Request.newMeRequest(currentSession, new Request.GraphUserCallback() {
-            @Override
-            public void onCompleted(GraphUser me, Response response) {
-                if (response.getError() != null) {
-                    if (mLocalListeners.get(REQUEST_GET_DETAIL_PERSON) != null) {
-                        mLocalListeners.get(REQUEST_GET_DETAIL_PERSON).onError(
-                                getID(), REQUEST_GET_DETAIL_PERSON, response.getError().getErrorMessage()
-                                , null);
-                    }
-                    return;
-                }
-
+        if(userId != null){
+            throw new SocialNetworkException("requestDetailedSocialPerson isn't allowed for FacebookSocialNetwork");
+        } else {
+            if (com.facebook.AccessToken.getCurrentAccessToken() == null) {
                 if (mLocalListeners.get(REQUEST_GET_DETAIL_PERSON) != null) {
-                    FacebookPerson facebookPerson = new FacebookPerson();
-                    getDetailedSocialPerson(facebookPerson, me);
-
-                    ((OnRequestDetailedSocialPersonCompleteListener) mLocalListeners.get(REQUEST_GET_DETAIL_PERSON))
-                            .onRequestDetailedSocialPersonSuccess(getID(), facebookPerson);
+                    mLocalListeners.get(REQUEST_GET_DETAIL_PERSON).onError(getID(),
+                            REQUEST_GET_DETAIL_PERSON, "Please login first", null);
                 }
+                return;
             }
-        });
-        request.executeAsync();
+
+            GraphRequest request = GraphRequest.newMeRequest(
+                    com.facebook.AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                        @Override
+                        public void onCompleted(JSONObject me, GraphResponse response) {
+                            if (response.getError() != null) {
+                                if (mLocalListeners.get(REQUEST_GET_DETAIL_PERSON) != null) {
+                                    mLocalListeners.get(REQUEST_GET_DETAIL_PERSON).onError(
+                                            getID(), REQUEST_GET_DETAIL_PERSON, response.getError().getErrorMessage(), null);
+                                }
+                                return;
+                            }
+                            if (mLocalListeners.get(REQUEST_GET_DETAIL_PERSON) != null) {
+                                FacebookPerson facebookPerson = new FacebookPerson();
+                                try {
+                                    getDetailedSocialPerson(facebookPerson, me);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                    mLocalListeners.get(REQUEST_GET_DETAIL_PERSON).onError(
+                                            getID(), REQUEST_GET_DETAIL_PERSON, e.getLocalizedMessage(), null);
+                                }
+                                ((OnRequestDetailedSocialPersonCompleteListener) mLocalListeners.get(REQUEST_GET_DETAIL_PERSON))
+                                        .onRequestDetailedSocialPersonSuccess(getID(), facebookPerson);
+                            }
+                        }
+                    });
+            Bundle parameters = new Bundle();
+            parameters.putString("fields", "id,name,email,link,about,bio,birthday," +
+                    "first_name,gender,hometown,is_verified,last_name,locale,middle_name," +
+                    "timezone,updated_time,verified,website,cover");
+            request.setParameters(parameters);
+            request.executeAsync();
+        }
     }
 
-    private SocialPerson getSocialPerson(SocialPerson socialPerson, GraphUser user){
-        socialPerson.id = user.getId();
-        socialPerson.name = user.getName();
-        socialPerson.avatarURL = String.format("https://graph.facebook.com/%s/picture?type=large", user.getId());
-        if(user.getLink() != null) {
-            socialPerson.profileURL = user.getLink();
-        } else {
-            socialPerson.profileURL = String.format("https://www.facebook.com/", user.getId());
+
+    private SocialPerson getSocialPerson(SocialPerson socialPerson, JSONObject user) throws JSONException {
+
+        if(user.has("id")) {
+            socialPerson.id = user.getString("id");
+            socialPerson.avatarURL = String.format("https://graph.facebook.com/%s/picture?type=large", user.getString("id"));
+            if(user.has("link")) {
+                socialPerson.profileURL = user.getString("link");
+            } else {
+                socialPerson.profileURL = String.format("https://www.facebook.com/", user.getString("id"));
+            }
         }
-        if(user.getProperty("email") != null){
-            socialPerson.email = user.getProperty("email").toString();
+        if(user.has("name")) {
+            socialPerson.name = user.getString("name");
+        }
+        if(user.has("email")) {
+            socialPerson.email = user.getString("email");
         }
         return socialPerson;
     }
 
-	private FacebookPerson getDetailedSocialPerson(FacebookPerson facebookPerson, GraphUser user){
+    private FacebookPerson getDetailedSocialPerson(FacebookPerson facebookPerson, JSONObject user) throws JSONException {
         getSocialPerson(facebookPerson, user);
-        facebookPerson.firstName = user.getFirstName();
-        facebookPerson.middleName = user.getMiddleName();
-        facebookPerson.lastName = user.getLastName();
-        if(user.getProperty("gender") != null) {
-            facebookPerson.gender = user.getProperty("gender").toString();
+        if(user.has("first_name")) {
+            facebookPerson.firstName = user.getString("first_name");
         }
-        facebookPerson.birthday = user.getBirthday();
-        if(user.getLocation() != null) {
-            facebookPerson.city = user.getLocation().getProperty("name").toString();
+        if(user.has("middle_name")) {
+            facebookPerson.middleName = user.getString("middle_name");
         }
-        facebookPerson.verified = user.getProperty("verified").toString();
+        if(user.has("last_name")) {
+            facebookPerson.lastName = user.getString("last_name");
+        }
+        if(user.has("gender")) {
+            facebookPerson.gender = user.getString("gender");
+        }
+        if(user.has("birthday")) {
+            facebookPerson.birthday = user.getString("birthday");
+        }
+        if(user.has("verified")) {
+            facebookPerson.verified = user.getString("verified");
+        }
         return facebookPerson;
     }
 
@@ -338,7 +414,9 @@ public class FacebookSocialNetwork extends SocialNetwork {
     public void requestPostMessage(String message, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostMessage(message, onPostingCompleteListener);
         mStatus = message;
+        requestID = REQUEST_POST_MESSAGE;
         performPublish(PendingAction.POST_STATUS_UPDATE);
+        postStatusUpdate(mStatus);
     }
 
     /**
@@ -352,7 +430,9 @@ public class FacebookSocialNetwork extends SocialNetwork {
         super.requestPostPhoto(photo, message, onPostingCompleteListener);
         mPhotoPath = photo.getAbsolutePath();
         mStatus = message;
+        requestID = REQUEST_POST_PHOTO;
         performPublish(PendingAction.POST_PHOTO);
+        postPhoto(mPhotoPath, message);
     }
 
     /**
@@ -365,7 +445,9 @@ public class FacebookSocialNetwork extends SocialNetwork {
     public void requestPostLink(Bundle bundle, String message, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostLink(bundle, message, onPostingCompleteListener);
         mBundle = bundle;
+        requestID = REQUEST_POST_LINK;
         performPublish(PendingAction.POST_LINK);
+        postLink(mBundle);
     }
 
     /**
@@ -376,92 +458,36 @@ public class FacebookSocialNetwork extends SocialNetwork {
     @Override
     public void requestPostDialog(Bundle bundle, OnPostingCompleteListener onPostingCompleteListener) {
         super.requestPostDialog(bundle, onPostingCompleteListener);
-        if (FacebookDialog.canPresentShareDialog(mSocialNetworkManager.getActivity(),
-                FacebookDialog.ShareDialogFeature.SHARE_DIALOG)) {
-            FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(mSocialNetworkManager.getActivity())
-                    .setLink(bundle.getString(BUNDLE_LINK))
-                    .setDescription(bundle.getString(BUNDLE_MESSAGE))
-                    .setName(bundle.getString(BUNDLE_NAME))
-                    .setApplicationName(bundle.getString(BUNDLE_APP_NAME))
-                    .setCaption(bundle.getString(BUNDLE_CAPTION))
-                    .setPicture(bundle.getString(BUNDLE_PICTURE))
-//                    .setFriends(bundle.getStringArrayList(DIALOG_FRIENDS))
+        Uri link = null;
+        Uri pictureLink = null;
+        if (ShareDialog.canShow(ShareLinkContent.class)) {
+            if (bundle.getString(BUNDLE_LINK) != null) {
+                link = Uri.parse(bundle.getString(BUNDLE_LINK));
+            } else {
+                Log.e("FaceboolSocialNetwork:", "requestPostDialog required URL to share!");
+            }
+            if (bundle.getString(BUNDLE_PICTURE) != null) {
+                pictureLink = Uri.parse(bundle.getString(BUNDLE_PICTURE));
+            }
+            ShareLinkContent linkContent = new ShareLinkContent.Builder()
+                    .setContentTitle(bundle.getString(BUNDLE_NAME))
+                    .setContentDescription(bundle.getString(BUNDLE_MESSAGE))
+                    .setContentUrl(link)
+                    .setImageUrl(pictureLink)
                     .build();
-            mUILifecycleHelper.trackPendingDialogCall(shareDialog.present());
+            shareDialog.show(linkContent);
         } else {
-            publishFeedDialog(bundle);
+            mLocalListeners.get(REQUEST_POST_DIALOG).onError(
+                    getID(), REQUEST_POST_DIALOG, "Can't show share dialog, check login or permissions", null);
         }
-    }
-
-    private void publishFeedDialog(Bundle bundle) {
-        Bundle params = new Bundle();
-        params.putString("name", bundle.getString(BUNDLE_NAME));
-        params.putString("caption", bundle.getString(BUNDLE_CAPTION));
-        params.putString("description", bundle.getString(BUNDLE_MESSAGE));
-        params.putString("link", bundle.getString(BUNDLE_LINK));
-        params.putString("picture", bundle.getString(BUNDLE_PICTURE));
-
-        WebDialog feedDialog = (
-                new WebDialog.FeedDialogBuilder(mSocialNetworkManager.getActivity(),
-                        Session.getActiveSession(),
-                        params))
-                .setOnCompleteListener(new WebDialog.OnCompleteListener() {
-                    @Override
-                    public void onComplete(Bundle values,
-                                           FacebookException error) {
-                        if (error == null) {
-                            final String postId = values.getString("post_id");
-                            if (postId != null) {
-                                ((OnPostingCompleteListener) mLocalListeners.get(REQUEST_POST_DIALOG)).onPostSuccessfully(getID());
-                            } else {
-                                mLocalListeners.get(REQUEST_POST_DIALOG).onError(getID(),
-                                        REQUEST_POST_DIALOG, "Canceled", null);
-                            }
-                        } else {
-                            mLocalListeners.get(REQUEST_POST_DIALOG).onError(getID(),
-                                    REQUEST_POST_DIALOG, "Canceled: " + error.toString(), null);
-                        }
-                        mLocalListeners.remove(REQUEST_POST_DIALOG);
-                    }
-                })
-                .build();
-        feedDialog.show();
     }
 
     private void performPublish(PendingAction action) {
-        Session session = Session.getActiveSession();
-        if (session != null) {
+        if(com.facebook.AccessToken.getCurrentAccessToken() != null) {
             mPendingAction = action;
-            if (session.isPermissionGranted(PERMISSION)) {
-                // We can do the action right away.
-                handlePendingAction();
-                return;
-            } else if (session.isOpened()) {
-                // We need to get new permissions, then complete the action when we get called back.
-                session.requestNewPublishPermissions(new Session.NewPermissionsRequest(mSocialNetworkManager.getActivity(), PERMISSION));
-                return;
-            }
-        }
-
-        if (action == PendingAction.POST_STATUS_UPDATE) {
-            if (mLocalListeners.get(REQUEST_POST_MESSAGE) != null) {
-                mLocalListeners.get(REQUEST_POST_MESSAGE).onError(getID(),
-                        REQUEST_POST_MESSAGE, "no session", null);
-            }
-        }
-
-        if (action == PendingAction.POST_PHOTO) {
-            if (mLocalListeners.get(REQUEST_POST_PHOTO) != null) {
-                mLocalListeners.get(REQUEST_POST_PHOTO).onError(getID(),
-                        REQUEST_POST_PHOTO, "no session", null);
-            }
-        }
-
-        if (action == PendingAction.POST_LINK) {
-            if (mLocalListeners.get(REQUEST_POST_LINK) != null) {
-                mLocalListeners.get(REQUEST_POST_LINK).onError(getID(),
-                        REQUEST_POST_LINK, "no session", null);
-            }
+        } else {
+            mLocalListeners.get(requestID).onError(getID(),
+                    requestID, "User should be logged first", null);
         }
     }
 
@@ -479,42 +505,61 @@ public class FacebookSocialNetwork extends SocialNetwork {
      * Get current user friends list
      * @param onRequestGetFriendsCompleteListener listener for getting list of current user friends
      */
-	@Override
+    //TODO: Pagination
+    @Override
     public void requestGetFriends(OnRequestGetFriendsCompleteListener onRequestGetFriendsCompleteListener) {
         super.requestGetFriends(onRequestGetFriendsCompleteListener);
-		final Session currentSession = mSessionTracker.getOpenSession();
 
-        if (currentSession == null) {
-            if (mLocalListeners.get(REQUEST_GET_FRIENDS) != null) {
-                mLocalListeners.get(REQUEST_GET_FRIENDS).onError(getID(),
-                        REQUEST_GET_FRIENDS, "Please login first", null);
+        if (com.facebook.AccessToken.getCurrentAccessToken() == null) {
+            if (mLocalListeners.get(REQUEST_GET_CURRENT_PERSON) != null) {
+                mLocalListeners.get(REQUEST_GET_CURRENT_PERSON).onError(getID(),
+                        REQUEST_GET_PERSON, "Please login first", null);
             }
-
             return;
         }
 
-        Request request = Request.newMyFriendsRequest(currentSession, new Request.GraphUserListCallback() {
-            @Override
-            public void onCompleted(List<GraphUser> users, Response response) {
-                String[] ids = new String[users.size()];
-                ArrayList<SocialPerson> socialPersons = new ArrayList<SocialPerson>();
-                SocialPerson socialPerson = new SocialPerson();
-                int i = 0;
-                for(GraphUser user : users) {
-                    getSocialPerson(socialPerson, user);
-                    socialPersons.add(socialPerson);
-                    socialPerson = new SocialPerson();
-                    ids[i] = user.getId();
-                    i++;
-                }
-                ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                        .OnGetFriendsIdComplete(getID(), ids);
-                ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                        .OnGetFriendsComplete(getID(), socialPersons);
-                mLocalListeners.remove(REQUEST_GET_FRIENDS);
-            }
-        });
+        GraphRequest request = GraphRequest.newMyFriendsRequest(
+                com.facebook.AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONArrayCallback() {
+                    @Override
+                    public void onCompleted(JSONArray list, GraphResponse response) {
+                        if (response.getError() != null) {
+                            if (mLocalListeners.get(REQUEST_GET_FRIENDS) != null) {
+                                mLocalListeners.get(REQUEST_GET_FRIENDS).onError(
+                                        getID(), REQUEST_GET_FRIENDS, response.getError().getErrorMessage(), null);
+                            }
+                            return;
+                        }
+                        if (mLocalListeners.get(REQUEST_GET_FRIENDS) != null) {
+                            String[] ids = new String[list.length()];
+                            ArrayList<SocialPerson> socialPersons = new ArrayList<>();
+                            try {
+                                SocialPerson socialPerson = new SocialPerson();
+                                for(int i = 0; i < list.length(); i++) {
+                                    getSocialPerson(socialPerson, list.getJSONObject(i));
+                                    socialPersons.add(socialPerson);
+                                    socialPerson = new SocialPerson();
+                                    if(list.getJSONObject(i).has("id")) {
+                                        ids[i] = list.getJSONObject(i).getString("id");
+                                    }
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                mLocalListeners.get(REQUEST_GET_FRIENDS).onError(
+                                        getID(), REQUEST_GET_FRIENDS, e.getLocalizedMessage(), null);
+                            }
+                            ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
+                                    .onGetFriendsIdComplete(getID(), ids);
+                            ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
+                                    .onGetFriendsComplete(getID(), socialPersons);
+                            mLocalListeners.remove(REQUEST_GET_FRIENDS);
+                        }
+                    }
+                });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "id,name,email,link");
+        request.setParameters(parameters);
         request.executeAsync();
+
     }
 
     /**
@@ -539,122 +584,6 @@ public class FacebookSocialNetwork extends SocialNetwork {
         throw new SocialNetworkException("requestRemoveFriend isn't allowed for FacebookSocialNetwork");
     }
 
-    private void onSessionStateChange(Session session, SessionState state, Exception exception) {
-
-        if (mSessionState == SessionState.OPENING && state == SessionState.OPENED) {
-            if (mLocalListeners.get(REQUEST_LOGIN) != null) {
-                ((OnLoginCompleteListener) mLocalListeners.get(REQUEST_LOGIN)).onLoginSuccess(getID());
-                mLocalListeners.remove(REQUEST_LOGIN);
-            }
-        }
-
-        if (state == SessionState.CLOSED_LOGIN_FAILED) {
-            if (mLocalListeners.get(REQUEST_LOGIN) != null) {
-                mLocalListeners.get(REQUEST_LOGIN).onError(getID(), REQUEST_LOGIN, exception.getMessage(), null);
-                mLocalListeners.remove(REQUEST_LOGIN);
-            }
-        }
-
-        mSessionState = state;
-
-        if (mPendingAction != PendingAction.NONE &&
-                (exception instanceof FacebookOperationCanceledException ||
-                        exception instanceof FacebookAuthorizationException)) {
-            mPendingAction = PendingAction.NONE;
-
-            if (mLocalListeners.get(REQUEST_POST_MESSAGE) != null) {
-                mLocalListeners.get(REQUEST_POST_MESSAGE).onError(getID(),
-                        REQUEST_POST_MESSAGE, "permission not granted", null);
-            }
-
-            if (mLocalListeners.get(REQUEST_POST_PHOTO) != null) {
-                mLocalListeners.get(REQUEST_POST_PHOTO).onError(getID(),
-                        REQUEST_POST_PHOTO, "permission not granted", null);
-            }
-
-            if (mLocalListeners.get(REQUEST_POST_LINK) != null) {
-                mLocalListeners.get(REQUEST_POST_LINK).onError(getID(),
-                        REQUEST_POST_LINK, "permission not granted", null);
-            }
-        }
-
-        if (session.isPermissionGranted(PERMISSION)
-                && state == SessionState.OPENED_TOKEN_UPDATED) {
-            handlePendingAction();
-        }
-    }
-
-    /**
-     * Overrided for connect facebook to activity
-     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle). Note: Otherwise it is null.
-     */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mUILifecycleHelper = new UiLifecycleHelper(mSocialNetworkManager.getActivity(), mSessionStatusCallback);
-        mUILifecycleHelper.onCreate(savedInstanceState);
-
-        initializeActiveSessionWithCachedToken(mSocialNetworkManager.getActivity());
-        finishInit();
-    }
-
-    private boolean initializeActiveSessionWithCachedToken(Context context) {
-        if (context == null) {
-            return false;
-        }
-
-        Session session = Session.getActiveSession();
-        if (session != null) {
-            return session.isOpened();
-        }
-
-        mApplicationId = Utility.getMetadataApplicationId(context);
-        return mApplicationId != null && Session.openActiveSessionFromCache(context) != null;
-
-    }
-
-    private void finishInit() {
-        mSessionTracker = new SessionTracker(
-                mSocialNetworkManager.getActivity(), mSessionStatusCallback, null, false);
-    }
-
-    /**
-     * Overrided for facebook connect in resume activity
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-        mUILifecycleHelper.onResume();
-    }
-
-    /**
-     * Overrided for facebook connect in pause
-     */
-    @Override
-    public void onPause() {
-        super.onPause();
-        mUILifecycleHelper.onPause();
-    }
-
-    /**
-     * Overrided for destroying facebook session
-     */
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mUILifecycleHelper.onDestroy();
-    }
-
-    /**
-     * Overrided for facebook
-     * @param outState Bundle in which to place your saved state.
-     */
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mUILifecycleHelper.onSaveInstanceState(outState);
-    }
-
     /**
      * Overrided for facebook
      * @param requestCode The integer request code originally supplied to startActivityForResult(), allowing you to identify who this result came from.
@@ -664,24 +593,7 @@ public class FacebookSocialNetwork extends SocialNetwork {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mUILifecycleHelper.onActivityResult(requestCode, resultCode, data, null);
-
-        Session session = Session.getActiveSession();
-        int sanitizedRequestCode = requestCode % 0x10000;
-        if (session != null) {
-            session.onActivityResult(mSocialNetworkManager.getActivity(), sanitizedRequestCode, resultCode, data);
-        }
-
-        mUILifecycleHelper.onActivityResult(requestCode, resultCode, data, new FacebookDialog.Callback() {
-            @Override
-            public void onError(FacebookDialog.PendingCall pendingCall, Exception error, Bundle data) {
-                Log.e("Activity", String.format("Error: %s", error.toString()));
-            }
-
-            @Override
-            public void onComplete(FacebookDialog.PendingCall pendingCall, Bundle data) {
-            }
-        });
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     private void handlePendingAction() {
@@ -704,56 +616,144 @@ public class FacebookSocialNetwork extends SocialNetwork {
     }
 
     private void postStatusUpdate(String message) {
-        if (isConnected() && Session.getActiveSession().isPermissionGranted(PERMISSION)){
-            Request request = Request
-                    .newStatusUpdateRequest(Session.getActiveSession(), message, null, null, new Request.Callback() {
-                        @Override
-                        public void onCompleted(Response response) {
-                            publishSuccess(REQUEST_POST_MESSAGE,
-                                    response.getError() == null ? null : response.getError().getErrorMessage());
-                        }
-                    });
-            request.executeAsync();
+        ShareLinkContent content = new ShareLinkContent.Builder()
+                .build();
+
+        if (ShareDialog.canShow(ShareLinkContent.class)) {
+            shareDialog.show(content);
         } else {
-            mPendingAction = PendingAction.POST_STATUS_UPDATE;
+            if(com.facebook.AccessToken.getCurrentAccessToken().getPermissions().contains(PERMISSION)){
+                ShareApi.share(content, new FacebookCallback<Sharer.Result>() {
+                    @Override
+                    public void onSuccess(Sharer.Result result) {
+                        Log.v("FACEBOOK_TEST", "share api success");
+                        publishSuccess(REQUEST_POST_MESSAGE, null);
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Log.v("FACEBOOK_TEST", "share api cancel");
+                        publishSuccess(REQUEST_POST_MESSAGE, "postRequestMessage canceled");
+                    }
+
+                    @Override
+                    public void onError(FacebookException e) {
+                        Log.v("FACEBOOK_TEST", "share api error " + e);
+                        publishSuccess(REQUEST_POST_MESSAGE, e.toString());
+                    }
+                });
+            } else {
+                LoginManager.getInstance().logInWithPublishPermissions(
+                        fragment.getActivity(), Collections.singletonList(PERMISSION));//Arrays.asList("publish_actions"));
+            }
         }
     }
 
     private void postPhoto(final String path, final String message) {
-        if (Session.getActiveSession().isPermissionGranted(PERMISSION)){
-            Bitmap image = BitmapFactory.decodeFile(path);
-            Request request = Request.newUploadPhotoRequest(Session.getActiveSession(), image, new Request.Callback() {
-                @Override
-                public void onCompleted(Response response) {
-                    publishSuccess(REQUEST_POST_PHOTO,
-                            response.getError() == null ? null : response.getError().getErrorMessage());
-                }
-            });
-            if(message != null && message.length()>0) {
-                Bundle parameters = request.getParameters();
-                parameters.putString("message", message);
-                request.setParameters(parameters);
-            }
-            request.executeAsync();
+        Bitmap image = BitmapFactory.decodeFile(path);
+        SharePhoto photo = new SharePhoto.Builder()
+                .setBitmap(image)
+                .setCaption(message)
+                .build();
+        SharePhotoContent content = new SharePhotoContent.Builder()
+                .addPhoto(photo)
+                .build();
+
+        if (ShareDialog.canShow(SharePhotoContent.class)) {
+            shareDialog.show(content);
         } else {
-            mPendingAction = PendingAction.POST_PHOTO;
+            if(com.facebook.AccessToken.getCurrentAccessToken().getPermissions().contains(PERMISSION)){
+                ShareApi.share(content, new FacebookCallback<Sharer.Result>() {
+                    @Override
+                    public void onSuccess(Sharer.Result result) {
+                        Log.v("FACEBOOK_TEST", "share api success");
+                        publishSuccess(REQUEST_POST_PHOTO, null);
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Log.v("FACEBOOK_TEST", "share api cancel");
+                        publishSuccess(REQUEST_POST_PHOTO, "postRequestPhoto canceled");
+                    }
+
+                    @Override
+                    public void onError(FacebookException e) {
+                        Log.v("FACEBOOK_TEST", "share api error " + e);
+                        publishSuccess(REQUEST_POST_PHOTO, e.toString());
+                    }
+                });
+            } else {
+                LoginManager.getInstance().logInWithPublishPermissions(
+                        fragment.getActivity(), Collections.singletonList(PERMISSION)); //Arrays.asList("publish_actions"));
+            }
         }
     }
 
     private void postLink(final Bundle bundle) {
-        if (Session.getActiveSession().isPermissionGranted(PERMISSION)){
-            Request request = new Request(Session.getActiveSession(), "me/feed", bundle,
-                    HttpMethod.POST, new Request.Callback(){
-                @Override
-                public void onCompleted(Response response) {
-                    publishSuccess(REQUEST_POST_LINK,
-                            response.getError() == null ? null : response.getError().getErrorMessage());
-                }
-            });
-            request.executeAsync();
+
+//        JSONObject object = new JSONObject();
+//        try {
+//            object.put("message", "wat");
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        GraphRequest request =  GraphRequest.newPostRequest(com.facebook.AccessToken.getCurrentAccessToken(), "me/feed",
+//                object, new GraphRequest.Callback(){
+//
+//                    @Override
+//                    public void onCompleted(GraphResponse response) {
+//                        Log.v("wat", response.toString());
+//                    }
+//                });
+//        request.executeAsync();
+
+        Uri link = null;
+        Uri pictureLink = null;
+        if (bundle.getString(BUNDLE_LINK) != null) {
+            link = Uri.parse(bundle.getString(BUNDLE_LINK));
         } else {
-            mPendingAction = PendingAction.POST_PHOTO;
+            Log.e("FaceboolSocialNetwork:", "requestPostLink required URL to share!");
+            publishSuccess(REQUEST_POST_LINK, "postRequestLink required URL to share!");
         }
+        if (bundle.getString(BUNDLE_PICTURE) != null) {
+            pictureLink = Uri.parse(bundle.getString(BUNDLE_PICTURE));
+        }
+        ShareLinkContent content = new ShareLinkContent.Builder()
+                .setContentTitle(bundle.getString(BUNDLE_NAME))
+                .setContentDescription(bundle.getString(BUNDLE_MESSAGE))
+                .setContentUrl(link)
+                .setImageUrl(pictureLink)
+                .build();
+
+        if (ShareDialog.canShow(ShareLinkContent.class)) {
+            shareDialog.show(content);
+        } else {
+            if(com.facebook.AccessToken.getCurrentAccessToken().getPermissions().contains(PERMISSION)){
+                ShareApi.share(content, new FacebookCallback<Sharer.Result>() {
+                    @Override
+                    public void onSuccess(Sharer.Result result) {
+                        Log.v("FACEBOOK_TEST", "share api success");
+                        publishSuccess(REQUEST_POST_LINK, null);
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Log.v("FACEBOOK_TEST", "share api cancel");
+                        publishSuccess(REQUEST_POST_LINK, "postRequestLink canceled");
+                    }
+
+                    @Override
+                    public void onError(FacebookException e) {
+                        Log.v("FACEBOOK_TEST", "share api error " + e);
+                        publishSuccess(REQUEST_POST_LINK, e.toString());
+                    }
+                });
+            } else {
+                LoginManager.getInstance().logInWithPublishPermissions(
+                        fragment.getActivity(), Collections.singletonList("publish_actions"));
+            }
+        }
+
     }
 
     private void publishSuccess(String requestID, String error) {

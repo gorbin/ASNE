@@ -123,11 +123,13 @@ public class OAuthActivity extends Activity {
                 return super.shouldOverrideUrlLoading(view, url);
             }
 
+            
             @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                handler.proceed();
-            }
-
+              public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                  // In case of SslError cancel that request       
+                  handler.cancel();
+             }
+            
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 super.onReceivedError(view, errorCode, description, failingUrl);

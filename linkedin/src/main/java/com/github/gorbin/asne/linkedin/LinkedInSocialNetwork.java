@@ -26,6 +26,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 
 import com.github.gorbin.asne.core.AccessToken;
 import com.github.gorbin.asne.core.OAuthActivity;
@@ -77,7 +78,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
     private static final String SAVE_STATE_KEY_OAUTH_REQUEST_TOKEN = "LinkedInSocialNetwork.SAVE_STATE_KEY_OAUTH_SECRET";
     private static final String SAVE_STATE_KEY_EXPIRES_DATE = "LinkedInSocialNetwork.SAVE_STATE_KEY_EXPIRES_DATE";
 //    private final String LINKEDIN_OAUTH2_CALLBACK_URL = "https://asne";
-    private final String authURLString;
+    private final String mAuthURLString;
     private String LINKEDIN_API = "https://www.linkedin.com/uas/oauth2/authorization?response_type=code";
     private String LINKEDIN_TOKEN = "https://www.linkedin.com/uas/oauth2/accessToken?grant_type=authorization_code";
     private String LINKEDIN_V1_API = "https://api.linkedin.com/v1";
@@ -86,19 +87,19 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
     private String COMMENT = "<comment>{0}</comment>";
     private String CONTENT = "<content><title>{0}</title><description>{1}</description>" +
             "<submitted-url>{2}</submitted-url><submitted-image-url>{3}</submitted-image-url></content>";
-    private String consumerKey;
-    private String consumerSecret;
-    private String redirectURL;
+    private String mConsumerKey;
+    private String mConsumerSecret;
+    private String mRedirectURL;
 
     public LinkedInSocialNetwork(Fragment fragment, String consumerKey, String consumerSecret, String redirectURL, String permissions) {
         super(fragment);
         if (TextUtils.isEmpty(consumerKey) || TextUtils.isEmpty(consumerSecret) || TextUtils.isEmpty(permissions)) {
             throw new IllegalArgumentException("TextUtils.isEmpty(ConsumerKey) || TextUtils.isEmpty(ConsumerSecret) || TextUtils.isEmpty(Permissions)");
         }
-        this.consumerKey = consumerKey;
-        this.consumerSecret = consumerSecret;
-        this.redirectURL = redirectURL;
-        authURLString = LINKEDIN_API + "&client_id=" + consumerKey + "&scope=" + permissions +
+        this.mConsumerKey = consumerKey;
+        this.mConsumerSecret = consumerSecret;
+        this.mRedirectURL = redirectURL;
+        this.mAuthURLString = LINKEDIN_API + "&client_id=" + consumerKey + "&scope=" + permissions +
                          "&state=" + REQUEST_AUTH + "&redirect_uri=" + redirectURL;
     }
     /**
@@ -109,8 +110,8 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
     public boolean isConnected() {
         String accessToken = mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null);
         String requestToken = mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_REQUEST_TOKEN, null);
-        Long expiresDate = mSharedPreferences.getLong(SAVE_STATE_KEY_EXPIRES_DATE, 0);
-        Boolean notExpired = expiresDate > 0 && Calendar.getInstance().getTimeInMillis() - 86400000 < expiresDate;
+        long expiresDate = mSharedPreferences.getLong(SAVE_STATE_KEY_EXPIRES_DATE, 0);
+        boolean notExpired = expiresDate > 0 && Calendar.getInstance().getTimeInMillis() - DateUtils.DAY_IN_MILLIS < expiresDate;
         return accessToken != null && requestToken != null && notExpired;
     }
 
@@ -122,8 +123,8 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
     public void requestLogin(OnLoginCompleteListener onLoginCompleteListener) {
         super.requestLogin(onLoginCompleteListener);
         Intent intent = new Intent(mSocialNetworkManager.getActivity(), OAuthActivity.class)
-                .putExtra(OAuthActivity.PARAM_CALLBACK, redirectURL)
-                .putExtra(OAuthActivity.PARAM_URL_TO_LOAD, authURLString);
+                .putExtra(OAuthActivity.PARAM_CALLBACK, mRedirectURL)
+                .putExtra(OAuthActivity.PARAM_URL_TO_LOAD, mAuthURLString);
         mSocialNetworkManager.getActivity().startActivityForResult(intent, REQUEST_AUTH);
     }
 
@@ -154,7 +155,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
      */
     @Override
     public AccessToken getAccessToken() {
-        return new com.github.gorbin.asne.core.AccessToken(
+        return new AccessToken(
                 mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null),
                 null
         );
@@ -168,7 +169,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
     public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
         super.requestAccessToken(onRequestAccessTokenCompleteListener);
         ((OnRequestAccessTokenCompleteListener) mLocalListeners.get(REQUEST_ACCESS_TOKEN))
-                .onRequestAccessTokenComplete(getID(), new com.github.gorbin.asne.core.AccessToken(
+                .onRequestAccessTokenComplete(getID(), new AccessToken(
                         mSharedPreferences.getString(SAVE_STATE_KEY_OAUTH_TOKEN, null),
                         null
                 ));
@@ -425,7 +426,8 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
                     + "&count=" + RequestGetFriendsAsyncTask.count;
         }
         JSONArray jsonResponse = jsonObject.getJSONArray("values");
-        for(int i = 0; i < jsonResponse.length(); i++){
+        int length = jsonResponse.length();
+        for (int i = 0; i < length; i++) {
             SocialPerson socialPerson = new SocialPerson();
             getSocialPerson(socialPerson, jsonResponse.getJSONObject(i));
             socialPersons.add(socialPerson);
@@ -465,13 +467,13 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        int sanitizedRequestCode = requestCode % 0x10000;
+        int sanitizedRequestCode = requestCode & 0xFFFF;
         if (sanitizedRequestCode != REQUEST_AUTH) return;
         super.onActivityResult(requestCode, resultCode, data);
 
         Uri uri = data != null ? data.getData() : null;
 
-        if (uri != null && uri.toString().startsWith(redirectURL.toLowerCase())) {
+        if (uri != null && uri.toString().startsWith(mRedirectURL.toLowerCase())) {
             String parts[] = uri.toString().split("=");
             String verifier = parts[1];
             verifier = verifier.substring(0, verifier.indexOf("&"));
@@ -496,20 +498,19 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
         super.cancelLoginRequest();
     }
 
-    private String streamToString(InputStream p_is) {
+    private String streamToString(InputStream is) {
         try {
-            BufferedReader m_br;
-            StringBuilder m_outString = new StringBuilder();
-            m_br = new BufferedReader(new InputStreamReader(p_is));
-            String m_read = m_br.readLine();
-            while(m_read != null) {
-                m_outString.append(m_read);
-                m_read =m_br.readLine();
+            StringBuilder outString = new StringBuilder();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            String read = reader.readLine();
+            while (read != null) {
+                outString.append(read);
+                read = reader.readLine();
             }
-            return m_outString.toString();
+            return outString.toString();
         }
-        catch (Exception p_ex) {
-            p_ex.printStackTrace();
+        catch (Exception ex) {
+            ex.printStackTrace();
             return null;
         }
     }
@@ -551,7 +552,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
         }
     }
 
-    private void checkExeption(Exception e, Bundle result){
+    private void checkException(Exception e, Bundle result){
         result.putString(SocialNetworkAsyncTask.RESULT_ERROR, e.getMessage());
     }
 
@@ -570,8 +571,8 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
             HttpsURLConnection httpsURLConnection = null;
             try
             {
-                String tokenURLString = LINKEDIN_TOKEN + "&code=" + verifier + "&redirect_uri=" + redirectURL +
-                        "&client_id=" + consumerKey + "&client_secret=" + consumerSecret;
+                String tokenURLString = LINKEDIN_TOKEN + "&code=" + verifier + "&redirect_uri=" + mRedirectURL +
+                        "&client_id=" + mConsumerKey + "&client_secret=" + mConsumerSecret;
 
                 URL url = new URL(tokenURLString);
                 httpsURLConnection = (HttpsURLConnection) url.openConnection();
@@ -656,7 +657,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
                 getSocialPerson(socialPerson, jsonObject);
                 result.putParcelable(REQUEST_GET_PERSON, socialPerson);
             } catch (Exception e) {
-                checkExeption(e, result);
+                checkException(e, result);
             }
             return result;
         }
@@ -704,7 +705,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
                 getDetailedSocialPerson(linkedinPerson, jsonObject);
                 result.putParcelable(REQUEST_GET_DETAIL_PERSON, linkedinPerson);
             } catch (Exception e) {
-                checkExeption(e, result);
+                checkException(e, result);
             }
             return result;
         }
@@ -749,7 +750,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
                 outputStreamWriter.flush();
                 checkConnectionErrors(connection);
             } catch (Exception e) {
-                checkExeption(e, result);
+                checkException(e, result);
             }
 
             return result;
@@ -804,7 +805,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
                 outputStreamWriter.flush();
                 checkConnectionErrors(connection);
             } catch (Exception e) {
-                checkExeption(e, result);
+                checkException(e, result);
             }
 
             return result;
@@ -892,7 +893,7 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
                 result.putStringArray(RESULT_GET_FRIENDS_ID, ids.toArray(new String[ids.size()]));
                 result.putParcelableArrayList(RESULT_GET_FRIENDS, socialPersons);
             } catch (Exception e) {
-                checkExeption(e, result);
+                checkException(e, result);
             }
             return result;
         }
@@ -903,10 +904,10 @@ public class LinkedInSocialNetwork extends OAuthSocialNetwork {
                     result.getStringArray(RESULT_GET_FRIENDS_ID))) return;
 
             ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                    .OnGetFriendsIdComplete(getID(), result.getStringArray(RESULT_GET_FRIENDS_ID));
+                    .onGetFriendsIdComplete(getID(), result.getStringArray(RESULT_GET_FRIENDS_ID));
             ArrayList<SocialPerson> socialPersons = result.getParcelableArrayList(RESULT_GET_FRIENDS);
             ((OnRequestGetFriendsCompleteListener) mLocalListeners.get(REQUEST_GET_FRIENDS))
-                    .OnGetFriendsComplete(getID(), socialPersons);
+                    .onGetFriendsComplete(getID(), socialPersons);
         }
     }
 
