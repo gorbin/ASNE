@@ -22,6 +22,8 @@
 package com.github.gorbin.asne.core;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -125,9 +127,25 @@ public class OAuthActivity extends Activity {
 
             
             @Override
-              public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+              public void onReceivedSslError(WebView view, final SslErrorHandler handler, SslError error) {
                   // In case of SslError cancel that request       
-                  handler.cancel();
+                final AlertDialog.Builder builder = new AlertDialog.Builder(OAuthActivity.this);
+                builder.setMessage("Invalid SSL error");
+                builder.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        handler.proceed();
+                     }
+                 });
+
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                     @Override
+                     public void onClick(DialogInterface dialog, int which) {
+                         handler.cancel();
+                     }
+                 });
+                final AlertDialog dialog = builder.create();
+                dialog.show();
              }
             
             @Override
