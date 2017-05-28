@@ -128,9 +128,15 @@ public class OAuthActivity extends Activity {
             
             @Override
               public void onReceivedSslError(WebView view, final SslErrorHandler handler, SslError error) {
-                  // In case of SslError cancel that request       
+
+                /**
+                 * Fix for Secure Error in Google Play Developer Console
+                 *
+                 * @author  Michael Sheleg (shelegmike@gmail.com)
+                 */
+
                 final AlertDialog.Builder builder = new AlertDialog.Builder(OAuthActivity.this);
-                builder.setMessage("Invalid SSL error");
+                builder.setMessage("Invalid SSL");
                 builder.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
