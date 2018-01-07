@@ -353,9 +353,7 @@ public class FacebookSocialNetwork extends SocialNetwork {
                         }
                     });
             Bundle parameters = new Bundle();
-            parameters.putString("fields", "id,name,email,link,about,bio,birthday," +
-                    "first_name,gender,hometown,is_verified,last_name,locale,middle_name," +
-                    "timezone,updated_time,verified,website,cover");
+            parameters.putString("fields", " id,about,age_range,birthday,context,cover,currency,devices,education,email,favorite_athletes,favorite_teams,first_name,gender,hometown,inspirational_people,installed,install_type,is_verified,languages,last_name,link,locale,location,meeting_for,middle_name,name,name_format,political,quotes,payment_pricepoints,relationship_status,religion,security_settings,significant_other,sports,test_group,timezone,third_party_id,updated_time,verified,video_upload_limits,viewer_can_send_gift,website,work");
             request.setParameters(parameters);
             request.executeAsync();
         }
