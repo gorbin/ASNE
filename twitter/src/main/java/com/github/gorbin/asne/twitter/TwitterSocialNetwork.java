@@ -27,7 +27,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-
 import com.github.gorbin.asne.core.AccessToken;
 import com.github.gorbin.asne.core.OAuthActivity;
 import com.github.gorbin.asne.core.OAuthSocialNetwork;
@@ -44,13 +43,12 @@ import com.github.gorbin.asne.core.listener.OnRequestRemoveFriendCompleteListene
 import com.github.gorbin.asne.core.listener.OnRequestSocialPersonCompleteListener;
 import com.github.gorbin.asne.core.listener.OnRequestSocialPersonsCompleteListener;
 import com.github.gorbin.asne.core.persons.SocialPerson;
-
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-
 import twitter4j.PagableResponseList;
 import twitter4j.Relationship;
 import twitter4j.StatusUpdate;
@@ -508,9 +506,11 @@ public class TwitterSocialNetwork extends OAuthSocialNetwork {
         @Override
         protected void onPostExecute(Bundle result) {
             if (!handleRequestResult(result, REQUEST_LOGIN)) return;
+            if (mSocialNetworkManager == null) return;
 
-            if (result.containsKey(RESULT_OAUTH_LOGIN)) {
-                Intent intent = new Intent(mSocialNetworkManager.getActivity(), OAuthActivity.class)
+            WeakReference<Context> contextReference = new WeakReference<Context>(mSocialNetworkManager.getActivity());
+            if (result.containsKey(RESULT_OAUTH_LOGIN) && contextReference.get() != null) {
+                Intent intent = new Intent(contextReference.get(), OAuthActivity.class)
                         .putExtra(OAuthActivity.PARAM_CALLBACK, mRedirectURL)
                         .putExtra(OAuthActivity.PARAM_URL_TO_LOAD, result.getString(RESULT_OAUTH_LOGIN));
 
