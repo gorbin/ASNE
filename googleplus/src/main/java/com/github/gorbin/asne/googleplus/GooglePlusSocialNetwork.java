@@ -21,15 +21,14 @@
  *******************************************************************************/
 package com.github.gorbin.asne.googleplus;
 
-import android.content.Context;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-
 import com.github.gorbin.asne.core.AccessToken;
 import com.github.gorbin.asne.core.SocialNetwork;
 import com.github.gorbin.asne.core.SocialNetworkException;
@@ -45,9 +44,8 @@ import com.github.gorbin.asne.core.listener.OnRequestSocialPersonCompleteListene
 import com.github.gorbin.asne.core.listener.OnRequestSocialPersonsCompleteListener;
 import com.github.gorbin.asne.core.persons.SocialPerson;
 import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -56,7 +54,6 @@ import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.PlusShare;
 import com.google.android.gms.plus.model.people.Person;
 import com.google.android.gms.plus.model.people.PersonBuffer;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +65,7 @@ import java.util.UUID;
  * @author Anton Krasov
  * @author Evgeny Gorbin (gorbin.e.o@gmail.com)
  */
-public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class GooglePlusSocialNetwork extends SocialNetwork implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     /*** Social network ID in asne modules, should be unique*/
     public static final int ID = 3;
@@ -634,14 +631,6 @@ public class GooglePlusSocialNetwork extends SocialNetwork implements GooglePlay
             mLocalListeners.get(REQUEST_LOGIN).onError(getID(), REQUEST_LOGIN,
                     "get person == null", null);
         }
-        mConnectRequested = false;
-    }
-
-    /**
-     * Called when the client is disconnected.
-     */
-    @Override
-    public void onDisconnected() {
         mConnectRequested = false;
     }
 
