@@ -170,12 +170,20 @@ public class VkSocialNetwork extends SocialNetwork {
         vkAccessTokenTracker.startTracking();
         VKSdk.customInitialize(mActivity.getApplicationContext(),wat,null);// initialize(mActivity.getApplicationContext());
     }
-
-//    public VkSocialNetwork(Fragment fragment, Context context, String key, String[] permissions) {
-//        super(fragment, context);
-//        this.key = key;
-//        this.permissions = permissions;
-//    }
+    public VkSocialNetwork(Activity activity, String key, String[] permissions) {
+        super(null, activity);
+        this.mKey = key;
+        this.mPermissions = permissions;
+        this.mActivity = activity;
+        int wat = Integer.parseInt(mKey);
+        vkAccessTokenTracker.startTracking();
+        VKSdk.customInitialize(mActivity.getApplicationContext(),wat,null);// initialize(mActivity.getApplicationContext());
+    }
+    public VkSocialNetwork(Fragment fragment, Context context, String key, String[] permissions) {
+        super(fragment, context);
+        this.key = key;
+        this.permissions = permissions;
+    }
 
     private static boolean stringToBool(String s) {
         if (s.equals("1"))
