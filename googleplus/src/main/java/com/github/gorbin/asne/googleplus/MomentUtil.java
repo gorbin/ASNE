@@ -16,8 +16,6 @@
 
 package com.github.gorbin.asne.googleplus;
 
-import com.google.android.gms.plus.model.moments.ItemScope;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -66,66 +64,5 @@ public class MomentUtil {
         for (int i = 0; i < count; i++) {
             ACTIONS[i] = "http://schemas.google.com/" + ACTIONS[i];
         }
-    }
-
-    /**
-     * Generates the "result" JSON object for select moments.
-     *
-     * @param momentType The type of the moment.
-     */
-    public static ItemScope getResultFor(String momentType) {
-        if (momentType.equals("CommentActivity")) {
-            return getCommentActivityResult();
-        }
-        if (momentType.equals("ReserveActivity")) {
-            return getReserveActivityResult();
-        }
-        if (momentType.equals("ReviewActivity")) {
-            return getReviewActivityResult();
-        }
-        return null;
-    }
-
-    /**
-     * Generates the "result" JSON object for CommentActivity moment.
-     */
-    private static ItemScope getCommentActivityResult() {
-        return new ItemScope.Builder()
-                .setType("http://schema.org/Comment")
-                .setUrl("https://developers.google.com/+/plugins/snippet/examples/blog-entry#comment-1")
-                .setName("This is amazing!")
-                .setText("I can't wait to use it on my site!")
-                .build();
-    }
-
-    /**
-     * Generates the "result" JSON object for ReserveActivity moment.
-     */
-    private static ItemScope getReserveActivityResult() {
-        return new ItemScope.Builder()
-                .setType("http://schemas.google.com/Reservation")
-                .setStartDate("2012-06-28T19:00:00-08:00")
-                .setAttendeeCount(3)
-                .build();
-    }
-
-    /**
-     * Generates the "result" JSON object for ReviewActivity moment.
-     */
-    private static ItemScope getReviewActivityResult() {
-        ItemScope rating = new ItemScope.Builder()
-                .setType("http://schema.org/Rating")
-                .setRatingValue("100")
-                .setBestRating("100")
-                .setWorstRating("0")
-                .build();
-
-        return new ItemScope.Builder()
-                .setType("http://schema.org/Review")
-                .setName("A Humble Review of Widget")
-                .setUrl("https://developers.google.com/+/plugins/snippet/examples/review")
-                .setText("It is amazingly effective")
-                .setReviewRating(rating)
-                .build();
     }
 }
